@@ -10,6 +10,7 @@ import MEndpointList from './MEndpointList.vue'
 import { firewallCommand, reachOverview, reachView } from '../settings/reachability.js'
 import { failureWords, reachTexts } from '../settings/reachTexts.js'
 import { failureOf } from '../settings/remoteFlow.js'
+import { stepIcon, stepPhaseWord, stepTitle } from '../settings/networkCheck.js'
 
 // The connection paths of 主机设置 › 网络 as one calm list: a line per path (公网, 组网, 局域网) with the host's verdict as a small icon and chip, the one fact behind it and the address
 // a client should enter with a copy button; under a line, each thing the host said once (evidence, a reason with the action that fixes it, a note). Then the public endpoints as a
@@ -26,6 +27,8 @@ const props = defineProps({
   platform: { type: String, default: 'windows' },
   copy: { type: Function, default: null },
   lan: { type: Object, default: null },
+  /** while a check runs: { done, total, text, steps: [{ key, id, subject, phase }] } (useReachability's `view.progress`) */
+  progress: { type: Object, default: null },
   /** the public endpoints in the configuration as one string; the list is shown when `addressEditable` */
   endpoints: { type: String, default: '' },
   addressEditable: { type: Boolean, default: false },
@@ -59,6 +62,13 @@ function fix(path, row) {
   if (row.action === 'firewall' || row.action === 'outside') { open.value = open.value === key ? '' : key; return }
   emit('fix', row.action, row)
 }
+const running = computed(() => !!(loading.value && props.progress && props.progress.steps.length))
+// what a screen reader hears while the check goes: the step that is going or the one that has just ended, with the count
+const announce = computed(() => {
+  const steps = props.progress?.steps || []
+  const now = steps.find((s) => s.phase === 'running') || [...steps].reverse().find((s) => s.phase === 'done')
+  return now ? `${stepTitle(now, props.locale)}: ${stepPhaseWord(now, props.locale)} (${props.progress.text})` : ''
+})
 const NOTE_ICON = { problem: 'warning', evidence: 'history', good: 'check_circle', note: 'info' }
 const PATH_ICON = { public: 'public', mesh: 'hub', lan: 'lan' }
 const command = computed(() => firewallCommand(props.report, props.platform === 'windows' ? 'windows' : 'linux'))
@@ -66,11 +76,15 @@ const base = computed(() => (props.report?.ports || []).find((p) => p.role === '
 </script>
 
 <template>
-  <section class="m-reacho" :aria-busy="loading" :aria-label="label || T.overview.label">
+  <section class="m-reacho" :aria-busy="loading && !running" :aria-label="label || T.overview.label">
     <div class="m-reacho__bar">
       <small v-if="!stamped">{{ view?.checkedAt ? T.checkedAt.replace('{time}', view.checkedAt) : T.notChecked }}</small>
-      <MButton variant="tonal" size="sm" icon="refresh" :loading="loading" @click="emit('recheck')">{{ loading ? T.checking : T.recheck }}</MButton>
+      <MButton variant="tonal" size="sm" icon="refresh" :loading="loading" @click="emit('recheck')">{{ loading ? (progress ? `${T.checking} ${progress.text}` : T.checking) : T.recheck }}</MButton>
     </div>
+    <ol v-if="running" class="m-reacho__run">
+      <li v-for="s in progress.steps" :key="s.key" :class="[`is-${s.phase}`, s.phase === 'done' && s.state !== 'running' ? `is-${s.state}` : '']"><MIcon :name="stepIcon(s)" :fill="s.phase === 'done'" /><span>{{ stepTitle(s, locale) }}</span><small class="m-reacho__sr">{{ stepPhaseWord(s, locale) }}</small></li>
+    </ol>
+    <span v-if="running" class="m-reacho__sr" role="status" aria-live="polite">{{ announce }}</span>
     <MBanner v-if="status === 'unavailable' || status === 'error'" class="m-reach__fail" :tone="status === 'error' ? 'error' : 'info'" :icon="status === 'error' ? 'error' : 'info'">
       <b>{{ fail.title }}</b> {{ fail.why }} <span v-if="fail.next">{{ fail.next }}</span>
       <template v-if="status === 'error'" #actions><MButton variant="text" size="sm" icon="refresh" @click="emit('recheck')">{{ T.recheck }}</MButton></template>

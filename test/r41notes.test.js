@@ -34,7 +34,7 @@ test('the tiles carry the note of their class', () => {
   assert.equal(cat({ platform: 'windows' })['ctl-bitrate'].note, T.clientNote)
   assert.equal(cat({ platform: 'windows' })['ctl-encoder'].note, T.restartNote)
   const toggle = read('vue/tiles/TileToggleB3.vue')
-  assert.match(toggle, /<small class="m-b3a__note">\{\{ L\.restartNote \}\}<\/small>/, '手柄输入, 键盘输入, 鼠标输入, 显示光标, 串流音频: read at the start')
+  assert.match(toggle, /<small class="m-b3a__note">\{\{ d\.runtime \? L\.liveNote : L\.restartNote \}\}<\/small>/, '手柄输入, 键盘输入, 鼠标输入, 显示光标, 串流音频: read at the start; 主机音频 acts on the running stream')
   const setting = read('vue/tiles/TileSettingB3.vue')
   assert.match(setting, /id\.value === 'ctl-encoder' \? L\.value\.restartNote : id\.value === 'ctl-fps' \|\| id\.value === 'ctl-bitrate' \? L\.value\.clientNote : ''/, '编码器, 码率上限 and 帧率预设 on the strip')
   assert.match(setting, /\{\{ L\.restartNote \}\}<\/span>\n    <\/div><\/div>\n    <MPickSheet v-if="encChoices\.more"/, '编码器 at 方形')

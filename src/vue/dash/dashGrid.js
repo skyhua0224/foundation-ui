@@ -16,7 +16,8 @@ export function useDashGrid(D) {
   // the 底栏 layout is one row of SMALL tiles: every tile is S there whatever size it has in the smart layout (the saved sizes are not touched), and the size chooser offers S only.
   // Every tile draws the ONE generic small view (icon, value, label, chevron): the own small layouts of the cards were made for the grid and differ from each other.
   // ---- the grid in square units (round27-xl): a column is as wide as a 方形 is tall, the rows of the ladder are one column high, the strip rows are STRIP_PX; the columns follow the width and the density
-  const tileDensity = computed(() => appearance.state.tileDensity || 'standard')
+  // in the dock, a short window (a phone on its side) takes the smaller density (a unit of 130 to 175 px) unless the person chose another: the tiles of a row are shorter, so a whole row stays on the first screen
+  const tileDensity = computed(() => { const d = appearance.state.tileDensity || 'standard'; return d === 'standard' && tall.value < 480 && appearance.state.overview === 'dock' ? 'smaller' : d })
   const gridOf = (w) => columnsOf(w, tileDensity.value)
   const JOURNEY_PX = 200
   // the banner of the first pairing is as tall as its step, at least this
@@ -63,7 +64,7 @@ export function useDashGrid(D) {
     if (card.kind === 'stack') { const key = stackSizeFor(card); return { ...card, ...boxIn(card, key, u), size: key, sizeKey: key, sizeKeys: commonSizes(card.stackMembers, windowClass.value, tall.value), suggestion: suggestFor(card.stack, card.stackMembers, key), stack: { ...card.stack, activeId: card.stack.members[card.stack.active], members: card.stackMembers.map((m) => ({ ...m, hasDetail: hasDetailOf(m), size: key, sizeKey: key, sizeKeys: [key] })) } } }
     const c = { ...card, hasDetail: hasDetailOf(card) }
     if (dockLayout.value) return dockBox(c, u)
-    const key = drawnSize(c, sizeOf(c.id), lift)
+    const key = drawnSize(c, c.fillSize || sizeOf(c.id), lift)
     return { ...c, ...boxIn(c, key, u), size: key, sizeKey: key, sizeKeys: sizeKeysOf(c) }
   }
   // ---- smart stacks: what a stack turns to (stackModel.js rotationPick), and WHEN (stackRotation.js): never while the person looks at the overview. A stack with the pointer or the focus on it, a pinned

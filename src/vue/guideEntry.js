@@ -33,12 +33,14 @@ export function guideEntry({ progress = null, version = '', setupCompleted, pair
   return existing ? { mode: 'upgrade' } : null
 }
 
-/** The steps an upgrade leaves out because they are done: the account when a password is set, the setup once completed, the client steps when a client is paired. */
-export function upgradeSkips({ accountExists = true, setupCompleted, pairedCount = null } = {}) {
+/**
+ * The steps an upgrade leaves out because they are done: the account when a password is set, the update channel when the person chose one before (`channelChosen`: the product knows whether the
+ * choice was ever saved). An upgrade is what is new, the channel when it was never chosen, and the done page; the client steps are not part of it.
+ */
+export function upgradeSkips({ accountExists = true, channelChosen = false } = {}) {
   return [
     ...(accountExists ? ['account'] : []),
-    ...(setupCompleted === true ? ['setup'] : []),
-    ...(Number.isInteger(pairedCount) && pairedCount > 0 ? ['hostdone', 'install', 'address', 'pair'] : []),
+    ...(channelChosen ? ['channel'] : []),
   ]
 }
 

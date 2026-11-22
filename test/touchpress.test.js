@@ -102,6 +102,15 @@ test('the hit slop never stands on the mouse path: no rule of touch.css is writt
   assert.doesNotMatch(slop.replace(/\/\*[\s\S]*?\*\//g, ''), /background|border|box-shadow|outline/, 'the slop draws nothing')
 })
 
+test('tile buttons anchor the touch expansion to the button rather than its card', () => {
+  const text = css('touch.css').replace(/\/\*[\s\S]*?\*\//g, '')
+  const anchors = [...text.matchAll(/:is\(([\s\S]*?)\)\s*\{\s*position:\s*relative;/g)]
+  assert.ok(anchors.some((match) => match[1].split(',').some((selector) => selector.trim() === '.m-b2__btn')))
+  const slops = [...text.matchAll(/:is\(([^()]*)\)::after\s*\{[^}]*position:\s*absolute/g)]
+  assert.ok(slops.some((match) => match[1].split(',').some((selector) => selector.trim() === '.m-b2__btn')))
+  assert.match(text, /\.m-b2dl\s+\.m-b2__btn::after\s*\{\s*content:\s*none;/)
+})
+
 test('all.css loads the touch layers last, and the old ::after tooltip is gone so a [data-tip] control can carry a slop', () => {
   const all = css('all.css').trim().split('\n')
   assert.deepEqual(all.slice(-2), ["@import './touch-pressed.css';", "@import './touch.css';"])

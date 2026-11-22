@@ -17,7 +17,7 @@ export function redactKindOf(key) {
 
 /** What a data-redact mark may say. Only for the summary and the outline label; every kind is painted the same. */
 export const REDACT_KINDS = Object.freeze(['host', 'address', 'pin', 'client', 'user', 'path', 'serial', 'web', 'secret', 'text'])
-export const SELECTOR = '[data-redact], input[inputmode="numeric"], input[name*="pin" i], input[name*="port" i], input[type="password"], input[autocomplete="one-time-code"], input[autocomplete="username"], input[autocomplete="current-password"], input[autocomplete="new-password"]'
+export const SELECTOR = '[data-redact], input[inputmode="numeric"], input[name*="pin" i], input[name*="port" i], input[type="password"], input[name*="cdk" i], input[id*="cdk" i], input[autocomplete="off"][placeholder*="CDK"], input[autocomplete="one-time-code"], input[autocomplete="username"], input[autocomplete="current-password"], input[autocomplete="new-password"]'
 export const PAD = 3
 const FILL = 'rgb(0, 0, 0)'
 export const MASK_FILL = FILL

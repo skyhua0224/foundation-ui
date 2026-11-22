@@ -13,6 +13,7 @@ import { currentFingerprint } from './useAutoReport.js'
 import { devReport, openDevReport } from './devmode/devReport.js'
 import { devmodeTexts } from '../devmode/texts.js'
 import { errorDraft } from '../devmode/feedback.js'
+import { feedbackTexts } from '../feedback/texts.js'
 
 // The error surface of both products. A blocking error is a dialog with the way out first: 返回上一页, then 重启 Sunshine, then 复制 / 下载 / 报告给开发者. A non-blocking one is a snackbar with
 // a way to the same details. 报告给开发者 is a form (title and description are required) that shows exactly what is sent, and sends it as an error event named report through the host; where the host or the server cannot be reached the
@@ -33,6 +34,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['back', 'restarted'])
 const T = computed(() => errorTexts(props.locale))
+const F = computed(() => feedbackTexts(props.locale))
 const { state } = useErrors()
 const notify = useNotify()
 const report = computed(() => state.current?.report || null)
@@ -248,7 +250,7 @@ onBeforeUnmount(() => {
         <div class="m-err__secondary">
           <MButton variant="text" size="sm" icon="content_copy" @click="copy">{{ T.copy }}</MButton>
           <MButton variant="text" size="sm" icon="download" @click="download">{{ T.download }}</MButton>
-          <MButton variant="text" size="sm" icon="bug_report" @click="openForm">{{ T.report }}</MButton>
+          <MButton variant="text" size="sm" icon="feedback" data-fb="error-feedback" @click="openForm">{{ reportSheet ? F.errorButton : T.report }}</MButton>
         </div>
       </div>
     </template>

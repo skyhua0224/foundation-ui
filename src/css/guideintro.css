@@ -13,10 +13,6 @@ html.m-has-wallpaper .m-guide__herocard.m-about__top--a { padding-block: 10px; }
 /* the first screen fits the window without a scroll from 1280 x 800 up: the main area is tight, the notice is one line, the step text moves to the foot where the left of the footer would be empty */
 .m-guide[data-step='intro'] .m-guide__main { padding-top: 4px; padding-bottom: 12px; }
 .m-guide[data-step='intro'] .m-guide__body { gap: 8px; }
-.m-guide[data-step='intro'] .m-guide__open { margin-bottom: 8px; padding-block: 2px; }
-.m-guide[data-step='intro'] .m-guide__open p { font: var(--m-body-small, var(--m-body-medium)); }
-.m-guide__open a { flex: none; }
-.m-guide__body > .m-guide__open { margin: 0; }
 .m-guide__footstep { display: none; font: var(--m-label-large); color: var(--md-sys-color-on-surface-variant); }
 @container guide (min-width: 600px) {
   .m-guide[data-step='intro'] .m-guide__footstep, .m-guide[data-step='consent'] .m-guide__footstep { display: block; margin-inline-end: auto; }
@@ -42,7 +38,7 @@ html.m-has-wallpaper .m-guide__herocard.m-about__top--a { padding-block: 10px; }
    the main one a little wider and in label-large. 上一步 is the icon only (the label stays for screen readers and as the tooltip); a label that is too long for the width (the English 跳到下一页, the finish-and-tools button) is icon only too (.is-long). */
 @media (max-width: 599.98px) {
   .m-guide .m-guide__actions.m-guide__actions { flex-direction: row; flex-wrap: nowrap; align-items: center; justify-content: flex-start; gap: 4px; padding: 8px 12px; }
-  .m-guide .m-guide__actions.m-guide__actions .m-btn { flex: 0 0 auto; width: auto; min-width: 0; height: 40px; min-height: 40px; padding: 0 12px 0 8px; gap: 4px; font: var(--m-label-medium); --m-btn-icon: 18px; }
+  .m-guide .m-guide__actions.m-guide__actions .m-btn { flex: 0 0 auto; width: auto; min-width: 0; --m-btn-h: 40px; height: 40px; min-height: 40px; padding: 0 12px 0 8px; gap: 4px; font: var(--m-label-medium); --m-btn-icon: 18px; }
   .m-guide:not([data-step='intro']) .m-guide__actions.m-guide__actions .m-btn:last-child { flex: 0 1 auto; margin-inline-start: auto; padding: 0 16px 0 12px; font: var(--m-label-large); }
   .m-guide .m-guide__actions.m-guide__actions .m-guide__prev { margin-inline-end: 0; width: 40px; padding: 0; }
   .m-guide .m-guide__actions.m-guide__actions .m-guide__prev .m-btn__lead { margin-left: 0; }

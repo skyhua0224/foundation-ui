@@ -3,6 +3,7 @@
 // when there is no source here (the card then shows as unavailable in the catalogue and cannot be added). Nothing is invented.
 import { codecChips, formatClock } from './homeModel.js'
 import { reachView } from '../settings/reachability.js'
+import { audioDeviceName } from '../settings/audioDevice.js'
 import { bitrateChips, bitrateKbps } from '../settings/bitrate.js'
 import { encoderName, codecName as encoderCodec } from '../settings/model.js'
 import { errorsByHour, heatDays, logDays, recentApps } from './homeHistory.js'
@@ -10,6 +11,8 @@ import { DEFAULT_SIZES, MORE_META, MORE_SIZES, moreCatalogue } from './homeCatal
 import { SYSTEM_META, SYSTEM_SIZES, systemCatalogue } from './homeSystemTiles.js'
 import { DEFAULT_RECENT_SIZES, RECENT_META, RECENT_SIZES, recentCatalogue } from './homeRecent.js'
 import { onlineClients, realSession } from './clientsLive.js'
+import { GROWTH_META, GROWTH_SIZES, growthCatalogue } from './homeGrowth.js'
+import { GROWTH2_META, GROWTH2_SIZES, growth2Catalogue } from './homeGrowth2.js'
 
 export const LINKS = Object.freeze({
   star: 'https://github.com/AlkaidLab/foundation-sunshine',
@@ -29,7 +32,7 @@ const META = {
   'act-pair': ['resources', 'off', 2, 'strip', 'widget'], 'act-add-app': ['resources', 'off', 2, 'strip', 'widget'], 'act-scan-games': ['resources', 'off', 2, 'strip', 'widget'], 'act-restart': ['resources', 'off', 2, 'strip', 'widget'], 'act-docs': ['resources', 'off', 2, 'strip', 'widget'], 'act-community': ['resources', 'off', 2, 'strip', 'widget'], 'act-open-desktop': ['resources', 'off', 2, 'strip', 'widget'], 'act-star': ['resources', 'off', 2, 'strip', 'widget'],
   temperature: ['perf', 'off', 2, 'card', 'widget'], 'ctl-vdd': ['control', 'off', 4, 'card', 'widget'], 'ctl-encoder': ['control', 'off', 4, 'card', 'widget'], 'ctl-bitrate': ['control', 'off', 4, 'card', 'widget'], 'ctl-fps': ['control', 'off', 4, 'card', 'widget'], 'memory-trend': ['perf', 'off', 2, E, 'curve'], load: ['perf', 'off', 4, 'card', 'widget'],
 }
-Object.assign(META, MORE_META, SYSTEM_META, RECENT_META)
+Object.assign(META, MORE_META, SYSTEM_META, RECENT_META, GROWTH_META, GROWTH2_META)
 Object.assign(DEFAULT_SIZES, DEFAULT_RECENT_SIZES)
 export const CATALOGUE_IDS = Object.freeze(Object.keys(META))
 // the sizes a card offers (see homeSizes.js); a card of the strip class has one
@@ -48,6 +51,8 @@ export const CATALOGUE_SIZES = Object.freeze({
   ...MORE_SIZES,
   ...SYSTEM_SIZES,
   ...RECENT_SIZES,
+  ...GROWTH_SIZES,
+  ...GROWTH2_SIZES,
   latency: { s: [2, 1], m: [4, 1] }, loss: { s: [2, 1], m: [4, 1] }, dropped: { s: [2, 1], m: [4, 1] }, 'memory-trend': { s: [2, 1], m: [4, 1] },
   'session-time': { s: [2, 1], m: [4, 1] }, budget: { s: [2, 1], m: [4, 1] }, 'current-app': { s: [2, 1], m: [4, 1], l: [4, 2] }, 'last-session': { s: [2, 1], m: [4, 1] }, 'recent-games': { s: [2, 1], m: [4, 1] },
   'session-heat': { s: [2, 1], m: [4, 1], l: [8, 1] }, 'clients-paired': { s: [2, 1], m: [4, 1], l: [4, 2] }, 'clients-online': { s: [2, 1], m: [4, 1] }, covers: { m: [4, 1], l: [8, 1] },
@@ -90,8 +95,12 @@ export function buildCatalogue(x, T) {
 
   d['session-time'] = s && num(s.uptimeMs) !== null ? { type: 'ring', icon: 'timer', title: T['c_session-time'], value: (s.uptimeMs % 3600000) / 3600000, centre: formatClock(s.uptimeMs), caption: s.client_name || '' } : null
   d['current-app'] = s ? { type: 'now', icon: 'sports_esports', title: T['c_current-app'], name: s.app_name || T.nowNone, cover: coverOf(s.app_name), rows: [s.client_name && { icon: 'devices', title: T.client, value: s.client_name }, s.width && { icon: 'monitor', title: '', value: `${s.width}×${s.height}${s.fps ? ` · ${s.fps} ${T.fpsUnit || 'fps'}` : ''}` }, num(s.bitrate) !== null && { icon: 'speed', title: '', value: `${((num(s.measured_bitrate_kbps) ?? s.bitrate) / 1000).toFixed(1)} ${T.mbps}` }, s.codec && { icon: 'movie', title: '', value: encoderCodec(s.codec) }, num(s.uptimeMs) !== null && { icon: 'timer', title: '', value: formatClock(s.uptimeMs) }].filter(Boolean) } : null
-  const budget = s && num(s.latencyMs) !== null && num(s.fps) ? Math.min(1, s.latencyMs / (1000 / s.fps)) : null
-  d.budget = budget !== null ? { type: 'gauge', icon: 'speed', title: T.c_budget, value: budget, centre: `${Math.round(budget * 100)}`, unit: '%', zones: [{ to: 0.5, tone: 'ok' }, { to: 0.8, tone: 'warn' }, { to: 1, tone: 'err' }], spark: lat.length > 1 ? lat : null, caption: T.budget } : null
+  // the host latency is the pipeline's total when the host sends the stages (pipeTotalMs, the same field family as latencyMs); the stages are the averages of each part of it, in the order a frame goes through them
+  const latNow = s ? (num(s.latencyMs) ?? num(s.pipeTotalMs)) : null
+  const budget = s && latNow !== null && num(s.fps) ? Math.min(1, latNow / (1000 / s.fps)) : null
+  const STAGES = [['pipeCaptureToConvertMs', 'stageCapture'], ['pipeConvertMs', 'stageConvert'], ['pipeEncodeQueueMs', 'stageQueue'], ['pipeEncodeMs', 'stageEncode'], ['pipePacketToBroadcastMs', 'stageSend']]
+  const stages = s ? STAGES.map(([k, t], i) => (num(s[k]) !== null && s[k] >= 0 ? { key: k, i, title: T[t], ms: s[k], value: `${s[k] < 10 ? s[k].toFixed(2).replace(/0$/, '') : s[k].toFixed(1)}` } : null)).filter(Boolean) : []
+  d.budget = budget !== null ? { type: 'gauge', icon: 'speed', title: T.c_budget, value: budget, centre: `${Math.round(budget * 100)}`, unit: '%', zones: [{ to: 0.5, tone: 'ok' }, { to: 0.8, tone: 'warn' }, { to: 1, tone: 'err' }], spark: lat.length > 1 ? lat : null, caption: T.budget, frameMs: 1000 / s.fps, stages, facts: [{ title: T.c_latency, value: `${Number(latNow).toFixed(1)} ${T.ms || 'ms'}` }, { title: T.frameTime, value: `${(1000 / s.fps).toFixed(1)} ${T.ms || 'ms'}` }] } : null
 
   const last = x.history?.last?.() || null
   d['last-session'] = { type: 'rows', icon: 'history', title: T['c_last-session'], empty: T.lastNone, cover: last ? coverOf(last.app) : '', rows: last ? [{ icon: 'sports_esports', title: last.app || last.client || '–', value: when(last.start) }, { icon: 'schedule', title: T.length, value: fmtMin(last.ms / 60000, T) }, { icon: 'speed', title: T.bitrateAvg, value: `${last.bitrate} ${T.mbps}` }, { icon: 'videocam', title: T.fpsAvg, value: `${last.fps} ${T.fpsUnit}` }, { icon: 'timer', title: T.p95, value: `${last.p95} ${T.ms}` }, { icon: 'warning', title: T.dropped, value: String(last.dropped) }] : [] }
@@ -112,7 +121,7 @@ export function buildCatalogue(x, T) {
   d.codecs = x.codecModes ? { type: 'chips', icon: 'movie', title: T.c_codecs, chips: codecChips(x.codecModes, T) } : null
   const hdr = s ? !!s.enable_hdr : x.display?.hdr
   d.hdr = hdr === undefined || hdr === null ? null : { type: 'chips', icon: 'hdr_on', title: T.c_hdr, big: hdr ? T.hdrOn : T.hdrOff, tone: hdr ? 'ok' : '', chips: [!s && x.display?.hdrText && { label: x.display.hdrText }, x.display?.nits && { label: `${Math.round(x.display.nits)} nits`, icon: 'light_mode' }].filter(Boolean) }
-  d['audio-out'] = x.config && typeof x.config.audio_sink === 'string' ? { type: 'rows', icon: 'volume_up', title: T['c_audio-out'], rows: [{ icon: 'speaker', title: T.device, value: x.config.audio_sink || T.auto }] } : null
+  d['audio-out'] = x.config && typeof x.config.audio_sink === 'string' ? { type: 'rows', icon: 'volume_up', title: T['c_audio-out'], rows: [{ icon: 'speaker', title: T.device, value: audioDeviceName(x.config.audio_sink, x.audio, T.audioDevice) || T.auto }] } : null
   d['gamepad-status'] = x.pads ? { type: 'rows', icon: 'sports_esports', title: T['c_gamepad-status'], rows: [{ icon: 'sports_esports', title: x.pads.title || T.gamepad, value: x.pads.text, tone: x.pads.tone }] } : null
   d['usb-devices'] = typeof x.usb === 'number' ? { type: 'rows', icon: 'usb', title: T['c_usb-devices'], big: String(x.usb), rows: [{ icon: 'usb', title: x.usb ? T.usbCount : T.usbNone, value: '' }] } : null
 
@@ -159,7 +168,7 @@ export function buildCatalogue(x, T) {
   const tc = num(x.temps?.cpu), tg = num(x.temps?.gpu), top = tg !== null ? tg : tc
   d.temperature = top !== null ? { type: 'gauge', icon: 'memory', title: T.c_temperature, value: Math.min(1, top / 100), centre: String(Math.round(top)), unit: '°C', zones: [{ to: 0.7, tone: 'ok' }, { to: 0.85, tone: 'warn' }, { to: 1, tone: 'err' }], caption: [tc !== null && `${T.loadCpu} ${Math.round(tc)} °C`, tg !== null && `${T.loadGpu} ${Math.round(tg)} °C`].filter(Boolean).join(' · ') } : null
   d.load = (h.cpu || []).length > 1 || (h.gpu || []).length > 1 ? { type: 'chart', icon: 'memory', title: T.c_load, series: [{ id: 'cpu', label: T.loadCpu, values: (h.cpu || []).slice(-60) }, ...((h.gpu || []).length > 1 ? [{ id: 'gpu', label: T.loadGpu, values: h.gpu.slice(-60) }] : [])], chart: 'line', unit: ' %', max: 100 } : null
-  Object.assign(d, moreCatalogue(x, T, now), systemCatalogue(x, T), recentCatalogue(x, T))
+  Object.assign(d, moreCatalogue(x, T, now), systemCatalogue(x, T), recentCatalogue(x, T), growthCatalogue(x, T), growth2Catalogue(x, T))
   // 设置 at 中: the encoder and the bitrate cap the host streams with
   if (d['act-settings'] && x.config) d['act-settings'].facts = [encoderName(x.config.encoder) || T.auto, d['ctl-bitrate']?.options?.find((o) => o.value === String(bitrateKbps(x.config.max_bitrate)))?.label].filter(Boolean).join(' · ')
   return { data: d }

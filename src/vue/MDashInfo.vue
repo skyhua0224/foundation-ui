@@ -28,7 +28,7 @@ const emit = defineEmits(['open'])
 <template>
   <MDashCard :title="title" :icon="icon" :chevron="chevron" :chevron-label="chevronLabel" class="m-dinfo" @open="emit('open')">
     <div v-if="screen" class="m-dinfo__screen" aria-hidden="true"><span class="m-dinfo__display" :class="{ 'is-hdr': screen.hdr }" :style="{ aspectRatio: `${screen.w} / ${screen.h}` }"><i>{{ screen.w }}×{{ screen.h }}</i></span><span class="m-dinfo__stand" /></div>
-    <MRing v-if="ring" class="m-dinfo__ring" :value="ring.value" :size="64" :thickness="8" :label="ring.caption"><b class="m-dnum m-dinfo__ringtext">{{ ring.label }}</b></MRing>
+    <MRing v-if="ring" class="m-dinfo__ring" :value="ring.value" :size="64" :label="ring.caption"><b class="m-dnum m-dinfo__ringtext">{{ ring.label }}</b></MRing>
     <div v-if="value" class="m-dinfo__value"><b class="m-dnum"><MRoll :text="value" /></b><small v-if="unit">{{ unit }}</small></div>
     <div v-if="sub" class="m-dinfo__sub">{{ sub }}</div>
     <div v-if="chips.length" class="m-dinfo__chips"><span v-for="(c, i) in chips" :key="i" class="m-dchip" :class="c.tone && `m-dchip--${c.tone}`"><MIcon v-if="c.icon" :name="c.icon" />{{ c.label }}</span></div>

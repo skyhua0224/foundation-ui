@@ -21,7 +21,7 @@ const sweep = computed(() => (Math.max(0, props.seconds) % props.period) / props
 
 <template>
   <div class="m-timer">
-    <MRing :value="sweep" :size="size" :thickness="14" :tone="tone" :label="label">
+    <MRing :value="sweep" :size="size" :tone="tone" :label="label">
       <b class="m-timer__text m-dnum">{{ text }}</b>
       <small v-if="label" class="m-timer__label">{{ label }}</small>
     </MRing>

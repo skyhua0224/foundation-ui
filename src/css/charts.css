@@ -26,14 +26,7 @@ html[data-motion='reduced'] .m-cx__line { animation: none; stroke-dashoffset: 0;
 .m-ibar--ok .m-ibar__fill { background: var(--md-sys-color-success); } .m-ibar--warn .m-ibar__fill { background: var(--md-sys-color-warning); } .m-ibar--err .m-ibar__fill { background: var(--md-sys-color-error); }
 .m-ibar__mark { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--md-sys-color-on-surface); opacity: .6; }
 .m-ibar__text { flex: none; min-width: 3.2em; text-align: right; font: 600 12px/16px var(--md-ref-typeface-brand); font-style: normal; font-variant-numeric: tabular-nums; color: var(--md-sys-color-on-surface); }
-.m-agauge { position: relative; overflow: hidden; } .m-agauge svg { display: block; overflow: visible; }
-.m-agauge__zone, .m-agauge__fill { fill: none; stroke-linecap: round; }
-.m-agauge__zone { opacity: .22; } .m-agauge__zone--ok { stroke: var(--md-sys-color-success); } .m-agauge__zone--warn { stroke: var(--md-sys-color-warning); } .m-agauge__zone--err { stroke: var(--md-sys-color-error); }
-.m-agauge__fill--ok { stroke: var(--md-sys-color-success); } .m-agauge__fill--warn { stroke: var(--md-sys-color-warning); } .m-agauge__fill--err { stroke: var(--md-sys-color-error); }
-.m-agauge__tick { stroke: var(--md-sys-color-on-surface); stroke-width: 2; opacity: .7; }
-.m-agauge__centre { position: absolute; left: 0; right: 0; top: 34%; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 /* ring segments named like the stacked bar of the info cards: host, other programs, free */
-.m-ring__arc--a { stroke: var(--md-sys-color-primary); } .m-ring__arc--b { stroke: color-mix(in srgb, var(--md-sys-color-primary) 50%, var(--md-sys-color-surface-container-highest)); } .m-ring__arc--free { stroke: var(--md-sys-color-surface-container-highest); }
 
 /* extended catalogue cards (MDashWidget) */
 .m-dwidget .m-dcard__body { gap: 8px; min-height: 0; }
@@ -68,10 +61,11 @@ html[data-motion='reduced'] .m-cx__line { animation: none; stroke-dashoffset: 0;
 /* the home strip: shared chip sets in one row, name at the start */
 .m-dstripctl { flex-direction: row; align-items: center; gap: 10px; padding: 0 12px 0 16px; border-radius: var(--m-dash-radius); } .m-dstripctl__title { flex: 1; min-width: 0; display: flex; flex-direction: column; } .m-dstripctl__title b { font: 600 13px/18px var(--md-ref-typeface-brand); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .m-dstripctl__title small { font: 400 11px/14px var(--md-ref-typeface-brand); color: var(--md-sys-color-on-surface-variant); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .m-dstripctl .m-chipset { flex: 0 1 auto; min-width: 0; flex-wrap: nowrap; gap: 4px; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; } .m-dstripctl .m-chipset::-webkit-scrollbar { display: none; } .m-dstripctl .m-chipset__chip { flex: none; }
+.m-dstripctl .m-swatches { flex: 0 1 auto; min-width: 0; flex-wrap: nowrap; gap: 6px; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; padding-block: 2px; } .m-dstripctl .m-swatches::-webkit-scrollbar { display: none; } .m-dstripctl .m-swatch { flex: none; width: 34px; height: 34px; }
 /* the options that do not fit scroll sideways; the edge that has more behind it fades */
-.m-dstripctl .m-chipset[data-edge='end'] { mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); }
-.m-dstripctl .m-chipset[data-edge='start'] { mask-image: linear-gradient(90deg, transparent, #000 28px); }
-.m-dstripctl .m-chipset[data-edge='both'] { mask-image: linear-gradient(90deg, transparent, #000 28px, #000 calc(100% - 28px), transparent); } .m-dwidget__vdd { flex: 1; min-height: 0; overflow: auto; }
+.m-dstripctl .m-chipset[data-edge='end'], .m-dstripctl .m-swatches[data-edge='end'] { mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); }
+.m-dstripctl .m-chipset[data-edge='start'], .m-dstripctl .m-swatches[data-edge='start'] { mask-image: linear-gradient(90deg, transparent, #000 28px); }
+.m-dstripctl .m-chipset[data-edge='both'], .m-dstripctl .m-swatches[data-edge='both'] { mask-image: linear-gradient(90deg, transparent, #000 28px, #000 calc(100% - 28px), transparent); } .m-dwidget__vdd { flex: 1; min-height: 0; overflow: auto; }
 
 /* an app without a cover: the games icon on a tonal square (never a lone letter), as on the apps tile */
 .m-dwidget__cover:not([style]), .m-dwidget__tile i:not([style]) { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); }
@@ -95,3 +89,5 @@ html[data-motion='reduced'] .m-cx__line { animation: none; stroke-dashoffset: 0;
 .m-dstripctl .m-fps { flex: 0 1 auto; min-width: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; } .m-dstripctl .m-fps::-webkit-scrollbar { display: none; }
 .m-dstripctl .m-fps .m-chipset { flex-wrap: nowrap; } .m-dstripctl .m-fps > .m-chipset__chip { flex: none; }
 .m-dstripctl--tip .m-dstripctl__title b { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-weight: 500; }
+
+.m-dwidget__time .m-dwidget__clock { font-size: 44px; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }

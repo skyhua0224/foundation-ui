@@ -6,6 +6,7 @@
 //                  bitrate ceiling (max_bitrate, the value the host started with; 0 is no ceiling) and the session's bandwidth budget (stream.cpp change_dynamic_param_for_client). The reply
 //                  repeats the number that was sent, so the control says the limit and does not claim the result. The control and the note say the same thing: with a ceiling the ceiling is the
 //                  top, without one the slider reaches the 800 Mbps the host takes (the note lbUncapped says it), in 1 Mbps steps the keyboard and the mouse share.
+//  live-audio      the host audio of the running client (POST /api/runtime/audio {clientname, enabled}, localhost only): one switch, the whole tile, that applies to the running stream
 //  live-ds5        the DualSense tuning that acts on a running controller (POST /api/dualsense/tuning, schema ALK-DS5T/1): the common sliders the host applies, one per line.
 import { getSearchIndex, settingsDataVersion } from '../settings/provider.js'
 import { realSession } from './clientsLive.js'
@@ -18,14 +19,16 @@ import { localizedKeyLabel } from '../settings/dualsenseLabels.js'
 export const RECENT_META = {
   'recent-actions': ['control', 'off', 4, 'card', 'widget'],
   'live-bitrate': ['stream', 'off', 4, 'card', 'widget'],
+  'live-audio': ['stream', 'off', 4, 'card', 'widget'],
   'live-ds5': ['control', 'off', 4, 'card', 'widget'],
 }
 export const RECENT_SIZES = {
   'recent-actions': { s: [2, 1], m: [4, 1], l: [4, 2], xl: [8, 2] },
   'live-bitrate': { m: [4, 1] },
+  'live-audio': { s: [2, 1] },
   'live-ds5': { m: [4, 1], l: [4, 2] },
 }
-export const DEFAULT_RECENT_SIZES = { 'recent-actions': 'm', 'live-bitrate': 'm', 'live-ds5': 'm' }
+export const DEFAULT_RECENT_SIZES = { 'recent-actions': 'm', 'live-bitrate': 'm', 'live-audio': 's', 'live-ds5': 'm' }
 /** How many rows each size shows. */
 export const RECENT_ROWS = Object.freeze({ s: 1, m: 2, l: 4, xl: 8 })
 /** The sizes that draw a row's whole control (a slider, a choice); the smaller ones draw the value and the way to the setting's page. */
@@ -74,13 +77,17 @@ export function ds5Sliders(keys, locale = 'en') {
 export function recentCatalogue(x, T) {
   const locale = T.__locale || 'en'
   const platform = x.config?.platform || ''
-  const d = { 'recent-actions': null, 'live-bitrate': null, 'live-ds5': null }
+  const d = { 'recent-actions': null, 'live-bitrate': null, 'live-audio': null, 'live-ds5': null }
   if (x.recent) d['recent-actions'] = { type: 'recent', icon: 'history', title: T['c_recent-actions'], empty: T.rcNone, rows: recentRows(x.recent, { config: x.config, platform, locale }) }
   const s = realSession(x.session, x.clients)
   if (s && s.client_name && x.canRuntime) {
     const cap = num(Number(x.config?.max_bitrate)) > 0 ? Number(x.config.max_bitrate) : 0
     const now = num(s.bitrate)
     d['live-bitrate'] = { type: 'live-bitrate', icon: 'speed', title: T['c_live-bitrate'], client: s.client_name, now: now === null ? null : Math.round(now / 1000), min: 1, max: cap ? Math.round(cap / 1000) : 800, cap: cap ? Math.round(cap / 1000) : 0, note: cap ? T.lbCapped.replace('{cap}', String(Math.round(cap / 1000))) : T.lbUncapped }
+  }
+  // the host audio of the running client: the field is there on a host that can switch it (a host without it leaves the tile out), the switch is the whole tile and acts on the stream that runs
+  if (s && s.client_name && x.canRuntime && typeof s.host_audio === 'boolean') {
+    d['live-audio'] = { type: 'control', icon: 'volume_up', title: T['c_live-audio'], key: 'host_audio', kind: 'chips', runtime: true, client: s.client_name, value: String(s.host_audio), options: [{ value: 'true', label: T.on }, { value: 'false', label: T.off }] }
   }
   const sliders = ds5Sliders(x.ds5Keys, locale)
   if (sliders.length && x.canRuntime !== false) d['live-ds5'] = { type: 'live-ds5', icon: 'sports_esports', title: T['c_live-ds5'], sliders, applies: T.dsLive, more: T.dsMore }
@@ -90,14 +97,14 @@ export function recentCatalogue(x, T) {
 export const RECENT_TEXTS = Object.freeze({
   en: {
     'c_recent-actions': 'Recent actions', 's_recent-actions': 'The settings you used last', rcNone: 'No setting used yet', rcOpen: 'Open the setting', rcOpenSettings: 'Open settings',
-    saveFailed: 'This setting was not saved', 'c_live-bitrate': 'Target bitrate of this stream', 's_live-bitrate': 'The command of the host for a running client', lbNow: 'Now', lbSet: 'Set', lbCapped: 'The host limits it to {cap} Mbps (the bitrate ceiling it started with); the bandwidth budget of the session can lower it more', lbUncapped: 'The host takes up to 800 Mbps and the bandwidth budget of the session can lower it', lbApplies: 'Applies to the running stream', lbSent: 'Bitrate request sent to {client}', lbFailed: 'The host did not take the bitrate request', dsFailed: 'The host did not take the tuning',
-    'c_live-ds5': 'DualSense tuning', 's_live-ds5': 'The common tuning of the host', dsLive: 'Applies while the controller is in use', dsMore: 'All tuning',
-    rIdleActions: 'The settings you used last', rLiveBitrate: 'The bitrate of the running stream', rLiveDs5: 'DualSense tuning while a controller is in use',
+    saveFailed: 'This setting was not saved', 'c_live-bitrate': 'Stream bitrate', 's_live-bitrate': 'The command of the host for a running client', lbNow: 'Now', lbSet: 'Set', lbCapped: 'Host limit: {cap} Mbps', lbUncapped: 'No host limit', lbApplies: 'Applies to the running stream', lbSent: 'Bitrate request sent to {client}', lbFailed: 'The host did not take the bitrate request', dsFailed: 'The host did not take the tuning',
+    'c_live-audio': 'Host audio', 's_live-audio': 'Play the stream\'s audio on the host as well', 'c_live-ds5': 'DualSense tuning', 's_live-ds5': 'The common tuning of the host', dsLive: 'Applies while the controller is in use', dsMore: 'All tuning',
+    rIdleActions: 'The settings you used last', rLiveBitrate: 'The bitrate of the running stream', rLiveDs5: 'DualSense tuning while a controller is in use', rLiveAudio: 'Host audio of the running stream',
   },
   zh: {
     'c_recent-actions': '最近操作', 's_recent-actions': '你最近用过的设置', rcNone: '还没有用过的设置', rcOpen: '打开设置', rcOpenSettings: '打开设置',
-    saveFailed: '这项设置没有保存', 'c_live-bitrate': '本次目标码率', 's_live-bitrate': '主机对运行中客户端的码率命令', lbNow: '当前', lbSet: '设为', lbCapped: '主机限制在 {cap} Mbps 以内（启动时的码率上限），会话的带宽预算还可能再降低', lbUncapped: '主机接受最高 800 Mbps，会话的带宽预算可能再降低', lbApplies: '对正在进行的串流生效', lbSent: '已向 {client} 发出码率请求', lbFailed: '主机没有接受码率请求', dsFailed: '主机没有接受这项调校',
-    'c_live-ds5': 'DualSense 调校', 's_live-ds5': '主机的常用调校', dsLive: '手柄使用中实时生效', dsMore: '全部调校',
-    rIdleActions: '你最近用过的设置', rLiveBitrate: '正在进行的串流的码率', rLiveDs5: '使用手柄时的 DualSense 调校',
+    saveFailed: '这项设置没有保存', 'c_live-bitrate': '本次目标码率', 's_live-bitrate': '主机对运行中客户端的码率命令', lbNow: '当前', lbSet: '设为', lbCapped: '主机上限 {cap} Mbps', lbUncapped: '主机不设上限', lbApplies: '对正在进行的串流生效', lbSent: '已向 {client} 发出码率请求', lbFailed: '主机没有接受码率请求', dsFailed: '主机没有接受这项调校',
+    'c_live-audio': '主机播放音频', 's_live-audio': '主机同时播放串流的声音', 'c_live-ds5': 'DualSense 调校', 's_live-ds5': '主机的常用调校', dsLive: '手柄使用中实时生效', dsMore: '全部调校',
+    rIdleActions: '你最近用过的设置', rLiveBitrate: '正在进行的串流的码率', rLiveDs5: '使用手柄时的 DualSense 调校', rLiveAudio: '正在进行的串流的主机音频',
   },
 })

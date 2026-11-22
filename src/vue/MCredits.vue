@@ -4,7 +4,7 @@ import MIcon from './MIcon.vue'
 import MButton from './MButton.vue'
 import MMascot from './MMascot.vue'
 import MGithubMark from './MGithubMark.vue'
-import { CONTRIBUTORS, PRODUCT, SPONSORS, TEAM, THANKS, FONTS, FOUNDER, TEAM_SPONSORS } from '../about/index.js'
+import { CONTRIBUTORS, PRODUCT, SPONSORS, TEAM, THANKS, FONTS, FOUNDER, TEAM_SPONSORS, resolveLink } from '../about/index.js'
 import { avatarImage } from '../about/avatars.js'
 import { reducedMotion } from '../appearance/motion.js'
 
@@ -85,7 +85,7 @@ const open = (url) => emit('open', url)
         <section class="m-credits__part" :aria-label="texts.creditsSponsors">
           <h3 class="m-credits__title">{{ texts.creditsSponsors }}</h3>
           <ul class="m-credits__names m-credits__names--big">
-            <li v-for="s in SPONSORS" :key="s.login"><button type="button" class="m-credits__link" @click="open(s.url)"><MIcon name="favorite" />{{ s.login }}</button></li>
+            <li v-for="s in SPONSORS" :key="s.login"><button type="button" class="m-credits__link" @click="open(resolveLink(s, locale))"><MIcon name="favorite" />{{ s.login }}</button></li>
           </ul>
         </section>
 

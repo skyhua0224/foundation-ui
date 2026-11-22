@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { BREAKPOINTS, RAIL_WIDTH, SUPPORTING_WIDTH, canExpand, navigationOf, railWidthOf, calculateScene, layoutOf, listDetailStrategy, listWidth, supportingPaneStrategy } from '../src/nav/scenes.js'
+import { BREAKPOINTS, RAIL_WIDTH, SUPPORTING_WIDTH, canExpand, navigationOf, railWidthOf, calculateScene, layoutOf, listDetailStrategy, listWidth, settledWidth, supportingPaneStrategy } from '../src/nav/scenes.js'
 
 const entries = [{ key: 'l', id: 'input:list', role: 'list' }, { key: 'd', id: 'gamepad', role: 'detail', supporting: 'state' }]
 const strategies = [supportingPaneStrategy(), listDetailStrategy()]
@@ -54,4 +54,16 @@ test('where the expanded rail is allowed the list stays under 360 and the detail
   // and collapsed at 1024, where the expanded rail would not leave room
   const space = 1024 - railWidthOf(navigationOf(1024, true))
   assert.ok(space - listWidth(space) >= 560)
+})
+
+test('the pane that fills the space ends at its column of the layout the scene is going to, less the scrollbar it shows now (apps page to overview: the list folds away, the page keeps the full width)', () => {
+  const space = 1344
+  const listDetail = layoutOf({ kind: 'list-detail', visible: 'both' }, space)
+  const single = layoutOf({ kind: 'single', visible: 'detail' }, space)
+  assert.equal(settledWidth(single, 1), space, 'the overview opens at the whole space')
+  assert.equal(settledWidth(single, 1, 12), space - 12, 'less the scrollbar of the pane')
+  assert.equal(settledWidth(listDetail, 1), space - listDetail.cols[0], 'with the list beside it, the detail ends narrower')
+  assert.equal(settledWidth(layoutOf({ kind: 'single', visible: 'list' }, space), 0), space, 'a single scene that shows the list fills with the list')
+  assert.equal(settledWidth(single, 1, -5), space, 'a negative scrollbar is none')
+  assert.equal(settledWidth({ cols: [0, 4, 0] }, 1, 12), 0, 'never below zero')
 })

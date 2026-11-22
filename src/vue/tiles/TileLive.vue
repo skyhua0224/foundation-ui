@@ -21,6 +21,8 @@ watch(() => d.value.now, (v) => { if (v !== null && v !== undefined) rate.value 
 const lo = computed(() => Math.round((d.value.min ?? 1) * 1000)), hi = computed(() => Math.round((d.value.max ?? 800) * 1000))
 const span = computed(() => bitrateSliderSpan(lo.value, hi.value))
 const marks = computed(() => bitrateChipMarks([5, 10, 20, 50, 100, 200], lo.value, hi.value))
+// the shared M3 Expressive slider at every size of the tile; the layout makes room for it
+const sliderSize = 'm'
 const rateProgress = computed({
   get: () => Math.min(span.value.max, Math.max(span.value.min, bitrateSliderProgress(rate.value * 1000))),
   set: (position) => { rate.value = Math.max(lo.value, bitrateFromProgress(position)) / 1000 },
@@ -38,19 +40,18 @@ const tune = (s, v) => { levels[s.key] = v; if (!props.preview) emit('act', { ty
 
 <template>
   <section v-if="card.id === 'live-bitrate'" class="m-tile m-cal m-rc m-rc--live is-m" data-size="m" data-accent="primary">
-    <header class="m-calm__head"><MIcon :name="d.icon" /><span class="m-calm__title">{{ card.title }}</span><small class="m-rc__client" data-redact="client">{{ d.client }}</small></header>
+    <header class="m-calm__head"><MIcon :name="d.icon" /><span class="m-calm__title">{{ card.title }}</span></header>
+    <div class="m-rc__mid"><b class="m-rc__big m-dnum"><span>{{ rate }}</span><small>Mbps</small></b><small class="m-rc__note">{{ d.note }}</small></div>
     <div class="m-rc__live">
-      <MSlider v-model="rateProgress" :min="span.min" :max="span.max" :step="1" :marks="marks" size="m" :label="card.title" :bubble-text="`${rate} Mbps`" @commit="sendRate" />
-      <b class="m-rc__val">{{ rate }} Mbps</b>
+      <MSlider v-model="rateProgress" :min="span.min" :max="span.max" :step="1" :size="sliderSize" :label="card.title" :marks="marks" :bubble-text="`${rate} Mbps`" @commit="sendRate" />
     </div>
-    <small class="m-rc__note">{{ d.note }}</small>
   </section>
   <section v-else class="m-tile m-cal m-rc m-rc--live" :class="card.size === 'l' ? 'is-l' : 'is-m'" :data-size="card.size === 'l' ? 'l' : 'm'" data-accent="secondary">
     <header class="m-calm__head"><MIcon :name="d.icon" /><span class="m-calm__title">{{ card.title }}</span><button v-if="hidden > 0 && !preview" type="button" class="m-rc__all" :aria-label="d.more || card.title" @click.stop="emit('act', { type: 'open', value: 'gamepad' })"><span v-if="d.more">{{ d.more }}</span><MIcon name="chevron_right" /></button></header>
     <ul class="m-rc__rows">
-      <li v-for="s in shown" :key="s.key" class="m-rc__row is-slider is-full">
-        <span class="m-rc__text"><b>{{ s.label }}</b><small>{{ d.applies }}</small></span>
-        <span class="m-rc__ctl"><MSlider :model-value="levelOf(s)" :min="s.min" :max="s.max" :step="s.step" size="m" :label="s.label" @update:model-value="(v) => { levels[s.key] = v }" @commit="(v) => tune(s, v)" /><b class="m-rc__val">{{ f2(levelOf(s)) }}</b></span>
+      <li v-for="s in shown" :key="s.key" class="m-rc__row is-slider is-full is-hv">
+        <span class="m-rc__text"><span class="m-rc__line"><b>{{ s.label }}</b><strong class="m-rc__val m-dnum">{{ f2(levelOf(s)) }}</strong></span><small>{{ d.applies }}</small></span>
+        <span class="m-rc__ctl"><MSlider :model-value="levelOf(s)" :min="s.min" :max="s.max" :step="s.step" :size="sliderSize" :label="s.label" @update:model-value="(v) => { levels[s.key] = v }" @commit="(v) => tune(s, v)" /></span>
       </li>
     </ul>
   </section>

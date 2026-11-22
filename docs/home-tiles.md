@@ -7,7 +7,9 @@ appearance, or it is a pure action or link. A card whose source is missing in a 
 Sizes are S (a quarter of the width), M (half) and L (half the width and twice the height, or the whole width for lists). The window's size class moves every card one
 size at draw time (compact one smaller, extra-wide one larger; the setting 磁贴尺寸 in 个性化 turns this off), see `homeSizes.js`.
 
-Totals: 17 default cards, 7 component-status cards (`comp:*`), 62 catalogue cards. The default home ships 配对 and 下载客户端 (both ordinary cards: they can be resized, moved, removed and added back).
+**The size of a tile is the same on every window.** One unit (the square of a 方形) is 148 CSS px at the standard density, plus a 12 px gap (a pitch of 160 px), at any window size and on any screen at the same OS scale; the density setting scales it, nothing else does. A bigger window holds more columns and rows of standard tiles (the smart overview fills the free places with more tiles), a smaller one fewer; only a pane narrower than two units and a gap (a phone) gets a smaller unit. The grid is as wide as its columns and sits in the middle of the pane. 148 px packs the content widths of the common windows (1280, 1440, 1920) into 7, 8 and 11 columns with 12 px to spare. The grid has at most 12 columns (1908 px): a wider window keeps the tiles at their size and gets wider margins on both sides, and there is no sectioned layout any more (it was the answer to a grid wider than the catalogue can fill). The smart overview fills the free places with more tiles with data; when they run out it takes the column count (up to six less than the window holds) that leaves the fewest empty cells, so the grid has no holes.
+
+Totals: 17 default cards, 7 component-status cards (`comp:*`), 66 catalogue cards. The default home ships 配对 and 下载客户端 (both ordinary cards: they can be resized, moved, removed and added back).
 
 ## Default cards
 
@@ -32,7 +34,7 @@ Totals: 17 default cards, 7 component-status cards (`comp:*`), 62 catalogue card
 
 `comp:vdd`, `comp:usbip`, `comp:dualsense`, `comp:drivers`, `comp:mic`, `comp:encoder`, `comp:host`: the state of each component (see `docs/m3e-status.md`, "Component status").
 
-## Catalogue cards (62)
+## Catalogue cards (66)
 
 | Card | Name (en / zh) | Group | Sizes | Source |
 | `latency` | Host latency / 主机延迟 | Stream | S/M/L | Session latency series of the performance recorder |
@@ -66,6 +68,14 @@ Totals: 17 default cards, 7 component-status cards (`comp:*`), 62 catalogue card
 | `ctl-vdd` | Virtual display / 虚拟显示器 | Control | M/L | The shared virtual display control |
 | `ctl-encoder` | Encoder / 编码器 | Control | M/L | Host setting, saved like the settings page |
 | `ctl-bitrate` | Bitrate cap / 码率上限 | Control | M/L | Host setting, saved like the settings page |
+| `ports-check` | Ports / 端口 | Host | S/M/L | Port check of the host (`/api/network/reachability`): reachable ports out of all |
+| `file-maps` | File mappings / 文件映射 | Host | S/M/L | Host configuration `file_mappings` and `file_mapping_port` |
+| `encode-budget` | Encode budget / 编码预算 | Stream | S/M/L | Host configuration `active_nvenc_frame_budget`: the encode time estimate against the frame time |
+| `web-access` | Web page access / 网页访问范围 | Control | S/M | Host setting `origin_web_ui_allowed`, saved like the settings page; a change that locks the person out or opens the page to the internet asks first |
+| `link-margin` | Link headroom / 链路余量 | Stream | S/M/L | Default network adapter of the host (`/api/system/info` `nics`: `link_speed_mbps`) against the session's bitrate (`measured_bitrate_kbps`, else the budget) and the FEC share (host setting `fec_percentage`); the link speed is the negotiated rate, not a measured throughput, and only the host's end |
+| `frame-supply` | Frame supply / 帧率来源 | Stream | S/M/L | `frame_rates` of `/api/perf/current` (source, capture, submitted, encoded, repeated frames per second, `source_kind`), passed by the product as `session.frameRates`; a stage that delivers clearly fewer frames than the one before it is marked |
+| `mic-health` | Microphone / 麦克风 | Devices | S/M/L | The microphone status (`/api/microphone/status`, passed as `mic`): the state, the gap, dropped and error counters; the path (`microphone_redirect_backend`: 自动, VB-CABLE, USB/IP, 关闭) is chosen on the tile at 中 and 大, saved like the settings page |
+| `capture-method` | Capture method / 捕获方式 | Control | S/M/L | Host setting `capture` ('' auto, ddx, wgc, amd, vdd; Windows), chosen on the tile at 中 and 大, saved like the settings page, in effect after a restart of the host; the method of the running session (`perfCapture`) is shown at 大 |
 | `ctl-fps` | Frame rates / 帧率预设 | Control | M/L | Host setting, saved like the settings page |
 | `memory-trend` | Memory over time / 内存变化 | Performance | S/M/L | Memory counters, kept locally |
 | `load` | CPU and GPU / CPU 与 GPU | Performance | M/L | Load counters, kept locally |
@@ -160,7 +170,7 @@ host card, the person's order, hidden cards and sizes are kept, and a saved size
 |---|---|---|---|
 | `journey` | Get started | while no client is paired | the paired clients (`/api/clients/list`); its state is local (`foundation-ui.journey.<key>`) |
 | `star` | Get started | once, after the first pairing or the first stream | local state (`foundation-ui.star.<key>`); the first stream is the product's `sessionSeen` |
-| `net` (网卡) | Host | smart mode, or added | `GET /api/system/info` `nics`: the adapter with `is_default_route` (type, `link_speed_mbps`, `ipv4`, Wi-Fi `signal`), all adapters as rows, `ipv6` and the OUI of `mac` (never the device part) |
+| `net` (网卡) | Host | smart mode, or added | `GET /api/system/info` `nics` (type, `link_speed_mbps`, `ipv4`, `ipv6`, Wi-Fi `signal`, the OUI of `mac`, never the device part). Sizes 中, 大, 特大 (no 方形). The adapter shown is the person's choice on the tile (a menu at 中, the list of adapters at 大 and 特大, kept per host name in local storage; Auto removes it), else the rule of `src/vue/nicChoice.js`: the adapter that holds the host's `bind_address`, else the one on the network of the streaming client (`client_address` of `/api/runtime/sessions`, same /24 or /64), else a physical adapter with the default route (wired before wireless; VPN, tunnel, bridge, container and hypervisor adapters are recognised by `type` and by their name or description, even when the host calls them ethernet), else any other physical adapter, and a virtual one only when nothing else is up. 特大 adds the stream's measured bitrate (`measured_bitrate_kbps`) over time, only while the shown adapter is the one that carries the stream |
 | `sys` (系统) | Host | smart mode, or added | `GET /api/system/info` `os` (name, version, build) and `host.name` |
 | `public-address` (公网地址) | Host | smart mode, or added | the configuration key `external_endpoints` (the old `external_ip` when the list is empty) and the host's reachability check (`public.endpoints`: per endpoint the state, the tested HTTPS port, the latency, the scope); the verdict is `MReachVerdict`, the endpoint list editor `MPublicEndpoints`, the same components as the network page's status card |
 | `cpu`, `gpu` (more lines) | Performance | as before | `GET /api/system/info`: `cpu.model`, `cores`/`threads`, the temperature where the product has one; `gpus[]`: name, `driver_version`, `vram_mb`, `is_streaming_adapter` |

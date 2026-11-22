@@ -19,7 +19,7 @@ import { useErrors } from './useErrors.js'
 // 诊断与日志, one page for both products. Restart sits above the tabs. Every other row is shown only when the product
 // passes a function for it: that is what this product can do, not a second copy of the page. `panel` and `records` are
 // the same kind of fact (this product has a panel log). The product owns the data and the actions.
-//   commands  { restart, resetDisplay, ai, diagnose, downloadLogs, copyLogs, copyConfig, guide, coach, remote, startCard, wizard, forceClose, boom, logout }
+//   commands  { restart, resetDisplay, resetSettings (opens 恢复默认设置), ai, diagnose, downloadLogs, copyLogs, copyConfig, guide, coach, remote, startCard, wizard, forceClose, boom, logout }
 //   labels    optional { [id]: { title, text } } when the product has a more specific name
 //   notes     { [id]: string | { text, tone } }    disabled  { [id]: boolean }
 //   ai        the diagnosis sheet, or null when this product has no assistant for the log
@@ -61,7 +61,7 @@ const call = (id) => { if (props.disabled?.[id]) return; const fn = props.comman
 // what a line of the log offers in its context menu (MLogViewer): the same two controls the overview's rows are
 provide('m-diag-actions', { get ai() { return has('ai') && !props.disabled?.ai ? () => call('ai') : null }, exportDiag: () => { exportOpen.value = true } })
 const ORDER = [
-  ['resetDisplay', 'restart_alt'], ['ai', 'smart_toy'], ['downloadLogs', 'download'], ['copyLogs', 'content_paste'], ['copyConfig', 'content_copy'],
+  ['resetDisplay', 'restart_alt'], ['resetSettings', 'tune'], ['ai', 'smart_toy'], ['downloadLogs', 'download'], ['copyLogs', 'content_paste'], ['copyConfig', 'content_copy'],
   ['guide', 'rocket_launch'], ['coach', 'lightbulb'], ['remote', 'public'], ['startCard', 'checklist'], ['wizard', 'wand_stars'],
   ['forceClose', 'cancel'], ['boom', 'warning'], ['logout', 'logout'],
 ]

@@ -1,5 +1,5 @@
 export * from './catalogue.js'
-export { RELEASE_PRODUCT, RELEASE_BASE, RECOMMENDED_TYPE, releaseRows, releaseUrlOf, assetOsOf, copyChoices, isDownloadable, sizeLabel, mirrorName } from './assets.js'
+export { RELEASE_PRODUCT, RELEASE_BASE, RECOMMENDED_TYPE, releaseRows, releaseUrlOf, assetOsOf, copyChoices, isDownloadable, sizeLabel, mirrorName, shortVersion } from './assets.js'
 export { recommendForOs, connectTexts, whyOf, clientUrl, readsPairQr, CONNECT_OS } from './recommend.js'
 export { DEFAULT_OS, readOs, writeOs } from './osChoice.js'
 export { ANDROID_ABIS, clientTags, targetTag } from './tags.js'

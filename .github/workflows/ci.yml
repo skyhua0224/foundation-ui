@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # The log-record tests compare host timestamps with the machine clock. A fixed zone makes the
+  # runner deterministic and matches the UTC fleet; Naive UI pins the zone in CI for the same reason.
+  TZ: UTC
+
+jobs:
+  tests:
+    name: Tests (shard ${{ matrix.shard }}/4)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Node.js with the npm cache
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install from the lockfile
+        run: npm ci --no-audit --no-fund
+      - name: Run the test shard
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run test:shard -- --test-shard=${{ matrix.shard }}/4 --test-reporter=spec "test/*.test.js" 2>&1 | tee "$RUNNER_TEMP/tests.log"
+      - name: Name the failing tests in the job summary
+        if: failure()
+        run: |
+          node scripts/ci/test-summary.mjs "$RUNNER_TEMP/tests.log" "Tests (shard ${{ matrix.shard }}/4)"
+          cat "$GITHUB_STEP_SUMMARY"
+
+  build:
+    name: Gallery build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Node.js with the npm cache
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install from the lockfile
+        run: npm ci --no-audit --no-fund
+      - name: Build the gallery with Vite
+        run: npx vite build --config gallery/vite.config.js
+
+  summary:
+    name: CI summary
+    needs: [tests, build]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Record the job results
+        run: |
+          {
+            echo "### CI"
+            echo
+            echo "| job | result |"
+            echo "| --- | --- |"
+            echo "| tests | ${{ needs.tests.result }} |"
+            echo "| gallery build | ${{ needs.build.result }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Fail when a job failed
+        if: ${{ needs.tests.result != 'success' || needs.build.result != 'success' }}
+        run: exit 1

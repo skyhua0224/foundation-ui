@@ -28,6 +28,8 @@ const props = defineProps({
   callbacks: { type: Object, default: () => ({}) },
   /** the second layer starts open (the gallery and a search result) */
   open: { type: Boolean, default: false },
+  /** 'listed': only the client finds this computer by itself; 'trouble': only what to do when it does not (the pair step shows the two apart); '' both */
+  only: { type: String, default: '' },
 })
 const emit = defineEmits(['copy', 'qr-begin', 'qr-stop'])
 const A = computed(() => props.T.address)
@@ -52,7 +54,7 @@ const portCallbacks = { savePort: (port) => (props.callbacks.setPort ? props.cal
 </script>
 
 <template>
-  <figure class="m-guide__listed" data-layer="listed">
+  <figure v-if="only !== 'trouble'" class="m-guide__listed" data-layer="listed">
     <span class="m-guide__listart" aria-hidden="true">
       <span class="m-guide__listrow"><MIcon name="desktop_windows" fill /><b data-redact="host">{{ hostName || T.address.kinds.lan }}</b></span>
       <MIcon class="m-guide__listtap" name="touch_app" fill />
@@ -60,6 +62,7 @@ const portCallbacks = { savePort: (port) => (props.callbacks.setPort ? props.cal
     <figcaption class="m-guide__text">{{ listed }}</figcaption>
   </figure>
 
+  <template v-if="only !== 'listed'">
   <MGroup>
     <MItem action icon="help" :title="A.notShowing" :aria-expanded="miss" @click="miss = !miss">
       <template #trail><MIcon :name="miss ? 'keyboard_arrow_up' : 'keyboard_arrow_down'" /></template>
@@ -100,5 +103,6 @@ const portCallbacks = { savePort: (port) => (props.callbacks.setPort ? props.cal
     </template>
   </MGroup>
 
-  <MGuidePort :T="T" :port="Number(network.port) || DEFAULT_BASE_PORT" :active="Number(network.activePort) || 0" :address="plan.main?.address || ''" :callbacks="portCallbacks" />
+  <MGuidePort v-if="miss" :T="T" :port="Number(network.port) || DEFAULT_BASE_PORT" :active="Number(network.activePort) || 0" :address="plan.main?.address || ''" :callbacks="portCallbacks" />
+  </template>
 </template>

@@ -11,7 +11,7 @@ const d = computed(() => props.card.data || {})
 
 <template>
   <button type="button" class="m-tile m-cal m-cala" :class="{ 'is-quiet': card.quiet }" data-size="s" data-accent="secondary" @click="emit('act', { type: d.act, value: d.value })">
-    <span class="m-cala__glyph"><MIcon :name="d.icon" /></span>
+    <span class="m-cala__glyph"><MIcon :name="d.icon" :fill="d.icon === 'stop'" /></span>
     <b class="m-cala__name">{{ d.title }}</b>
   </button>
 </template>

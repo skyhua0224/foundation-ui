@@ -62,6 +62,7 @@ test('a tile dragged out of the gallery: the gallery slides away, the tile is ne
   assert.match(d, /function addFromGallery\(id\) \{[\s\S]*addCard\(id\)[\s\S]*sheetAway\.value = true[\s\S]*placed\(id, before\)/)
   const css = read('src/css/gallery.css')
   assert.match(css, /\.m-dedit\.is-away \{ transform: translateY\(calc\(100% \+ 48px\)\); opacity: 0; pointer-events: none; \}/)
+  assert.match(read('src/css/notify.css'), /body:has\(\.m-dedit__fab, \.m-dedit__selbar\) \.m-snackbar\[popover\] \{ bottom: calc\(var\(--m-dedit-clear\) \+ 12px\) !important; \}/)
   assert.doesNotMatch(css, /\.m-flip-/) // the tile that is placed arrives by the FLIP of flipGroup.js (a scale and a lift on the spring, a fade), not by the classes of a TransitionGroup
 })
 

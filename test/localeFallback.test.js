@@ -68,11 +68,11 @@ test('every language resolves every guide key, and an empty stub keeps the Engli
       if (leaf.value !== '') assert.notEqual(got, '', where)
     }
   }
-  assert.notEqual(guideTexts('de').titles.pair, 'Pair a device')
-  assert.equal(guideTexts('de').skipIn, 'Anleitung überspringen ({n})')
+  assert.notEqual(guideTexts('de').titles.account, 'Set up the WebUI panel account')
+  assert.equal(guideTexts('de').skipThis, 'Diesen Schritt überspringen')
   assert.equal(guideTexts('ja').titles.intro, 'ようこそ')
   assert.equal(guideTexts('fr').intro.followSystem, 'Suivre le système')
-  assert.equal(guideTexts('zh_TW').titles.pair, '首次配對')
+  assert.equal(guideTexts('zh_TW').titles.pair, '連線並配對')
   assert.equal(guideTexts('zh').next, '下一步')
   assert.equal(modeListTexts('zh-CN'), MODE_LIST_TEXTS.zh)
   assert.equal(modeListTexts('de').resolutionTitle, 'Auflösungen von Foundation Virtual Display')

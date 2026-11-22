@@ -18,5 +18,5 @@ for (const f of FILES) {
 }
 test('a MButton whose handler can be missing is drawn only when the handler exists (the sign-in button of the page)', () => {
   const page = fs.readFileSync(new URL('../src/vue/MSecurityLogin.vue', import.meta.url), 'utf8')
-  assert.match(page, /<MButton v-if="signedOut" icon="login" @click="signedOut\(\)">/)
+  assert.match(page, /<MButton v-if="signedOut" :icon="setupRequired \? 'person_add' : 'login'" @click="signedOut\(\)">/)
 })

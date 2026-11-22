@@ -87,7 +87,7 @@ export default
   "errorsNoticeLink": "Sobre › Privacidade",
   "privacyMore": "O que é enviado e o que não é",
   "privacyTitle": "Relatórios de erros e estatísticas de uso",
-  "privacyLead": "Cada chave funciona sozinha. Desligada, nada desse tipo é enviado.",
+  "privacyLead": "Cada chave funciona sozinha. Ao desligar uma, é enviado um pequeno registro de que ela foi desligada (qual chave, o produto e a versão dele, e o número anônimo deste computador); depois nada desse tipo é enviado.",
   "lblCollected": "Enviado",
   "lblNever": "Nunca enviado",
   "lblWhere": "Destino",

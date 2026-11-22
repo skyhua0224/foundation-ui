@@ -3,7 +3,10 @@ export default
   "source": "更新ソース",
   "channel": "更新チャンネル",
   "sources": {
-    "auto": "自動"
+    "auto": "自動",
+    "cnb": "CNB",
+    "github": "GitHub",
+    "mirror": "MirrorChyan"
   },
   "mirrorAbout": "MirrorChyan はオープンソースプロジェクト向けのダウンロード高速化サービスで、開発者を支援する手段でもあります。購読すると CDK でダウンロードが速くなり、収益は MirrorChyan を利用する開発者（このプロジェクトを含む）に分配されます。CDK は任意で、なければ CNB または GitHub からダウンロードします。",
   "tagDomestic": "中国では高速",
@@ -11,6 +14,7 @@ export default
   "getCdk": "CDK を入手",
   "remainingDays": "CDK は {0} 日で期限切れです。",
   "fetchFailed": "CDK 情報を取得できませんでした。最後に成功した結果を表示します。",
+  "cdk": "MirrorChyan CDK",
   "cdkHint": "システムの安全な保管場所に置き、保存後は再表示しません。",
   "save": "保存",
   "clear": "削除",

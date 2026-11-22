@@ -1,11 +1,12 @@
 /* what the real Panel showed that the mock gate let through (fixes found with the browser check over harness/real/*, the real host of 2026-11-07).
    Every rule keeps the tile's visual; nothing below 11 px. */
 /* 公网地址: the glyph and the two lines share the plate's height; the value fits the plate, not the tile (fitText.js) */
-.m-b2addr.is-s .m-b2plate { padding: 8px 10px; gap: 4px; }
-.m-b2addr.is-s .m-b2plate .m-b2glyph { --g: 28px; }
+.m-b2addr.is-s .m-b2plate { padding: 6px 8px; gap: 2px; margin-top: 4px; justify-content: flex-end; }
 .m-b2addr .m-b2plate .m-b2addr__text { min-width: 0; max-width: 100%; }
+/* a state or an address is read in full: it wraps (a long name or a state in words) and the plate grows to its text, nothing is cut */
+.m-dash__cell .m-b2addr .m-b2plate b, .m-b2addr .m-b2plate b { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: anywhere; line-height: 1.2; }
+.m-dash__cell .m-b2addr .m-b2plate small, .m-b2addr .m-b2plate small { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: anywhere; line-height: 1.25; }
 /* 编码器: the big shape sits at the corner, below the title's words */
-.m-tenc--encoder .m-tile__corner { translate: 10% 8%; width: 104px; height: 104px; }
 /* 日志 (and every empty state at 方形): the corner shape keeps its glyph inside the tile */
 .m-tempty--s .m-tempty__shape { translate: -4% 4%; }
 /* 内存 and the other charts: the end dot's ring (12 px dot, 9 px halo) is not cut by the chart's box */
@@ -23,7 +24,6 @@
 .m-calh__now small { text-wrap: balance; }
 /* 组件 tiles at 中 (usbip-win2): the status sits inside its plate */
 .m-b2comp.is-m .m-b2plate { padding: 8px 12px; gap: 2px; justify-content: center; }
-.m-b2comp.is-m .m-b2plate .m-b2glyph { --g: 34px; }
 .m-caln.is-s .m-caln__art.has-art { background-position: 50% 100%; }
 /* 本主机: a chip that does not fit is not shown (no half chip under a fade): the row wraps and fitRows.js takes out the entries that fall below the tile's content edge */
 .m-calh__fchips span { flex: none; }
@@ -84,6 +84,12 @@
 .m-calq__title:has(+ .m-b3s__row) { flex: 0 1 auto; max-width: 46%; }
 /* strips with a button row: the title column gives room to the row, its note wraps to two lines */
 .m-calq:has(> .m-b3s__row) > .m-calq__title { flex: 0 1 46%; min-width: 0; }
+/* (#9) the title keeps its width and the buttons their own width where the strip has room for it; in a narrow strip (under 640 px, the rules above and in tilefit.css) the buttons share the row, which the 360 px check needs */
+@container m-calq (min-width: 640px) {
+  .m-b3s.m-calq:has(> .m-b3s__row) > .m-calq__title { flex: 0 0 auto; max-width: none; }
+  .m-b3s.m-calq .m-b3s__row > * { flex: 0 0 auto; width: auto; max-width: none; min-width: min-content; white-space: nowrap; }
+  .m-b3s.m-calq .m-b3s__row button { padding-right: 18px; }
+}
 .m-calq:has(> .m-b3s__row) .m-b3s__tt small { white-space: normal; line-height: 14px; }
 /* 上次串流 at 中 in a short tile: the numeral and its line stay, the stats row (it needs 36 px more) goes */
 
@@ -124,3 +130,14 @@
 .m-b2paired.is-s .m-calo__rings:has(.is-more) li:nth-child(3) { display: none; }
 /* 内存变化 at 中: the chart takes the tile below the numeral and its caption, never more (60 % of a 148 px tile put the line of a 39 % memory through 「39 %」) */
 .m-tmem--trend.is-m { --tile-bleed: min(60%, calc(100% - 108px)); }
+/* 开关 at 方形 (添加的串流音频, 控制器, 键盘, 光标): the state sits beside the glyph, so the name (two lines in English) and the note under it stay inside the tile */
+.m-b3t[data-size='s'] { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto auto; align-content: space-between; align-items: start; column-gap: 8px; row-gap: 2px; }
+.m-b3t[data-size='s'] .m-b3a__text { display: contents; }
+.m-b3t[data-size='s'] .m-cala__glyph { grid-column: 1; grid-row: 1; }
+.m-b3t[data-size='s'] .m-b3a__state { grid-column: 2; grid-row: 1; align-self: center; justify-self: end; }
+.m-b3t[data-size='s'] .m-cala__name { grid-column: 1 / -1; grid-row: 2; align-self: end; }
+.m-b3t[data-size='s'] .m-b3a__note { grid-column: 1 / -1; grid-row: 3; }
+/* 设备 at 中 (Gamepad, Microphone, USB beside each other): three columns of 84 px hold the English names on one line and the state under them inside the tile; the names broke in the middle of the word and the state was cut */
+.m-b2dev .m-calo__tiles { gap: 6px; }
+.m-b2dev .m-calo__tiles li { padding: 10px 9px; }
+.m-b2dev .m-calo__tiles span b { font-size: 12px; line-height: 16px; white-space: nowrap !important; overflow-wrap: normal !important; }

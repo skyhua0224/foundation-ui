@@ -13,15 +13,16 @@ export function settingDocs(entries, { prefix = '', locale = 'en' } = {}) {
   return entries.map((e) => ({
     id: e.keyName ? `setting:${e.keyName}` : `page:${e.id}`,
     type: e.keyName ? 'setting' : 'page',
-    title: e.title, path: e.keyName && placeOf(e) ? `${placeOf(e)} › ${e.path}` : (e.path || ''), icon: e.icon, keywords: e.keywords || '', key: e.keyName || '',
+    title: e.title, path: e.keyName && placeOf(e) ? `${placeOf(e)} › ${e.path}` : (e.path || ''), icon: e.icon, keywords: e.keywords || '', key: e.keyName || '', ...(e.aliases ? { aliases: e.aliases } : {}), ...(e.pathAlt ? { pathAlt: e.pathAlt } : {}),
     route: e.route, params: e.params, entry: e,
+    ...(e.availability ? { availability: e.availability } : {}),
     // what the result can be pinned to the overview as: a tile with the live control, or (tier 3) a link to its page
     ...(e.keyName ? { pin: pinSpecForSetting(e.keyName, { title: e.title, icon: e.icon, locale }) } : {}),
   }))
 }
 
 /** Pages: [{ id, title, path?, icon?, route, keywords? }]. */
-export const pageDocs = (pages) => pages.map((p) => ({ id: `page:${p.id}`, type: 'page', title: p.title, path: p.path || '', icon: p.icon || 'tune', keywords: p.keywords || '', route: p.route || p.id, params: p.params, entry: p }))
+export const pageDocs = (pages) => pages.map((p) => ({ id: `page:${p.id}`, type: 'page', title: p.title, path: p.path || '', icon: p.icon || 'tune', keywords: p.keywords || '', ...(p.aliases ? { aliases: p.aliases } : {}), route: p.route || p.id, params: p.params, entry: p }))
 
 /** Clients of the host (named certificates): [{ name, uuid? }]. */
 export const clientDocs = (clients, { place = '', icon = 'devices' } = {}) => (clients || []).filter((c) => c?.name).map((c) => ({ id: `client:${c.uuid || c.name}`, type: 'client', title: c.name, path: place, icon, keywords: 'client device paired', client: c }))

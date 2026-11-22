@@ -28,7 +28,8 @@ export const CAPS_PX = Object.freeze({ s: 460, m: 780, l: 1060 })
 export const unitsFor = (width) => Math.max(MIN_UNITS, Math.min(MAX_UNITS, Math.floor((width + GAP) / (UNIT_PX + GAP))))
 
 /** Whether the window shows the dashboard as sections: wider than 2560 css px, or wider than 2.1 : 1. */
-export const sectionedOf = (winW, winH) => winW > SECTIONS_FROM || (winH > 0 && winW / winH > ULTRAWIDE)
+// The sections were the answer to a grid wider than the catalogue could fill; the grid now has at most MAX_COLUMNS columns of the fixed unit, centred, so a very wide or ultrawide window is the same grid with wider margins.
+export const sectionedOf = () => false
 
 /** How many sections stand side by side in `width` px, and how wide each is (capped). */
 export function sectionLayout(width) {

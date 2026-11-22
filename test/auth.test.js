@@ -141,7 +141,7 @@ test('the sign-in page fills the window: no body margin, safe-area insets, a she
   assert.match(css, /min-height: 100dvh/); assert.match(css, /@media \(max-height: 520px\) and \(orientation: landscape\)/)
 })
 
-test('in the control panel (a trusted local surface) the page is the account form: the current password is always asked and the host checks it, there is no sign-in and no sign-out', async () => {
+test('the signed-out page distinguishes a first installation from a stale sign-in; the account form still asks for the current password', async () => {
   const fs = await import('node:fs')
   const page = fs.readFileSync(new URL('../src/vue/MSecurityLogin.vue', import.meta.url), 'utf8')
   assert.doesNotMatch(page, /resetPassword|resetSupported|const reset = /, 'the old-password-free reset is not part of the page')
@@ -149,7 +149,9 @@ test('in the control panel (a trusted local surface) the page is the account for
   assert.match(page, /<MFieldItem v-model="username" :label="T\.username"/)
   assert.match(page, /const canChange = computed\(\(\) => current\.value !== '' && \(next\.value !== '' \|\| renamed\.value\)/)
   // a sign-in button needs somewhere to go: with no `signedOut` it is not drawn (a control that does nothing is a bug)
-  assert.match(page, /<MButton v-if="signedOut" icon="login" @click="signedOut\(\)">/)
+  assert.match(page, /:title="setupRequired \? T\.setupTitle : T\.signedOutTitle"/)
+  assert.match(page, /:text="setupRequired \? T\.setupLead : T\.signedOutText"/)
+  assert.match(page, /<MButton v-if="signedOut" :icon="setupRequired \? 'person_add' : 'login'" @click="signedOut\(\)">\{\{ setupRequired \? T\.create : T\.signIn \}\}<\/MButton>/)
   // signing every device out never sends the control panel to a sign-in page
   assert.match(page, /if \(auth\.local\.value\) \{ say\(T\.value\.revokedAll\); await auth\.loadSessions\(\) \}/)
   const texts = authTexts('zh'); assert.equal(texts.change, '修改用户名和密码'); assert.equal(authTexts('en').change, 'Change user name and password')

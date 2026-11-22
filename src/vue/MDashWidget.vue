@@ -122,9 +122,9 @@ onBeforeUnmount(() => stripObserver?.disconnect())
   <section v-else-if="size === 'strip' && ['control', 'appearance', 'fps', 'tip'].includes(data.type)" class="m-dcard m-dstripctl" :class="`m-dstripctl--${data.type}`">
     <MIcon class="m-dcard__icon" :name="data.type === 'tip' ? 'lightbulb' : data.icon" />
     <span class="m-dstripctl__title"><b>{{ data.type === 'tip' ? data.text : data.title }}</b><small v-if="data.type === 'control' && data.note">{{ data.note }}</small></span>
-    <MChipSet v-if="data.type === 'control'" :model-value="data.value" :options="data.options" :label="data.title" @update:model-value="(v) => emit('act', 'setting', { key: data.key, value: v })" />
-    <MSwatches v-else-if="data.type === 'appearance' && data.which === 'preset'" :model-value="presetHex" :colors="swatches" :label="data.title" @update:model-value="setPreset" />
-    <MChipSet v-else-if="data.type === 'appearance'" :model-value="apValue" :options="data.options" :label="data.title" @update:model-value="setAp" />
+    <MChipSet v-if="data.type === 'control'" ref="stripChips" :data-edge="stripEdge" :model-value="data.value" :options="data.options" :label="data.title" @scroll.passive="measureStrip" @update:model-value="(v) => emit('act', 'setting', { key: data.key, value: v })" />
+    <MSwatches v-else-if="data.type === 'appearance' && data.which === 'preset'" ref="stripChips" :data-edge="stripEdge" :model-value="presetHex" :colors="swatches" :label="data.title" @scroll.passive="measureStrip" @update:model-value="setPreset" />
+    <MChipSet v-else-if="data.type === 'appearance'" ref="stripChips" :data-edge="stripEdge" :model-value="apValue" :options="data.options" :label="data.title" @scroll.passive="measureStrip" @update:model-value="setAp" />
     <MFpsPresets v-else-if="data.type === 'fps'" :model-value="data.value" :label="data.title" :add-label="data.addLabel" :add-text="data.addText" @update:model-value="(v) => emit('act', 'setting', { key: 'fps', value: `[${[...v].sort((a, b) => a - b).join(',')}]` })" />
   </section>
   <section v-else-if="data.type === 'strip-control'" class="m-dcard m-dstripctl">
@@ -187,8 +187,8 @@ onBeforeUnmount(() => stripObserver?.disconnect())
   </section>
 
   <MDashCard v-else :title="data.title" :icon="data.icon" :chevron="chevron" :chevron-label="texts.more" class="m-dwidget" @open="emit('act', 'detail')" :class="`m-dwidget--${data.type} m-dwidget--${size}`">
-    <!-- ring timer -->
-    <div v-if="data.type === 'ring'" class="m-dwidget__centre"><MRing :value="data.value" :size="size === 's' ? 96 : 120" :thickness="12" :label="data.title"><b class="m-dnum m-dwidget__clock">{{ data.centre }}</b></MRing><span v-if="data.caption && size !== 's'" class="m-dwidget__cap">{{ data.caption }}</span></div>
+    <!-- an elapsed time: the time is the hero, no ring (it has no full) -->
+    <div v-if="data.type === 'ring'" class="m-dwidget__centre m-dwidget__time"><b class="m-dnum m-dwidget__clock">{{ data.centre }}</b><span v-if="data.caption && size !== 's'" class="m-dwidget__cap">{{ data.caption }}</span></div>
 
     <!-- arc gauge with the latency behind it -->
     <div v-else-if="data.type === 'gauge'" class="m-dwidget__centre m-dwidget__gauge"><MArcGauge :value="data.value" :zones="data.zones" :size="size === 's' ? 120 : 140" :label="data.title"><b class="m-dnum m-dwidget__clock">{{ data.centre }}</b><small>{{ data.unit }}</small></MArcGauge><MSparkline v-if="data.spark && size !== 's'" :points="data.spark" :width="140" :height="44" /></div>

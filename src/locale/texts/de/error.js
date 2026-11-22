@@ -85,7 +85,7 @@ export default
   "errorsNoticeLink": "Info › Datenschutz",
   "privacyMore": "Was gesendet wird und was nicht",
   "privacyTitle": "Fehlerberichte und Nutzungsstatistik",
-  "privacyLead": "Jeder Schalter wirkt für sich. Ist er aus, wird nichts dieser Art gesendet.",
+  "privacyLead": "Jeder Schalter wirkt für sich. Beim Ausschalten wird ein kleiner Eintrag gesendet, dass er ausgeschaltet wurde (welcher Schalter, das Produkt und seine Version sowie die anonyme Nummer dieses Computers); danach wird nichts dieser Art mehr gesendet.",
   "lblCollected": "Gesendet",
   "lblNever": "Nie gesendet",
   "lblWhere": "Ziel",

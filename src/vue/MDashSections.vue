@@ -7,7 +7,6 @@ import MHeatStrip from './MHeatStrip.vue'
 import MInlineBar from './MInlineBar.vue'
 import MSeg from './MSeg.vue'
 import MSparkline from './MSparkline.vue'
-import MTimerRing from './MTimerRing.vue'
 import MRing from './MRing.vue'
 import MIcon from './MIcon.vue'
 
@@ -37,9 +36,9 @@ const marksOf = (s) => { const v = cut(s.samples) || []; return v.map((x, i) => 
   <div class="m-ddetail" :class="{ 'm-ddetail--inline': inline }">
   <MSeg v-if="detail.ranges && !inline" class="m-ddetail__ranges" :model-value="span" :options="detail.ranges" :label="texts.range || ''" @update:model-value="(v) => (spanOf = { ...spanOf, [uid]: v })" />
   <template v-for="(s, i) in detail.sections" :key="i">
-    <MTimerRing v-if="s.type === 'ring'" :seconds="s.seconds" :period="s.period || 3600" :label="s.label" />
+    <div v-if="s.type === 'ring'" class="m-timer"><b class="m-timer__text m-dnum">{{ s.label }}</b></div>
     <div v-else-if="s.type === 'donut'" class="m-ddetail__donut">
-      <MRing :segments="s.segments" :size="inline ? 120 : 168" :thickness="inline ? 16 : 22" :label="s.title"><b class="m-dnum m-ddetail__centre">{{ s.centre }}</b><small>{{ s.caption }}</small></MRing>
+      <MRing :segments="s.segments" :size="inline ? 120 : 168" :label="s.title"><b class="m-dnum m-ddetail__centre">{{ s.centre }}</b><small>{{ s.caption }}</small></MRing>
       <ul class="m-dstack__legend"><li v-for="(g, j) in s.segments" :key="j"><i :class="`m-dstack__dot--${g.tone}`" /><span>{{ g.label }}</span><b class="m-dnum">{{ g.text }}</b></li></ul>
     </div>
     <div v-else-if="s.type === 'chart'" class="m-ddetail__chart">

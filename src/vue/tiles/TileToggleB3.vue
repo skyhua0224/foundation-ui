@@ -1,5 +1,5 @@
 <script>
-export const tileIds = ['ctl-audio', 'ctl-controller', 'ctl-cursor', 'ctl-keyboard', 'ctl-mouse']
+export const tileIds = ['ctl-audio', 'ctl-controller', 'ctl-cursor', 'ctl-keyboard', 'ctl-mouse', 'live-audio']
 </script>
 
 <script setup>
@@ -23,6 +23,8 @@ const on = computed(() => (draft.value !== null ? draft.value : String(d.value.v
 function flip() {
   if (props.preview) return
   draft.value = !on.value
+  // a switch of the running stream (the host audio of the client) acts on the stream, it is not a saved setting: nothing says "after a restart" and the product sends the command
+  if (d.value.runtime) { emit('act', { type: 'runtime-host-audio', value: { client: d.value.client, enabled: draft.value, failed: () => { draft.value = null } } }); return }
   emit('act', { type: 'setting', value: { key: d.value.key, value: draft.value ? onValue.value : offValue.value, failed: () => { draft.value = null } } })
 }
 </script>
@@ -30,6 +32,6 @@ function flip() {
 <template>
   <button type="button" role="switch" class="m-tile m-cal m-cala m-b3t" :class="on ? 'is-on' : 'is-off'" data-size="s" data-accent="primary" :aria-checked="on" :aria-label="card.title" @click="flip">
     <span class="m-cala__glyph"><MIcon :name="d.icon" /></span>
-    <span class="m-b3a__text"><b class="m-cala__name">{{ card.title }}</b><small class="m-b3a__state">{{ on ? L.on : L.off }}</small><small class="m-b3a__note">{{ L.restartNote }}</small></span>
+    <span class="m-b3a__text"><b class="m-cala__name">{{ card.title }}</b><small class="m-b3a__state">{{ on ? L.on : L.off }}</small><small class="m-b3a__note">{{ d.runtime ? L.liveNote : L.restartNote }}</small></span>
   </button>
 </template>

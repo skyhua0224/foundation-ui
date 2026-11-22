@@ -1,6 +1,7 @@
 // The error report: what an uncaught error becomes, what the person copies, downloads or sends, and the event that goes to the developers' server.
 // Pure and framework-free. Everything is scrubbed (scrub.js) and cut to the limits of the report.
 import { scrubStack, scrubText } from './scrub.js'
+import { REPLY_KEY } from '../feedback/replies.js'
 import { describeError } from './describe.js'
 
 export { describeError }
@@ -71,6 +72,10 @@ export function reportProblems({ title = '', description = '' } = {}) {
   return out
 }
 
+/** The contact line of a report: one line, trimmed, at most CONTACT_MAX characters, no control characters. */
+export const CONTACT_MAX = 200
+export const cleanContact = (value) => String(value || '').replace(/[\u0000-\u001f\u007f]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, CONTACT_MAX)
+
 /** The categories a user report can have (the contract's): what the form's type maps to. */
 export const REPORT_TYPES = Object.freeze(['bug', 'performance', 'compat', 'suggestion', 'other'])
 /** The category of a report: the type the person chose when the form has one, else a bug for an error the product met and `other` for feedback written without an error. */
@@ -79,7 +84,7 @@ export const reportTypeOf = (report, type = '') => (REPORT_TYPES.includes(type) 
 export const ATTACHMENT_REF = /^att-\d{4}-\d{2}\/[0-9a-f]{64}\.[a-z0-9]{1,8}$/
 
 /** The document of a report (plain values), or null while the title or the description is empty. Exactly these fields, nothing else; no contact line: the contract has none on purpose. */
-export function reportToDocument(report, { title = '', description = '', issue = '', type = '', attachment = '' } = {}) {
+export function reportToDocument(report, { title = '', description = '', issue = '', type = '', attachment = '', contact = '' } = {}) {
   if (reportProblems({ title, description }).length) return null
   const L = REPORT_LIMITS
   const doc = {
@@ -109,11 +114,14 @@ export function reportToDocument(report, { title = '', description = '', issue =
   if (/^[0-9a-f]{32}$/.test(String(issue || ''))) doc.issue = issue
   doc.report_type = reportTypeOf(report, type)
   if (ATTACHMENT_REF.test(String(attachment || ''))) doc.attachment = attachment
+  // the contact the person chose to leave: only the developers read it, in the one issue of this report; it is not scrubbed (an address the person gave is what it is for) and never leaves the one event
+  const reach = cleanContact(contact)
+  if (reach) doc.contact = reach
   return doc
 }
 
 /** The names of the fields of a document (what the form builds; the event that is sent carries the part the contract has room for, reportToEvent). */
-export const DOCUMENT_FIELDS = Object.freeze(['schema', 'title', 'description', 'kind', 'fatal', 'message', 'product', 'app_version', 'client_time', 'name', 'stack', 'os', 'page', 'locale', 'logs', 'category', 'code', 'issue', 'breadcrumbs', 'components', 'encoder', 'gpu_vendor', 'capture_backend', 'report_type', 'attachment'])
+export const DOCUMENT_FIELDS = Object.freeze(['schema', 'title', 'description', 'kind', 'fatal', 'message', 'product', 'app_version', 'client_time', 'name', 'stack', 'os', 'page', 'locale', 'logs', 'category', 'code', 'contact', 'issue', 'breadcrumbs', 'components', 'encoder', 'gpu_vendor', 'capture_backend', 'report_type', 'attachment'])
 export const DOCUMENT_REQUIRED = Object.freeze(['schema', 'title', 'description', 'kind', 'fatal', 'message', 'product', 'app_version', 'client_time'])
 
 const token = (value, max) => String(value || '').toLowerCase().replace(/[^a-z0-9._:+-]+/g, '-').replace(/^[^a-z0-9]+/, '').slice(0, max).replace(/-+$/, '')
@@ -125,17 +133,28 @@ export const USER_REPORT_MESSAGE_MAX = 2000
  * the full stack and the log lines stay in the copy, the download and the GitHub issue.
  */
 export function reportMessage(doc) {
-  const written = [doc.title, String(doc.description || '').slice(0, 1200)].filter(Boolean).join('\n\n')
-  const error = [doc.name, doc.message].filter(Boolean).join(': ').slice(0, 300)
+  const description = String(doc.description || '').slice(0, 1200)
+  // the title of a report written without an error is the first line of what the person wrote: it is not said twice
+  const first = description.split('\n').map((l) => l.trim()).find(Boolean) || ''
+  const stem = String(doc.title || '').replace(/…$/, '')
+  const same = !!stem && (first === doc.title || first.startsWith(stem))
+  const written = (same ? [description] : [doc.title, description]).filter(Boolean).join('\n\n')
+  // feedback with no error has nothing to say about one ("Error: Feedback" was a placeholder)
+  const error = doc.kind === 'manual' && !doc.message ? '' : [doc.name, doc.message].filter(Boolean).join(': ').slice(0, 300)
   const stack = lines(doc.stack, 6, 120)
   const events = lines(doc.breadcrumbs, 5, 100, true)
   const parts = [written, error && `Error: ${error}`, stack && `Stack:\n${stack}`, events && `Recent events:\n${events}`].filter(Boolean)
   return scrubText(parts.join('\n\n'), USER_REPORT_MESSAGE_MAX)
 }
 
+/** The most characters of the base64 text of a screenshot that travels in the event (700 KB of picture, a little room for the padding). */
+export const SHOT_BASE64_MAX = 960_000
+/** A screenshot as it is carried in a document: base64 of a picture, at most SHOT_BASE64_MAX characters. */
+export const isShotData = (v) => typeof v === 'string' && v.length >= 16 && v.length <= SHOT_BASE64_MAX && /^[A-Za-z0-9+/]+={0,2}$/.test(v)
+
 /**
  * The event a report written by the person becomes: kind `error`, name `user_report` (telemetry-v1-spec, "Worker additions"): the category (bug | performance | compat | suggestion | other), the component (the product),
- * the page, the error code, the reference of an uploaded attachment, and the message above. No contact field exists on purpose. This is what the form shows as "what is sent".
+ * the page, the error code, the reference of an uploaded attachment, the screenshot when the person attached one (`shot`, base64), the contact when the person left one, and the message above. This is what the form shows as "what is sent".
  */
 export function reportToEvent(doc) {
   const props = { category: REPORT_TYPES.includes(doc.report_type) ? doc.report_type : 'other', component: token(doc.product, 32) || 'web' }
@@ -144,6 +163,12 @@ export function reportToEvent(doc) {
   const code = String(doc.category && doc.code ? `${doc.category}.${doc.code}` : doc.code || '').replace(/[^A-Za-z0-9_.:+-]+/g, '-').slice(0, 64)
   if (code) props.error_code = code
   if (ATTACHMENT_REF.test(String(doc.attachment || ''))) props.attachment = doc.attachment
+  // the screenshot (shotImage.js, at most 700 KB, base64): the host uploads it to the developers' server like the run log and puts the reference it gets into the event; the page never names a reference itself
+  if (isShotData(doc.shot)) props.shot = doc.shot
+  const contact = cleanContact(doc.contact)
+  if (contact) props.contact = contact
+  // the address of the developers' answer (feedback/replies.js): random, made by the sheet, kept on this computer; the host passes it on and the server writes it only into the issue of this report
+  if (REPLY_KEY.test(String(doc.reply_key || ''))) props.reply_key = doc.reply_key
   props.message = reportMessage(doc)
   return { kind: 'error', name: 'user_report', props }
 }

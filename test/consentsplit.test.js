@@ -1,3 +1,4 @@
+import { feedbackTexts } from '../src/feedback/texts.js'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
@@ -65,13 +66,13 @@ test('nobody is asked about usage statistics: the dialog, its words and the quie
 
 test('the error-report notice and the two privacy rows have words; the queue sentence names no vendor', () => {
   const zh = errorTexts('zh'), en = errorTexts('en')
-  assert.equal(zh.errorsNotice, '为了更快修复问题、决定先改进什么，软件会把错误记录和使用统计发送到开发者自己的服务器（api.alkaidlab.com）。不会发送屏幕内容、名称、路径和地址。可在「{link}」查看发送的内容，或关闭「错误报告」「使用统计」。')
-  assert.equal(en.errorsNotice, 'To fix problems faster and decide what to improve, the software sends error records and usage statistics to the developers\' own server, api.alkaidlab.com. No screen content, names, paths or addresses are sent. In {link} you can see what is sent and turn off “Error reports” or “Usage statistics”.')
+  assert.equal(zh.errorsNotice, '为了更快修复问题、决定先改进什么，软件会把错误记录和使用统计（串流质量按分钟统计）发送到开发者自己的服务器（api.alkaidlab.com）；崩溃报告、反馈或严重的串流问题时，还会附上日志行，先在这台电脑上做匿名处理（去除名称、文件夹和地址）。不会发送屏幕内容、名称、路径和地址。可在「{link}」查看发送的内容，或关闭「错误报告」「使用统计」。')
+  assert.equal(en.errorsNotice, 'To fix problems faster and decide what to improve, the software sends error records and usage statistics (stream quality is counted per minute) to the developers\' own server, api.alkaidlab.com. With a crash report, a feedback message or after a serious stream problem it also sends log lines, made anonymous on this computer first (names, folders and addresses removed). No screen content, names, paths or addresses are sent. In {link} you can see what is sent and turn off “Error reports” or “Usage statistics”.')
   for (const text of [zh.errorsNotice, en.errorsNotice]) assert.equal(text.split('{link}').length, 2, 'one sentence plus the one link')
   assert.ok(!/[?？]/.test(zh.errorsNotice + en.errorsNotice), 'the notice asks nothing')
-  assert.equal(zh.usageRowText, '让我们知道哪些功能有人用、串流是否流畅，从而决定先改进什么。只发送次数和性能数字。')
-  assert.equal(en.usageRowText, 'Shows us which features are used and whether streams run smoothly, so we know what to improve first. Only counts and performance numbers are sent.')
-  assert.equal(zh.errorsRowText, '帮助我们更快发现并修复崩溃和错误。出错或崩溃时发送一条去除个人信息的记录。')
+  assert.equal(zh.usageRowText, '让我们知道哪些功能有人用、串流是否流畅，从而决定先改进什么。只发送次数和性能数字；串流质量按分钟统计（例如发送延迟、丢帧）。')
+  assert.equal(en.usageRowText, 'Shows us which features are used and whether streams run smoothly, so we know what to improve first. Only counts and performance numbers are sent; stream quality is counted per minute (for example send delay and dropped frames).')
+  assert.equal(zh.errorsRowText, '帮助我们更快发现并修复崩溃和错误。出错或崩溃时发送一条去除个人信息的记录；崩溃报告或反馈还会带上这次运行的日志，严重的串流问题会带上主机日志的最后几行，都先在这台电脑上做匿名处理（去除名称、文件夹和地址）。')
   assert.equal(zh.errorsRow, '错误报告'); assert.equal(zh.usageRow, '使用统计')
   assert.match(zh.queued, /^无法连接报告服务器/); assert.match(en.queued, /^The report server is unreachable/)
   for (const locale of ['zh', 'en', 'de', 'fr', 'ja', 'ru']) assert.ok(!/firebase/i.test(JSON.stringify(errorTexts(locale))), `no vendor in ${locale}`)
@@ -91,13 +92,10 @@ test('every locale has the new words, and none keeps the old consent question', 
   }
 })
 
-test('the report sheet has the box 以后自动发送, checked while error reports are on, and what it says when sending becomes the setting', () => {
-  const sheet = read('src/vue/devmode/DevReport.vue')
-  assert.match(sheet, /const autoSend = ref\(readErrors\(\) === 'on'\)/)
-  assert.match(sheet, /<label v-if="phase !== 'done' && isError" class="dm-auto dm-auto--foot" data-dev="report-auto"><input v-model="autoSend" type="checkbox"/)
-  assert.ok(sheet.indexOf('class="dm-auto dm-auto--foot"') > sheet.indexOf("#actions"), 'the box is in the foot of the sheet beside its buttons, where the body\'s scroll cannot hide it')
-  assert.match(sheet, /\(autoSend\.value \? 'on' : 'off'\) !== readErrors\(\)[\s\S]*ERRORS_REQUEST_EVENT/)
-  const texts = read('src/devmode/texts.js'); assert.match(texts, /autoSend: '以后自动发送'/); assert.match(texts, /autoSend: 'Send automatically from now on'/)
+test('the feedback panel names the log and the consent in one line, and does not offer to change the switch', () => {
+  const sheet = read('src/vue/feedback/MFeedbackPanel.vue')
+  assert.ok(!/ERRORS_REQUEST_EVENT/.test(sheet), 'a report does not wait for the switch, so the panel has nothing to ask of it')
+  assert.match(feedbackTexts('zh').logsText, /点「发送」就是同意发送这些内容，与「问题自动上报」开关无关/)
   assert.match(read('src/vue/useTelemetryConsent.js'), /addEventListener\(ERRORS_REQUEST_EVENT/)
 })
 

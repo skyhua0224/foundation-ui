@@ -4,6 +4,10 @@
 // The two choices are the shared ones (consent.js): usage statistics (usage and experience events) and error reports (error events), both on until the person turns them off. Nothing is queued for a kind that is
 // off here, and the host refuses it again when its own copy of the choice says off. Names the person typed or the host holds (apps, devices, games) are never sent: an event carries a fixed word (a catalogue id) or a
 // number, and an error event has no text at all.
+import { installActionTracking } from './actions.js'
+import { createPagePerf } from './pagePerf.js'
+import { guideFunnelProps } from './guideEvents.js'
+import { updateResultProps } from './updateEvents.js'
 import { mayCollect, mayReportErrors, readConsent, readErrors } from './consent.js'
 
 export const EVENTS_PATH = '/api/telemetry/events'
@@ -14,8 +18,12 @@ const FLUSH_AT = 20
 /** A catalogue id: lower case letters, digits, '.', '_' and '-', starting with a letter or a digit, at most `max` characters (what the contract accepts as an id). */
 export const catalogueId = (value, max = 48) => String(value ?? '').toLowerCase().replace(/[^a-z0-9._-]+/g, '-').replace(/^[^a-z0-9]+/, '').slice(0, max).replace(/-+$/, '')
 
-/** The update source setting (auto | cnb | github | mirror) as the contract names where an update came from: mirror (Mirror酱), github, other. */
-export const updateSourceOf = (source) => (source === 'mirror' ? 'mirror' : source === 'github' ? 'github' : 'other')
+/** The update source (the setting auto | cnb | github | mirror, or the source a download really came from) as the contract names where an update came from: mirror (Mirror酱), cnb, github, other (auto and anything else). */
+export const updateSourceOf = (source) => (source === 'mirror' || source === 'cnb' || source === 'github' ? source : 'other')
+
+/** Why the chosen source (Mirror酱) was not the one used, as the contract names it; anything else is dropped. */
+export const UPDATE_SOURCE_MISSES = Object.freeze(['version_lag', 'cdk_invalid', 'quota', 'network', 'no_cdk'])
+export const updateSourceMissOf = (miss) => (UPDATE_SOURCE_MISSES.includes(miss) ? miss : '')
 
 const defaultNow = () => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now())
 
@@ -68,11 +76,11 @@ export function createEventSender({ product, post, usageOn = () => mayCollect(re
     drop: ({ usage = true, errors = true } = {}) => { pending = pending.filter((e) => (e.kind === 'error' ? errors : usage)) },
     get pending() { return pending.length },
     track: {
-      /** The product was opened: once per load (cold: the first load in this session of the window); `startMs` is the time it took to get here; `updateSource` the setting of the update source. */
-      appStart: ({ startMs, updateSource } = {}) => {
+      /** The product was opened: once per load (cold: the first load in this session of the window); `startMs` is the time it took to get here; `updateSource` the source the last update really came from (else the setting); `updateSourceMiss` why the chosen source was not used (UPDATE_SOURCE_MISSES), only when it was not. */
+      appStart: ({ startMs, updateSource, updateSourceMiss } = {}) => {
         if (started) return
         started = true
-        queue('usage', 'app_start', { cold: sessionFlag(`foundation-ui.telemetry.started.${product}`), ...(Number.isFinite(startMs) ? { start_ms: Math.round(startMs) } : {}), ...(updateSource ? { update_source: updateSourceOf(updateSource) } : {}) })
+        queue('usage', 'app_start', { cold: sessionFlag(`foundation-ui.telemetry.started.${product}`), ...(Number.isFinite(startMs) ? { start_ms: Math.round(startMs) } : {}), ...(updateSource ? { update_source: updateSourceOf(updateSource) } : {}), ...(updateSourceMissOf(updateSourceMiss) ? { update_source_miss: updateSourceMissOf(updateSourceMiss) } : {}) })
       },
       /** A page was opened: the time until its first painted frame, as the first number of how quickly a page has something to show. */
       pageView: (page) => {
@@ -81,12 +89,21 @@ export function createEventSender({ product, post, usageOn = () => mayCollect(re
         const at = now()
         let current = sender._page
         current = sender._page = { id, at }
+        sender.perf?.visit(id)
         frames(() => { if (sender._page === current) queue('experience', 'panel_page', { page: id, time_to_content_ms: Math.max(0, Math.round(now() - at)) }) })
       },
       feature,
+      /** A step of the first-run guide (guideEvents.js): the props the guide's funnel hands over, cleaned to the fixed words once more. Usage kind: it follows the choice about anonymous usage statistics. */
+      guideFunnel: (props) => { const clean = guideFunnelProps({ phase: props?.phase, step: props?.step, optional: props?.optional, timeMs: props?.time_ms, mode: props?.mode }); if (clean) queue('usage', 'guide_funnel', clean) },
       error: (code, _message, extra = {}) => errorEvent({ code, ...extra }),
+      /** A step of an update finished (updateEvents.js): where it came from, the step, ok or failed and the class of the failure. Follows the error-report choice like the other results. */
+      updateResult: (details) => queue('error', 'update_result', updateResultProps({ ...details, source: updateSourceOf(details?.source) })),
     },
     _page: null,
+    /** The page-experience collector of this window (pagePerf.js), set by installEventListeners; null where the runtime has none. */
+    perf: null,
+    /** `fetch` with the clock around the calls to the host's own API; without a collector it is `fetch` itself. */
+    timedFetch: (fetchImpl = globalThis.fetch) => (sender.perf ? sender.perf.timedFetch(fetchImpl) : fetchImpl),
   }
   return sender
 }
@@ -99,7 +116,16 @@ export function installEventListeners(sender, win = globalThis.window, doc = glo
   if (!win || typeof win.addEventListener !== 'function') return () => {}
   const on = (name, fn) => { win.addEventListener(name, fn); return () => win.removeEventListener?.(name, fn) }
   const offs = []
-  offs.push(on('foundation-telemetry-consent', (event) => { if (!mayCollect(event.detail)) sender.drop({ usage: false }) }))
+  // the last actions of the person (page changes, marked presses, settings, stream state) for the error reports
+  offs.push(installActionTracking(win, doc))
+  // page experience sketches (LCP, CLS, INP, long animation frames, frame times, API latency, heap): one event per route when the page is hidden, nothing in between. Started before the listeners that flush, so its events are queued first.
+  if (!sender.perf && typeof win.PerformanceObserver !== 'undefined') {
+    const perf = createPagePerf({ emit: (props, name) => sender.queue('experience', name, props), onReady: (page, ms) => sender.queue('experience', 'page_ready', { page, ms: Math.min(3_600_000, Math.max(0, ms)) }), env: { win, doc } })
+    perf.start(sender._page?.id || 'home')
+    sender.perf = perf
+    offs.push(() => { perf.stop(); if (sender.perf === perf) sender.perf = null })
+  }
+  offs.push(on('foundation-telemetry-consent', (event) => { if (!mayCollect(event.detail)) { sender.drop({ usage: false }); sender.perf?.collect({ force: true }) } }))
   offs.push(on('foundation-telemetry-errors', (event) => { if (!mayReportErrors(event.detail)) sender.drop({ errors: false }) }))
   // a known limit of this machine or version (an unsupported GPU, a missing component): an error event of severity warning with the category and the code only, at most 20 a minute
   const known = []
@@ -119,7 +145,7 @@ export function installEventListeners(sender, win = globalThis.window, doc = glo
     stamps.push(t)
     sender.errorEvent({ code: 'shell_error', severity: event.detail?.fatal ? 'fatal' : 'error' })
   }))
-  offs.push(on('pagehide', () => { void sender.flush({ keepalive: true }) }))
+  offs.push(on('pagehide', () => { sender.perf?.collect({ continueVisit: false, force: true }); void sender.flush({ keepalive: true }) }))
   if (doc && typeof doc.addEventListener === 'function') {
     const hidden = () => { if (doc.visibilityState === 'hidden') void sender.flush({ keepalive: true }) }
     doc.addEventListener('visibilitychange', hidden)

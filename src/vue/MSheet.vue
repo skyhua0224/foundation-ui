@@ -36,9 +36,11 @@ onMounted(() => {
     const dialog = el.value
     if (!dialog || dialog.open || open.value) return
     try { if (navigator.scheduling?.isInputPending?.()) { warmTimer = window.setTimeout(warm, 1000); return } } catch { /* no such API */ }
+    const originalStyle = dialog.getAttribute('style')
     dialog.style.cssText = 'display:block;position:fixed;inset:auto;left:-99999px;top:0;visibility:hidden;pointer-events:none'
     void dialog.offsetHeight
-    dialog.style.cssText = ''
+    if (originalStyle === null) dialog.removeAttribute('style')
+    else dialog.setAttribute('style', originalStyle)
   }, 4000 + Math.random() * 4000)
 })
 onBeforeUnmount(() => { clearTimeout(warmTimer); el.value?.open && el.value.close() })

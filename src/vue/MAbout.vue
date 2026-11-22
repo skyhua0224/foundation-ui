@@ -36,7 +36,7 @@ import { HERO } from '../about/hero.js'
 //   version, channel ('stable' | 'prerelease' | ''), a build date when the version carries one,
 //   build   the build identity the host recorded (about/build.js); when given, its channel and UTC build time replace the guesses from the version
 //   update  { state: 'idle' | 'checking' | 'available' | 'latest' | 'error', version }  (the product runs the real check and opens MUpdateSheet)
-//   sponsors [{ id, label, url }] the product's own constant
+//   sponsors [{ id, label, url, zh? }] the product's own constant; zh is used for Chinese locales
 // Emits: check, open-update, open (url), copied.
 const developer = useDeveloperMode()
 const props = defineProps({
@@ -345,7 +345,7 @@ const team = computed(() => TEAM.map((p) => ({ ...p, founder: p.login === FOUNDE
 
     <MSection :title="T.supportTitle">
       <MGroup>
-        <MItem v-for="s in sponsors" :key="s.id" action icon="favorite" :title="`${T.sponsor} · ${s.label}`" @click="open(s.url)"><template #trail><MIcon name="open_in_new" /></template></MItem>
+        <MItem v-for="s in sponsors" :key="s.id" action icon="favorite" :title="`${T.sponsor} · ${s.label}`" @click="open(resolveLink(s, locale))"><template #trail><MIcon name="open_in_new" /></template></MItem>
         <MItem v-for="t in STAR_TARGETS" :key="t.url" action :title="`${T.star} · ${t.name}`" :text="t.repo" @click="open(t.url)"><template #lead><MGithubMark :size="22" /></template><template #trail><MIcon name="open_in_new" /></template></MItem>
         <MItem action :icon="copied === 'share' ? 'check_circle' : 'share'" :title="copied === 'share' ? T.shareCopied : T.share" @click="share" />
       </MGroup>

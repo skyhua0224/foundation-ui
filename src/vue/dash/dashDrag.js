@@ -14,16 +14,25 @@ export function useDashDrag(D) {
   let pressTimer = 0
   const settling = ref('')
   D.settleTimer = 0
+  // Touch: the page must stay scrollable under a finger that lands on a tile, so a tile is picked up by a press that holds still (LIFT_MS), as on the home screens of phones, and only then follows the finger
+  // (a finger that moves first is a scroll: the browser takes it over and the press ends without selecting anything). The page's own scroll is stopped for a lifted tile by a touchmove listener that
+  // is there from the start (a listener added after the finger landed is too late for the first move).
+  const LIFT_MS = 320
+  const onTouchMove = (ev) => { if (drag.value?.touch && drag.value.lifted && ev.cancelable) ev.preventDefault() }
+  onMounted(() => document.addEventListener('touchmove', onTouchMove, { passive: false }))
+  onBeforeUnmount(() => document.removeEventListener('touchmove', onTouchMove))
   const dragVars = (id) => (drag.value?.id === id ? { '--dx': `${drag.value.dx}px`, '--dy': `${drag.value.dy}px` } : undefined)
   function down(e, id) {
     if (!edit.value || e.button > 0 || e.target.closest('.m-dash__remove, .m-dash__sizes, .m-dash__handle')) return
     const cell = e.currentTarget
     const r = cell.getBoundingClientRect()
-    drag.value = { id, gx: e.clientX - r.left, gy: e.clientY - r.top, dx: 0, dy: 0, pid: e.pointerId, over: false, sx: e.clientX, sy: e.clientY, moved: false }
+    const touch = e.pointerType === 'touch'
+    drag.value = { id, gx: e.clientX - r.left, gy: e.clientY - r.top, dx: 0, dy: 0, pid: e.pointerId, over: false, sx: e.clientX, sy: e.clientY, moved: false, touch, lifted: !touch }
     docDrag(e.pointerId)
     // a long press selects the card at once, a tap selects it on release
     clearTimeout(pressTimer)
-    pressTimer = setTimeout(() => { if (drag.value && !drag.value.moved) select(id) }, 450)
+    if (touch) pressTimer = setTimeout(() => { const d = drag.value; if (d && d.id === id && !d.moved) { d.lifted = true; select(id); try { navigator.vibrate?.(12) } catch { /* no haptics */ } } }, LIFT_MS)
+    else pressTimer = setTimeout(() => { if (drag.value && !drag.value.moved) select(id) }, 450)
   }
   function select(id) { sel.value = id; if (id) say(`${titleOf(id)}: ${T.value.selected || 'selected, choose a size'}`) }
   const inside = (el, x, y) => { if (!el) return false; const r = el.getBoundingClientRect(); return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom }
@@ -36,6 +45,8 @@ export function useDashDrag(D) {
     lastX = x; lastY = y
     if (!d.moved) {
       if (Math.hypot(x - d.sx, y - d.sy) < 6) return
+      // a finger that moved before the tile was lifted is scrolling the page, not carrying the tile
+      if (d.touch && !d.lifted) { clearTimeout(pressTimer); drag.value = null; stopScroll(); return }
       d.moved = true
       clearTimeout(pressTimer)
       say(`${titleOf(d.id)}: ${T.value.picked || 'picked up'}`)
@@ -132,7 +143,7 @@ export function useDashDrag(D) {
     document.addEventListener('pointermove', m); document.addEventListener('pointerup', u); document.addEventListener('pointercancel', u)
   }
   // a press outside every card and outside the size selector deselects; so does Esc, leaving edit mode and removing the card
-  const outside = (e) => { if (sel.value && !e.target.closest('.m-dash__cell, .m-dedit, .m-dedit__fab')) sel.value = '' }
+  const outside = (e) => { if (sel.value && !e.target.closest('.m-dash__cell, .m-dedit, .m-dedit__fab, .m-dedit__selbar')) sel.value = '' }
   onMounted(() => document.addEventListener('pointerdown', outside, true))
   onBeforeUnmount(() => { document.removeEventListener('pointerdown', outside, true); clearTimeout(pressTimer) })
   watch(edit, (on) => { if (!on) sel.value = '' })
@@ -175,7 +186,13 @@ export function useDashDrag(D) {
   // A drag follows its pointer on the document: reordering moves the card's element in the page, which would end a pointer capture on it
   function docDrag(pid) {
     const m = (ev) => { if (ev.pointerId === pid) move(ev) }
-    const u = (ev) => { if (ev.pointerId !== pid) return; document.removeEventListener('pointermove', m); document.removeEventListener('pointerup', u); document.removeEventListener('pointercancel', u); up(ev) }
+    const u = (ev) => {
+      if (ev.pointerId !== pid) return
+      document.removeEventListener('pointermove', m); document.removeEventListener('pointerup', u); document.removeEventListener('pointercancel', u)
+      // the browser took the finger over (the page scrolls): not a tap, nothing is selected; a tile that was being carried is dropped where it is
+      if (ev.type === 'pointercancel' && drag.value && !drag.value.moved) { clearTimeout(pressTimer); clearTimeout(D.swapTimer); D.swapTimer = 0; drag.value = null; stopScroll(); return }
+      up(ev)
+    }
     document.addEventListener('pointermove', m); document.addEventListener('pointerup', u); document.addEventListener('pointercancel', u)
   }
   function sheetKey(e, id) {

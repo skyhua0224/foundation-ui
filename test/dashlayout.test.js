@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { LAYOUT_VERSION, useDashLayout } from '../src/vue/useDashLayout.js'
+import { LAYOUT_VERSION, RETIRED_SIZES, useDashLayout } from '../src/vue/useDashLayout.js'
 import { DEFAULT_ORDER, CARD_META, buildCards, packDash, rowTemplate, defaultVisible } from '../src/vue/homeCards.js'
 import { CATALOGUE_IDS } from '../src/vue/homeCatalogue.js'
 
@@ -159,4 +159,16 @@ test('paired clients make the star card due: a host that was set up before has t
   paired.value = 30
   assert.equal(card.visible.value, true, 'clients exist: the card is there (idle: the host star and the sponsor entry)')
   card.dismiss(); assert.equal(card.visible.value, false, 'later still hides it')
+})
+
+test('a saved 方形 of the 网卡 tile (it has none any more) is read as 中; the other sizes and the other tiles stay', () => {
+  const at = (sizes) => useDashLayout('r', { getItem: () => JSON.stringify({ v: LAYOUT_VERSION, order: DEFAULT_ORDER, overrides: { net: true }, sizes, pins: {}, mode: 'manual' }), setItem() {} }).state.sizes
+  assert.deepEqual(RETIRED_SIZES, { net: { s: 'm' } })
+  assert.deepEqual(at({ net: 's', cpu: 's' }), { net: 'm', cpu: 's' })
+  assert.deepEqual(at({ net: 'l' }), { net: 'l' }); assert.deepEqual(at({ net: 'xl' }), { net: 'xl' }); assert.deepEqual(at({}), {})
+})
+
+test('a layout saved before version 8 whose only choice is a 方形 网卡 stays the person\'s (manual) and reads it as 中', () => {
+  const l = useDashLayout('r2', { getItem: () => JSON.stringify({ v: 7, order: DEFAULT_ORDER, overrides: {}, sizes: { net: 's' }, pins: {}, mode: 'manual' }), setItem() {} })
+  assert.equal(l.state.sizes.net, 'm'); assert.equal(l.state.mode, 'manual')
 })

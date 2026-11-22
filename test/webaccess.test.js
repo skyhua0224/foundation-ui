@@ -63,12 +63,13 @@ test('the words: the three choices, a one-sentence consequence for the internet,
   assert.ok(zh.confirmText.includes('密码') && !zh.confirmText.includes('\n'))
 })
 
-test('the first-run flow has the step 手机和其他设备访问 after the graphics setup and before remote access', () => {
-  const ids = buildGuideSteps().map((s) => s.id)
-  assert.equal(ids[ids.indexOf('setup') + 1], 'webaccess')
-  assert.equal(ids[ids.indexOf('webaccess') + 1], 'remote')
+test('the optional pages of the done page have 手机和其他设备访问 before remote access, both marked advanced', () => {
+  const optional = buildGuideSteps().at(-1).optional
+  assert.equal(optional[optional.indexOf('webaccess') + 1], 'remote')
+  assert.ok(optional.indexOf('setup') < optional.indexOf('webaccess'), 'after the graphics setup')
   assert.equal(guideTexts('zh').titles.webaccess, '手机和其他设备访问')
   assert.ok(guideTexts('en').titles.webaccess && guideTexts('zh').leads.webaccess && guideTexts('en').leads.webaccess)
+  assert.ok(guideTexts('zh').done.items.webaccess.title && guideTexts('en').done.items.webaccess.title)
 })
 
 test('the internet asks twice: the question, then 「注意」 with what it costs; a No on either leaves the choice; the guide uses the same component', () => {

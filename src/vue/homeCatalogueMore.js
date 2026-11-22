@@ -44,6 +44,12 @@ export const isOn = (key, value) => {
 const TIPS = 8 // how many tips the texts carry (tip0 ... tip7)
 
 /** { [id]: data | null } for the cards above. x is the same input as buildCatalogue; `now` is a timestamp (the tip of the day follows the date). */
+/** The address a host sees for a client that streams through a router or a bridge is the router's: the first or the last address of a private /24 (192.168.1.1). It is not the client, so no tile names it as the client's. */
+export const viaGateway = (address) => {
+  const m = /^(10|172\.(?:1[6-9]|2\d|3[01])|192\.168)\.(?:\d{1,3}\.)?(\d{1,3})\.(\d{1,3})$/.exec(String(address || '').trim())
+  return !!m && (m[3] === '1' || m[3] === '254')
+}
+
 export function moreCatalogue(x, T, now = Date.now()) {
   const d = {}
   const s = realSession(x.session, x.clients)
@@ -56,14 +62,16 @@ export function moreCatalogue(x, T, now = Date.now()) {
   const latest = list && list.length ? list[list.length - 1] : null
   d.pair = list ? { type: 'pair', icon: 'person_add', title: T.c_pair, count: list.length, latest: latest ? { name: latest.name || '–', icon: latest.icon || 'devices' } : null, canPin: x.canAct !== false, qr: x.pairQr || null } : null
   d['stream-resolution'] = s && num(s.width) && num(s.height) ? rows('stream-resolution', 'aspect_ratio', `${s.width}×${s.height}`, [{ icon: 'slow_motion_video', title: T.target, value: num(s.fps) ? `${s.fps} ${T.fpsUnit || 'fps'}` : '' }].filter((r) => r.value)) : null
-  d['stream-client'] = s && (s.client_name || s.client_address) ? { ...rows('stream-client', 'devices', '', [{ icon: 'cast_connected', title: s.client_name || s.client_address, value: s.client_name ? s.client_address || '' : '', tone: 'ok' }]), clientIcon: (x.clients || []).find((c) => c.name === s.client_name)?.icon || '' } : null
-  d['stream-fps'] = s && num(s.fps) ? rows('stream-fps', 'slow_motion_video', num(s.fpsMeasured) !== null ? String(Math.round(s.fpsMeasured)) : '', [{ icon: 'check_circle', title: T.target, value: String(s.fps) }, ...(num(s.fpsMeasured) !== null ? [{ icon: 'speed', title: T.measured, value: String(Math.round(s.fpsMeasured)) }] : [])]) : null
+  d['stream-client'] = s && (s.client_name || s.client_address) ? { ...rows('stream-client', 'devices', '', [{ icon: 'cast_connected', title: s.client_name || (viaGateway(s.client_address) ? '' : s.client_address), value: s.client_name && !viaGateway(s.client_address) ? s.client_address || '' : '', tone: 'ok' }]), clientIcon: (x.clients || []).find((c) => c.name === s.client_name)?.icon || '' } : null
+  // 帧率: the measured rate is the number and the recent history of the rate is the curve behind it (a rate has no natural full, so no ring); the target is the dashed line
+  const fpsHistory = (x.series?.fps?.length ? x.series.fps : x.history?.samples?.fps || []).filter((v) => typeof v === 'number' && Number.isFinite(v))
+  d['stream-fps'] = s && num(s.fps) ? { ...rows('stream-fps', 'slow_motion_video', num(s.fpsMeasured) !== null ? String(Math.round(s.fpsMeasured)) : '', [{ icon: 'check_circle', title: T.target, value: String(s.fps) }, ...(num(s.fpsMeasured) !== null ? [{ icon: 'speed', title: T.measured, value: String(Math.round(s.fpsMeasured)) }] : [])]), value: num(s.fpsMeasured) !== null ? String(Math.round(s.fpsMeasured)) : '', unit: T.fpsUnit || 'fps', caption: `${T.target} ${s.fps} ${T.fpsUnit || 'fps'}`, points: fpsHistory, target: s.fps } : null
   const cap = c && num(Number(c.max_bitrate)) ? Number(c.max_bitrate) : null
   const kbps = num(s?.measured_bitrate_kbps) ?? num(s?.bitrate) // the measured bitrate when the host reports it, else the budget (titled 目标码率)
   d['stream-bitrate'] = s && kbps !== null ? { ...rows('stream-bitrate', 'speed', `${(kbps / 1000).toFixed(1)} ${T.mbps}`, [{ icon: 'vertical_align_top', title: T.capLabel, value: cap ? `${cap / 1000} ${T.mbps}` : T.auto }]), points: num(s.measured_bitrate_kbps) !== null ? (x.history?.samples?.bitrate || []).map((v) => v / 1000) : [], unit: T.mbps, ...(num(s.measured_bitrate_kbps) !== null ? { title: T['c_stream-bitrate_measured'] } : {}) } : null
   d['stream-mic'] = s && s.enable_mic !== undefined ? { type: 'chips', icon: 'mic', title: T['c_stream-mic'], big: s.enable_mic ? T.on : T.off, tone: s.enable_mic ? 'ok' : '', chips: [] } : null
   d['stream-vdd'] = s && s.use_vdd !== undefined ? { type: 'chips', icon: 'desktop_windows', title: T['c_stream-vdd'], big: s.use_vdd ? T.on : T.off, tone: s.use_vdd ? 'ok' : '', chips: [] } : null
-  d['act-stop'] = s && x.canAct !== false ? { type: 'action', icon: 'stop_circle', title: T['c_act-stop'], label: T.stopAction, act: 'hero', client: s.client_name || '', uptimeMs: num(s.uptimeMs) } : null
+  d['act-stop'] = s && x.canAct !== false ? { type: 'action', icon: 'stop', title: T['c_act-stop'], label: T.stopAction, act: 'hero', client: s.client_name || '', uptimeMs: num(s.uptimeMs) } : null
 
   d['host-ports'] = c ? rows('host-ports', 'lan', String(c.port || 47989), [{ icon: 'router', title: 'UPnP', value: state(isOn('upnp', c.upnp)) }]) : null
   d['host-name'] = c && c.sunshine_name ? rows('host-name', 'dns', c.sunshine_name, [c.platform && { icon: 'computer', title: T.platform, value: platformName(c.platform) }].filter(Boolean)) : null

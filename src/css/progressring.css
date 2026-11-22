@@ -1,0 +1,23 @@
+/* MProgressRing: the Material 3 circular progress indicator (see docs/progress-ring.md). One ring for every round data visual of the kit. */
+.m-pring { --mpr-active: var(--tk, var(--md-sys-color-primary)); --mpr-track: var(--md-sys-color-secondary-container); position: relative; display: grid; place-items: center; aspect-ratio: 1; min-width: 0; container-type: size; }
+.m-pring > svg { grid-area: 1 / 1; display: block; width: 100%; height: 100%; overflow: visible; }
+.m-pring__track, .m-pring__arc { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.m-pring__track { stroke: var(--mpr-track); }
+.m-tile--tonal .m-pring, .m-pring.is-on-tint { --mpr-track: color-mix(in srgb, var(--on-tk-c, currentColor) 16%, transparent); }
+.m-pring__arc--a, .m-pring__arc--primary { stroke: var(--mpr-active); }
+.m-pring__arc--b { stroke: color-mix(in srgb, var(--mpr-active) 52%, var(--md-sys-color-surface-container-highest)); }
+.m-pring__arc--c, .m-pring__arc--tertiary { stroke: var(--md-sys-color-tertiary); }
+.m-pring__arc--secondary { stroke: var(--md-sys-color-secondary); }
+.m-pring__arc--success, .m-pring__arc--ok { stroke: var(--md-sys-color-success); }
+.m-pring__arc--warn, .m-pring__arc--warning { stroke: var(--md-sys-color-warning); }
+.m-pring__arc--error, .m-pring__arc--err { stroke: var(--md-sys-color-error); }
+.m-pring__arc--free { stroke: var(--md-sys-color-surface-container-highest); }
+/* the centre: the inner circle of the ring (the stroke and, for the wavy one, the wave are outside it); a numeral is set in the ring's own units so it scales with the tile */
+.m-pring__centre { grid-area: 1 / 1; position: relative; z-index: 1; display: grid; place-items: center; align-content: center; text-align: center; min-width: 0; width: calc(var(--mpr-inner, .8) * 84cqw); max-height: calc(var(--mpr-inner, .8) * 84cqh); }
+.m-pring .m-tnum { align-items: center; text-align: center; }
+.m-pring .m-tnum--s { --tn: 27cqw; }
+.m-pring .m-tnum__u { font-size: max(11px, 11cqw); }
+.m-pring .m-tnum__cap { margin-top: 2px; font-size: max(10px, 9cqw); line-height: 1.1; }
+.m-ring, .m-gauge, .m-agauge { flex: none; }
+.m-gauge__text { font: var(--m-label-medium); color: currentColor; }
+.m-tile .m-gauge { --mpr-track: color-mix(in srgb, currentColor 14%, transparent); } .m-tile .m-gauge .m-pring__arc { stroke: currentColor; }

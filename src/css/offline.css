@@ -13,7 +13,7 @@ html[data-motion='reduced'] .m-offline__vivi { animation: none; }
 @supports (backdrop-filter: blur(1px)) { .m-offline__copy { backdrop-filter: blur(16px) saturate(1.1); } }
 @supports not (backdrop-filter: blur(1px)) { .m-offline__copy { background: color-mix(in srgb, var(--md-sys-color-surface-container) 90%, transparent); } }
 .m-offline__title { margin: 0; font: var(--m-title-large-emphasized); color: var(--md-sys-color-on-surface); text-wrap: balance; }
-.m-offline__line { margin: 0; font: var(--m-body-large); color: var(--md-sys-color-on-surface); opacity: .86; }
+.m-offline__line { margin: 0; font: var(--m-body-large); color: var(--md-sys-color-on-surface); }
 .m-offline__problem { margin: 0; display: inline-flex; align-items: flex-start; gap: 8px; font: var(--m-body-medium); color: var(--md-sys-color-on-surface); text-align: start; }
 .m-offline__problem .m-icon { flex: none; width: 20px; height: 20px; color: var(--md-sys-color-error); }
 .m-offline__connecting { margin: 0; font: var(--m-title-medium-emphasized); color: var(--md-sys-color-on-surface); }

@@ -22,6 +22,10 @@ const props = defineProps({
   callbacks: { type: Object, default: () => ({}) },
   /** open on this choice (the tutorial opened from a fix: 'public' or 'mesh') */
   initialMode: { type: String, default: '' },
+  /** the mode is chosen outside (the done page of the guide): the three cards are not shown */
+  hideChoice: { type: Boolean, default: false },
+  /** the page around it shows the host's check itself: the mesh path does not repeat it */
+  hideReach: { type: Boolean, default: false },
 })
 const T = computed(() => remoteTexts(props.locale))
 
@@ -54,7 +58,7 @@ const openLink = (url) => (props.callbacks.openLink ? props.callbacks.openLink(u
 
 <template>
   <div class="m-remote">
-    <MChoiceCards v-model="mode" :options="modeOptions" :label="T.mode" :columns="3" />
+    <MChoiceCards v-if="!hideChoice" v-model="mode" :options="modeOptions" :label="T.mode" :columns="3" />
 
     <!-- only this network -->
     <MBanner v-if="mode === 'lan'" tone="info" icon="check_circle">{{ T.lanDone }}</MBanner>
@@ -72,7 +76,7 @@ const openLink = (url) => (props.callbacks.openLink ? props.callbacks.openLink(u
         <li><b>3</b><span>{{ T.steps.add }}</span></li>
       </ol>
       <div class="m-remote__field"><span>{{ T.join }}</span><code>{{ MESH_COMMANDS[other].join }}</code><MButton variant="tonal" size="sm" :icon="copied === MESH_COMMANDS[other].join ? 'check' : 'content_copy'" @click="copyText(MESH_COMMANDS[other].join)">{{ copied === MESH_COMMANDS[other].join ? T.copied : T.serverCopy }}</MButton></div>
-      <MReachCard v-if="reach.status !== 'idle' && reach.status !== 'unavailable'" only="mesh" :report="reach.report" :status="reach.status" :http="reach.http || 0" :cause="reach.cause || ''" :locale="locale" :platform="state.host?.platform || 'windows'" :copy="callbacks.copy" @recheck="runReach(true)" @fix="onFix" />
+      <MReachCard v-if="!hideReach && reach.status !== 'idle' && reach.status !== 'unavailable'" only="mesh" :report="reach.report" :status="reach.status" :http="reach.http || 0" :cause="reach.cause || ''" :locale="locale" :platform="state.host?.platform || 'windows'" :copy="callbacks.copy" @recheck="runReach(true)" @fix="onFix" />
       <div class="m-remote__field"><span>{{ T.address }}</span><code>{{ MESH_COMMANDS[other].address }}</code><MButton variant="tonal" size="sm" :icon="copied === MESH_COMMANDS[other].address ? 'check' : 'content_copy'" @click="copyText(MESH_COMMANDS[other].address)">{{ copied === MESH_COMMANDS[other].address ? T.copied : T.serverCopy }}</MButton></div>
     </template>
 

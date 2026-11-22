@@ -23,7 +23,7 @@ import { useAuthSession } from './useAuthSession.js'
 const props = defineProps({
   client: { type: Object, required: true },
   locale: { type: String, default: 'en' },
-  /** called after this sign-in ended (sign out, sign out everywhere): the product goes to the sign-in page */
+  /** called after this sign-in ended or when no account exists: the product goes to its sign-in/create-account page */
   signedOut: { type: Function, default: null },
   /** the page is deeper than a list row (a back arrow) */
   back: { type: Boolean, default: false },
@@ -37,6 +37,7 @@ onMounted(() => { auth.load(); timer = setInterval(() => { now.value = Date.now(
 onBeforeUnmount(() => clearInterval(timer))
 
 const s = computed(() => auth.session.value)
+const setupRequired = computed(() => s.value?.setupRequired === true)
 const mine = computed(() => auth.signedIn.value && !auth.local.value)
 const others = computed(() => auth.list.sessions.filter((x) => !x.current))
 const lifetime = computed(() => {
@@ -108,9 +109,10 @@ const lastError = computed(() => { const e = auth.error.value; return e && !pass
     <template v-else>
       <MBanner v-if="lastError" tone="error" icon="error">{{ lastError }}</MBanner>
 
-      <!-- a browser that is signed out is sent to the sign-in page; the control panel is never signed out (a local, trusted surface), and a button that has nowhere to go is not drawn -->
-      <MEmpty v-if="!auth.signedIn.value && !auth.local.value" icon="lock" :title="T.signedOutTitle" :text="T.signedOutText">
-        <MButton v-if="signedOut" icon="login" @click="signedOut()">{{ T.signIn }}</MButton>
+      <!-- a browser that is signed out is sent to the sign-in page; an installation without an account is sent to the
+           same place, where the host's setup_required answer turns the form into account creation -->
+      <MEmpty v-if="!auth.signedIn.value && !auth.local.value" :icon="setupRequired ? 'person_add' : 'lock'" :title="setupRequired ? T.setupTitle : T.signedOutTitle" :text="setupRequired ? T.setupLead : T.signedOutText">
+        <MButton v-if="signedOut" :icon="setupRequired ? 'person_add' : 'login'" @click="signedOut()">{{ setupRequired ? T.create : T.signIn }}</MButton>
       </MEmpty>
 
       <MSection v-if="mine || s.username || auth.local.value" :title="mine ? T.now : T.local">

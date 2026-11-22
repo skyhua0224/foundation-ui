@@ -7,7 +7,7 @@ html[data-bs-theme='dark'], html.dark, html[data-theme='dark'] { --m-search-surf
 .m-usearch.is-open .m-usearch__box { background: var(--m-search-surface); border-radius: 24px; box-shadow: 0 10px 32px color-mix(in srgb, var(--md-sys-color-shadow, #000) 24%, transparent); }
 .m-usearch__field { display: flex; align-items: center; gap: 12px; height: var(--m-usearch-h, 40px); padding: 0 8px 0 14px; cursor: text; }
 .m-usearch__lead { flex: none; width: 22px; height: 22px; color: var(--md-sys-color-on-surface); }
-.m-usearch__input { all: unset; flex: 1; min-width: 0; font: var(--m-body-large); color: var(--md-sys-color-on-surface); }
+.m-usearch__input { all: unset; flex: 1; min-width: 0; font: var(--m-body-large); color: var(--md-sys-color-on-surface); overflow: hidden; text-overflow: ellipsis; }
 .m-usearch__input::placeholder { color: var(--md-sys-color-on-surface-variant); opacity: 1; }
 .m-usearch__input:focus-visible { outline: none; }
 .m-usearch__kbd { flex: none; padding: 0 8px; font: var(--m-label-medium); color: var(--md-sys-color-on-surface-variant); background: none; border: 0; border-radius: 0; box-shadow: none; }
@@ -30,6 +30,13 @@ html[data-bs-theme='dark'], html.dark, html[data-theme='dark'] { --m-search-surf
 .m-usearch__title { font: var(--m-body-large); color: var(--md-sys-color-on-surface); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
 .m-usearch__title mark { background: none; color: var(--md-sys-color-primary-text); font-weight: 700; }
 .m-usearch__path { font: var(--m-body-medium); color: var(--md-sys-color-on-surface-variant); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.m-usearch__row.is-unavailable .m-usearch__title { color: var(--md-sys-color-on-surface-variant); }
+.m-usearch__row.is-unavailable .m-usearch__icon { opacity: .7; }
+.m-usearch__why { display: flex; align-items: center; gap: 6px; font: var(--m-body-medium); color: var(--md-sys-color-on-surface-variant); }
+.m-usearch__why .m-icon { flex: none; width: 16px; height: 16px; }
+.m-usearch__unlock { flex: none; all: unset; cursor: pointer; padding: 6px 12px; border-radius: 12px; font: var(--m-label-large); color: var(--md-sys-color-primary-text); }
+.m-usearch__unlock:hover { background: color-mix(in srgb, var(--md-sys-color-primary) 10%, transparent); }
+.m-usearch__unlock:focus-visible { outline: 2px solid var(--md-sys-color-primary); outline-offset: 1px; }
 .m-usearch__trail { flex: none; font: var(--m-label-medium); color: var(--md-sys-color-primary-text); }
 .m-usearch__more { padding: 2px 24px 6px 64px; font: var(--m-body-small); color: var(--md-sys-color-on-surface-variant); }
 .m-usearch__empty { display: grid; gap: 4px; padding: 28px 24px; text-align: center; font: var(--m-body-medium); color: var(--md-sys-color-on-surface-variant); }
@@ -48,6 +55,10 @@ html[data-bs-theme='dark'], html.dark, html[data-theme='dark'] { --m-search-surf
 .m-usearch__head { display: flex; align-items: center; gap: 8px; flex: none; height: 72px; padding: 0 8px 0 8px; }
 .m-usearch__head .m-usearch__back { width: 48px; height: 48px; color: var(--md-sys-color-on-surface); } .m-usearch__head .m-usearch__back .m-icon { width: 24px; height: 24px; }
 .m-usearch__head .m-usearch__clear { width: 48px; height: 48px; }
+/* a field under 16px makes iOS Safari zoom the whole page when it takes the focus (the bar and the view then look deformed until the person pinches back): on a touch screen the field is never smaller */
+@media (any-pointer: coarse) { .m-usearch__input { font-size: max(16px, calc(16px * var(--m-text-scale, 1))); } }
+/* a phone on its side: the view has the height of the window, so the field and its rows take less of it */
+@media (max-height: 479.98px) { .m-usearch__head { height: 56px; } .m-usearch__head .m-usearch__back, .m-usearch__head .m-usearch__clear { width: 44px; height: 44px; } .m-usearch__row { min-height: 48px; } }
 .m-usearch__divider { flex: none; height: 1px; background: var(--md-sys-color-outline-variant); }
 .m-usearch__scroll { flex: 1; min-height: 0; overflow-y: auto; padding-bottom: env(safe-area-inset-bottom, 0px); overscroll-behavior: contain; }
 @media (prefers-reduced-motion: reduce) { html:not([data-motion='full']) .m-usearch__full { animation: none; } html:not([data-motion='full']) .m-usearch__box { transition: none; } }

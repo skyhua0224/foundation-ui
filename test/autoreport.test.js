@@ -130,7 +130,7 @@ test('dedupe: later occurrences of a fingerprint only add to its count (batched)
   await reporter.handle(appError())
   assert.equal(calls.bump.length, 1)
   assert.equal(calls.bump[0][1], 2, 'the two that waited')
-  assert.deepEqual(calls.bump[0][0], { component: 'web', code: `${again.cls.category}.${again.cls.code}` }, 'counted under the component and code of the first occurrence')
+  assert.deepEqual(calls.bump[0][0], { component: 'web', code: `${again.cls.category}.${again.cls.code}`, fingerprint: again.fingerprint }, 'counted under the component and code of the first occurrence, with its fingerprint')
   // a new release is a new issue
   const next = reporterFor({ ctx: { version: '2026.1104' } })
   assert.equal((await next.reporter.handle(appError())).action, 'detail')
@@ -172,9 +172,11 @@ test('the writes are error events for the host: the first occurrence with the de
   const transport = (status) => async (events) => { seen.push(events); return { ok: status < 300, status } }
   const doc = { fingerprint: 'a'.repeat(32), count: 1, kind: 'UNEXPECTED', stem: 'b'.repeat(32), category: 'ui', code: 'x', name: 'TypeError', product: 'web', release: 'r', message: 'it broke at C:\\Users\\Ann\\a.js', first_seen: 't', last_seen: 't', schema: 1 }
   assert.deepEqual(await createIssue(doc, { transport: transport(200) }), { state: 'sent' })
-  const [event] = seen[0]
+  const [event, detail] = seen[0]
   assert.deepEqual([event.kind, event.name], ['error', 'error'])
   assert.deepEqual(event.props, { component: 'web', code: 'ui.x', severity: 'error', count: 1 })  // the text of the error stays on this computer
+  assert.deepEqual([detail.kind, detail.name], ['error', 'error_report'])
+  assert.equal(detail.props.fingerprint, 'a'.repeat(32)); assert.equal(detail.props.lang, 'js')
   assert.ok(!/Ann|broke/.test(JSON.stringify(seen[0])))
   assert.equal((await createIssue(doc, { transport: transport(503) })).state, 'offline')
   assert.equal((await createIssue(doc, { transport: transport(400) })).state, 'rejected')
@@ -182,6 +184,10 @@ test('the writes are error events for the host: the first occurrence with the de
   seen.length = 0
   assert.equal((await bumpIssue({ component: 'panel', code: 'ui.x' }, 3, { transport: transport(200) })).state, 'sent')
   assert.deepEqual(seen[0][0].props, { component: 'panel', code: 'ui.x', severity: 'error', count: 3 })
+  assert.equal(seen[0].length, 1, 'a count without a fingerprint has no error_report')
+  seen.length = 0
+  await bumpIssue({ component: 'panel', code: 'ui.x', fingerprint: 'c'.repeat(32) }, 3, { transport: transport(200) })
+  assert.deepEqual(seen[0][1].props, { component: 'panel', lang: 'js', fingerprint: 'c'.repeat(32), code: 'ui.x', severity: 'error', count: 3 })
 })
 
 test('the report links to the automatic issue of the same error, and carries the classification and the last events', async () => {

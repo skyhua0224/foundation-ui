@@ -23,7 +23,7 @@ const facts = computed(() => (d.value.rows || []).filter((r) => !['devices', 'mo
     <div class="m-caln__text">
       <span class="m-caln__label"><MIcon :name="d.icon" />{{ card.title }}</span>
       <b class="m-caln__name" data-redact="text">{{ d.name }}</b>
-      <span class="m-caln__sub" data-redact="client">{{ client }}<template v-if="size !== 's' && stream"> · {{ stream }}</template></span>
+      <span class="m-caln__sub" data-redact="client"><span>{{ client }}</span><span v-if="size !== 's' && stream">{{ stream }}</span></span>
       <ul v-if="size === 'l' && facts.length" class="m-caln__facts"><li v-for="r in facts" :key="r.icon"><MIcon :name="r.icon" /><b class="m-dnum">{{ r.value }}</b></li></ul>
     </div>
   </section>

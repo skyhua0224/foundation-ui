@@ -21,19 +21,21 @@ const props = defineProps({
   collapseLabel: { type: String, default: 'Collapse navigation' },
   /** the brand lockup beside the menu button (expanded); a window with a caption bar of its own carries the lockup there and the rail has none */
   showName: { type: Boolean, default: true },
+  /** the bar of a short window: it stands beside the content as a narrow rail, the label under each icon */
+  side: { type: Boolean, default: false },
 })
 const emit = defineEmits(['select', 'toggle'])
 
-// Every item is visible at every height down to 480 px, without scrolling, and where there is room the rail is airy. It takes the roomiest of its states in which the items fit, then spends the height that is
+// Every item is visible with its label at every height; where the height does not hold them at their tightest the rail scrolls (tier 2), and where there is room the rail is airy. It takes the roomiest of its states in which the items fit, then spends the height that is
 // left on the space between destinations (never less than the 12 px of the Material 3 spec in the roomy tiers; up to 20), keeping a stretch of air between the last destination and the foot's icons.
-// The states, roomiest first: tier 0 with the roomy foot, tier 0 with the compact foot (so a window of 800 px keeps its full-size destinations at 56 px or more), 1 tighter, 2 icons only, 3 icons in two columns.
+// The states, roomiest first: tier 0 with the roomy foot, tier 0 with the compact foot (so a window of 800 px keeps its full-size destinations at 56 px or more), 1 tighter, 2 the labels kept and the rail scrolling (a window under about 600 px tall); the labels are never dropped.
 // What decides is the measure of the items as they are laid out here (the fonts, the scale, the real height of the window of this machine), never an assumed size: each state is tried on the element at its
 // closest spacing and kept when the items no longer overflow. It is decided in the frame of the change and again when the fonts arrive or the items change, as another font changes the height of a label.
 const root = ref(null)
 const tier = ref(0)
 const FOOT_AIR = 16 // between the last destination and the foot
 // [tier, compact foot, the closest and the widest space between destinations]
-const STATES = [[0, false, [8, 12]], [0, true, [4, 12]], [1, true, [4, 12]], [2, true, [2, 8]], [3, true, null]]
+const STATES = [[0, false, [8, 12]], [0, true, [4, 12]], [1, true, [4, 12]], [2, true, null]]
 let observer = null
 let mutations = null
 function fit() {
@@ -99,8 +101,8 @@ function key(event) {
 </script>
 
 <template>
-  <nav ref="root" class="m-rail" :class="`m-rail--${mode}`" :aria-label="label" @keydown="key">
-    <div v-if="mode !== 'bar'" class="m-rail__head">
+  <nav ref="root" class="m-rail" :class="[`m-rail--${mode}`, { 'm-rail--side': side }]" :aria-label="label" @keydown="key">
+    <div v-if="mode !== 'bar'" class="m-rail__head" data-tauri-drag-region="deep">
       <button v-if="canToggle" type="button" class="m-rail__menu" :aria-expanded="mode === 'expanded'" :aria-label="mode === 'expanded' ? collapseLabel : expandLabel" :data-tip="mode === 'expanded' ? collapseLabel : expandLabel" @click="emit('toggle')">
         <MIcon :name="mode === 'expanded' ? 'menu_open' : 'menu'" />
       </button>
@@ -116,7 +118,6 @@ function key(event) {
         :data-rail="item.id"
         :aria-current="current === item.id ? 'page' : undefined"
         :aria-label="item.label"
-        :data-tip="tier >= 2 && mode !== 'expanded' ? item.label : undefined"
         @click="emit('select', item)"
       >
         <span class="m-rail__pill">

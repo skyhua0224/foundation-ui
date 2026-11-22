@@ -114,15 +114,15 @@ export function buildGroups(target, ctx) {
     if (own.length) groups.push(own)
   }
   // the page
+  // 反馈此处的问题 opens the one feedback panel with the page and what was under the pointer: first in the page group, for every user
   const page = [
+    ...(cb.reportHere ? [it('dev-report', T.feedbackHere, { icon: 'feedback' })] : []),
     it('back', T.back, { icon: 'arrow_back', disabled: caps.canGoBack === false, reason: caps.canGoBack === false ? T.noHistory : undefined }),
     it('forward', T.forward, { icon: 'arrow_forward' }),
     it('reload', T.reload, { icon: 'refresh', shortcut: 'F5' }),
     ...(caps.print ? [it('print', T.print, { icon: 'print', shortcut: `${mod}P` })] : []),
     ...(caps.devtools && !caps.developer && cb.openDevtools ? [it('inspect', T.inspect, { icon: 'code' })] : []),
     ...(caps.devtools && !caps.developer ? [it('copy-route', T.copyRoute, { icon: 'content_copy' })] : []),
-    // 反馈此处问题: for every user, developer mode or not (the report sheet shows everything and redacts it before anything leaves)
-    ...(cb.reportHere ? [it('dev-report', T.feedbackHere, { icon: 'bug_report' })] : []),
   ]
   groups.push(page)
   groups.at(-1).page = true

@@ -24,7 +24,7 @@ const T = (k, d) => props.texts[k] || d
         <h3 class="m-dguide__title">{{ T('title', 'Get started') }}</h3>
         <p class="m-dguide__sub">{{ T('sub', 'Five steps to your first stream') }}</p>
       </div>
-      <MRing :segments="[{ value: steps.filter((s) => s.done).length / Math.max(steps.length, 1), tone: 'primary' }]" :size="52" :thickness="7" :label="T('title', 'Get started')"><b class="m-dnum m-dguide__count">{{ steps.filter((s) => s.done).length }}/{{ steps.length }}</b></MRing>
+      <MRing :segments="[{ value: steps.filter((s) => s.done).length / Math.max(steps.length, 1), tone: 'primary' }]" :size="52" :label="T('title', 'Get started')"><b class="m-dnum m-dguide__count">{{ steps.filter((s) => s.done).length }}/{{ steps.length }}</b></MRing>
     </header>
     <ol class="m-dguide__steps">
       <li v-for="(s, i) in steps" :key="s.id" class="m-dguide__step" :class="{ 'is-done': s.done }">

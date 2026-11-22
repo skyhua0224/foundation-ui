@@ -17,7 +17,7 @@ import { formatHostAddress } from './hostAddress.js'
  */
 export const RENEW_AT = 12
 export const STOP_GRACE_MS = 4000
-export function createPairQr({ start, poll, cancel, render, onPaired }) {
+export function createPairQr({ start, poll, cancel, render, onPaired, autoRenew = true }) {
   const view = reactive({ state: 'idle', image: '', pin: '', seconds: 0, address: '' })
   // what the code carries, as a person would type it in a client: the host answers with the address and the port it put in the link
   const addressOf = (r) => (r && r.host ? formatHostAddress(r.host, Number(r.port) || 0) : '')
@@ -38,12 +38,12 @@ export function createPairQr({ start, poll, cancel, render, onPaired }) {
       if (mine !== token || graceTimer) { if (r && r.url) quiet(cancel()); return }
       if (!r || !r.url) return
       const image = await render(r.url)
-      if (mine !== token || graceTimer) return
+      if (mine !== token || graceTimer || view.state !== 'ready') return
       view.image = image; view.pin = String(r.pin || ''); view.seconds = Math.max(0, Number(r.expires_in) || 0); view.address = addressOf(r)
     } catch { /* the code on screen runs out and shows the refresh button */ } finally { renewing = false }
   }
   async function begin(force = false) {
-    if (graceTimer) { clearTimeout(graceTimer); graceTimer = 0; if (view.state === 'ready' || view.state === 'loading') return }
+    if (graceTimer) { clearTimeout(graceTimer); graceTimer = 0; if (!force && (view.state === 'ready' || view.state === 'loading')) return }
     if (!force && (view.state === 'ready' || view.state === 'loading' || view.state === 'paired')) return
     const mine = ++token
     clear(); renewing = false; renewed = false
@@ -63,12 +63,12 @@ export function createPairQr({ start, poll, cancel, render, onPaired }) {
       timer = setInterval(async () => {
         if (mine !== token) return clear()
         view.seconds = Math.max(0, view.seconds - 1)
-        if (view.seconds === 0) { clear(); view.state = 'expired'; quiet(cancel()); return }
-        if (view.seconds <= RENEW_AT && !graceTimer) void renew(mine)
+        if (view.seconds === 0) { clear(); view.state = 'expired'; view.image = ''; quiet(cancel()); return }
+        if (autoRenew && view.seconds <= RENEW_AT && !graceTimer) void renew(mine)
         if (++tick % 2) return
         try {
           const s = await poll()
-          if (mine === token && s && s.status === 'paired') { clear(); view.state = 'paired'; if (onPaired) onPaired() }
+          if (mine === token && (view.state === 'ready' || view.state === 'expired') && s && s.status === 'paired') { clear(); view.state = 'paired'; if (onPaired) onPaired() }
         } catch { /* the next tick asks again */ }
       }, 1000)
     } catch {

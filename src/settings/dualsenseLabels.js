@@ -103,7 +103,8 @@ export const zhKeyLabels = {
   "ds5.audio.btFallback": "蓝牙下的音频回退",
   "ds5.compat.preset": "兼容预设",
   "ds5.compat.btOutput": "蓝牙输出方式",
-  "ds5.compat.reportRateCapHz": "上报频率上限",
+  "ds5.compat.reportRateCapHz": "体感上报频率上限",
+  "ds5.compat.inputReportRate": "手柄输入回报频率",
   "ds5.sync.allowHostOverrides": "允许主机覆盖设置",
   "ds5.sync.allowClientOverrides": "允许客户端覆盖设置",
   "ds5.sync.maxRateHz": "同步最高频率",
@@ -212,7 +213,8 @@ export const enKeyLabels = {
   "ds5.audio.btFallback": "Audio fallback over Bluetooth",
   "ds5.compat.preset": "Compatibility preset",
   "ds5.compat.btOutput": "Bluetooth output",
-  "ds5.compat.reportRateCapHz": "Report rate limit",
+  "ds5.compat.reportRateCapHz": "Motion report rate limit",
+  "ds5.compat.inputReportRate": "Controller input report rate",
   "ds5.sync.allowHostOverrides": "Let the host override settings",
   "ds5.sync.allowClientOverrides": "Let the client override settings",
   "ds5.sync.maxRateHz": "Maximum sync rate",
@@ -284,6 +286,8 @@ export const zhOptionLabels = {
   "default": "默认",
   "competitive": "竞技",
   "immersive": "沉浸",
+  "hz500": "500 Hz",
+  "hz250": "250 Hz",
   "0dB": "0 dB",
   "+6dB": "+6 dB"
 }
@@ -352,6 +356,8 @@ export const enOptionLabels = {
   "default": "Default",
   "competitive": "Competitive",
   "immersive": "Immersive",
+  "hz500": "500 Hz",
+  "hz250": "250 Hz",
   "0dB": "0 dB",
   "+6dB": "+6 dB"
 }

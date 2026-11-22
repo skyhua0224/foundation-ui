@@ -1,0 +1,72 @@
+/* The tiles of the catalogue growth round (tiles/TileGrowth.vue, homeGrowth.js): 端口, 文件映射, 编码预算, 网页访问范围. One hero per tile and size; colours are theme roles only. */
+.m-gr { display: flex; flex-direction: column; gap: 6px; min-height: 0; }
+.m-gr__body { flex: 1 1 0; min-height: 0; display: flex; align-items: center; gap: 16px; margin-top: 2px; }
+.m-gr.is-s .m-gr__body { justify-content: center; }
+.m-gr__ring { height: 100%; max-height: 112px; flex: none; aspect-ratio: 1; }
+.m-gr.is-l .m-gr__ring { max-height: 112px; }
+.m-gr--budget.is-l .m-gr__ring { max-height: 150px; } .m-gr--budget.is-l .m-gr__facts { gap: 8px; } .m-gr--budget.is-l .m-gr__facts li { font: var(--m-tile-text-14, var(--m-body-medium)); } .m-gr--budget.is-l .m-gr__facts li > b { font: var(--m-title-medium); }
+.m-gr__facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; flex: 1 1 auto; min-width: 0; align-content: center; }
+.m-gr__facts li { display: grid; grid-template-columns: auto auto 1fr; align-items: baseline; gap: 8px; min-width: 0; font: var(--m-tile-text-13); color: var(--tile-text-2, var(--md-sys-color-on-surface-variant)); }
+.m-gr__facts li > span { white-space: nowrap; }
+.m-gr__facts li > b { font: var(--m-tile-text-14-strong, var(--m-title-small)); color: var(--md-sys-color-on-surface); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.m-gr__facts li > small { font: var(--m-tile-text-12); color: var(--tile-text-2, var(--md-sys-color-on-surface-variant)); min-width: 0; line-height: 1.15; overflow-wrap: anywhere; }
+.m-gr__facts li.is-bad > b, .m-gr__facts li.is-bad > small { color: var(--md-sys-color-error); }
+.m-gr__facts li.is-warn > b, .m-gr__facts li.is-warn > small { color: var(--tile-warn-text, var(--md-sys-color-warning)); }
+.m-gr__side { flex: 1 1 auto; min-width: 0; }
+
+/* 端口: the ports one by one at 大 */
+.m-gr__ports { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 3px 18px; align-content: end; }
+.m-gr__ports li { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; align-items: center; gap: 8px; min-height: 22px; font: var(--m-tile-text-13); color: var(--md-sys-color-on-surface); min-width: 0; }
+.m-gr__ports li > i { width: 8px; height: 8px; border-radius: 50%; background: var(--tk); }
+.m-gr__ports li.is-bad > i { background: var(--md-sys-color-error); }
+.m-gr__ports li.is-warn > i { background: transparent; box-shadow: inset 0 0 0 2px var(--md-sys-color-warning); }
+.m-gr__ports li > span { min-width: 0; line-height: 1.1; overflow-wrap: anywhere; }
+.m-gr__ports li > em { font-style: normal; font: var(--m-tile-text-12); color: var(--tile-text-2, var(--md-sys-color-on-surface-variant)); white-space: nowrap; }
+
+/* 文件映射 */
+.m-gr__count { display: flex; align-items: center; gap: 12px; flex: none; min-width: 0; }
+.m-gr.is-s .m-gr__count { flex-direction: column; gap: 6px; align-items: flex-start; justify-content: center; width: 100%; }
+.m-gr__rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; flex: 1 1 auto; min-width: 0; }
+.m-gr__rows li { display: flex; align-items: center; gap: 8px; min-width: 0; font: var(--m-tile-text-14, var(--m-body-medium)); color: var(--md-sys-color-on-surface); }
+.m-gr__rows li > .m-icon { flex: none; font-size: 18px; color: var(--tk); }
+.m-gr__rows li > b { flex: 1 1 auto; min-width: 0; font-weight: 600; overflow-wrap: anywhere; line-height: 1.2; }
+.m-gr__rows li > .m-tchip { flex: none; }
+/* 文件映射 大: the folder shape and the count in the display numeral with its unit on one line (as 端口 8/8 and 编码预算 4.7 ms beside it), then up to three folders as cards; the fewer the folders, the larger the shape and the cards. */
+.m-gr--maps.is-l { --gr-shape: 72px; --gr-row-shape: 34px; --gr-row: 44px; gap: 8px; }
+.m-gr--maps.is-l[data-rows="1"] { --gr-shape: 132px; --gr-row-shape: 52px; --gr-row: 64px; gap: 10px; }
+.m-gr--maps.is-l[data-rows="2"] { --gr-shape: 96px; --gr-row-shape: 44px; --gr-row: 52px; }
+.m-gr--maps.is-l[data-rows="0"] { --gr-shape: 148px; gap: 10px; }
+.m-gr__hero { flex: 1 1 0; min-height: 0; display: flex; align-items: center; gap: 18px; }
+.m-gr__hero .m-gr__shape { flex: none; }
+.m-gr__heroside { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.m-gr__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; align-content: end; }
+.m-gr__list li { display: flex; align-items: center; gap: 12px; min-width: 0; min-height: var(--gr-row); padding: 4px 12px 4px 6px; border-radius: 20px; background: var(--cal-inner); }
+.m-gr__list li.is-more { padding-left: 18px; }
+.m-gr__list li > .m-gr__txt { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.m-gr__txt > b { font: var(--m-title-small); color: var(--md-sys-color-on-surface); overflow-wrap: anywhere; line-height: 1.25; }
+.m-gr__txt > small { font: var(--m-tile-text-12); color: var(--tile-text-2, var(--md-sys-color-on-surface-variant)); overflow-wrap: anywhere; }
+.m-gr__list li.is-more > .m-gr__txt > b { font: var(--m-tile-text-13-strong); color: var(--tile-text-2, var(--md-sys-color-on-surface-variant)); }
+.m-gr__list li > .m-tchip { flex: none; }
+/* three lines: the name keeps to one line (an ellipsis), so the line with the clients under it stays */
+.m-gr--maps.is-l[data-rows="3"] .m-gr__txt > b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* 编码预算 */
+.m-gr__chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+
+/* 网页访问范围: three segments at 中 */
+.m-gr--access.is-m { gap: 10px; }
+.m-gr__seg { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.m-gr__seg button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-width: 0; border: 0; padding: 0 6px; background: var(--cal-inner); color: var(--md-sys-color-on-surface); font: var(--m-tile-text-13-strong); cursor: pointer; border-radius: 8px; transition: background-color var(--m-spring-fast-effects-duration, .2s), border-radius var(--m-spring-fast-spatial-duration, .3s); }
+.m-gr__seg button:first-child { border-radius: 24px 8px 8px 24px; } .m-gr__seg button:last-child { border-radius: 8px 24px 24px 8px; }
+.m-gr__seg button .m-icon { font-size: 22px; color: var(--tk); }
+.m-gr__seg button > span { max-width: 100%; text-align: center; line-height: 1.1; text-wrap: balance; overflow-wrap: anywhere; }
+.m-gr__seg button.is-on { background: var(--tk); color: var(--on-tk); border-radius: 24px; }
+.m-gr__seg button.is-on .m-icon { color: var(--on-tk); }
+.m-gr__seg button:hover:not(.is-on) { background: color-mix(in srgb, var(--md-sys-color-on-surface) 10%, var(--cal-inner)); }
+.m-gr__seg button:focus-visible { outline: 3px solid var(--md-sys-color-primary); outline-offset: 2px; }
+
+/* 方形: the choice as three short list buttons (148 px holds the head and three of 28 px) */
+.m-gr--access.is-s .m-b2opts { gap: 3px; } .m-gr--access.is-s .m-b2opt { height: 28px; padding: 0 12px; border-radius: 14px; }
+/* 文件映射 方形: the folder shape beside the count, the caption under it */
+.m-gr--maps.is-s .m-gr__count { flex-direction: row; align-items: flex-end; justify-content: space-between; }
+.m-gr--maps.is-s .m-gr__shape { --ts: 48px; align-self: flex-start; }

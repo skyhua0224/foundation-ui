@@ -57,7 +57,7 @@ test('the overview: the switch decides, hysteresis holds a change back, a new pl
   assert.match(d, /planMoving\.value = true/)
   assert.match(d, /if \(appearance\.state\.smartTiles && layoutKey\(\) !== editSnap\) \{ appearance\.set\(\{ smartTiles: false \}\); return \}/)
   // editing begins from what was on the screen, and leaving it unchanged puts the saved layout back as it was
-  assert.match(d, /layout\.freeze\(D\.seenPlan && Date\.now\(\) - D\.flushedAt < 1500 \? D\.seenPlan : plan\.value\)/)
+  assert.match(d, /layout\.freeze\(withFill\(D\.seenPlan && Date\.now\(\) - D\.flushedAt < 1500 \? D\.seenPlan : plan\.value\)\)/)
   assert.match(d, /Object\.assign\(layout\.state, JSON\.parse\(editRaw\)\)/)
   assert.match(d, /const restoreSmart = \(\) => \{ appearance\.set\(\{ smartTiles: true \}\)/)
   assert.doesNotMatch(d, /layout\.state\.mode === 'manual'/, 'the sections follow the switch, not the stored mode')

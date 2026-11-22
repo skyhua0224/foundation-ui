@@ -87,7 +87,7 @@ export default
   "errorsNoticeLink": "정보 › 개인 정보",
   "privacyMore": "보내는 것과 보내지 않는 것",
   "privacyTitle": "오류 보고서와 사용 통계",
-  "privacyLead": "두 스위치는 각각 따로 동작합니다. 끄면 그 종류는 보내지 않습니다.",
+  "privacyLead": "두 스위치는 각각 따로 동작합니다. 끄면 꺼졌다는 작은 기록을 한 건 보냅니다(어느 스위치인지, 제품과 버전, 이 컴퓨터의 익명 번호). 그 뒤에는 그 종류를 보내지 않습니다.",
   "lblCollected": "보내는 것",
   "lblNever": "절대 보내지 않는 것",
   "lblWhere": "보내는 곳",

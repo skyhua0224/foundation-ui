@@ -1,4 +1,5 @@
-html { font-synthesis: none; }
+/* a phone turned on its side keeps its type size: iOS Safari and Chrome for Android enlarge text blocks on rotation (and in a page they take for desktop-sized) unless told not to */
+html { font-synthesis: none; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 /* Base: page ground, text, focus, motion preferences. Everything reads the tokens, nothing is hard-coded. */
 .m-app, .m-root {
   color: var(--md-sys-color-on-surface);

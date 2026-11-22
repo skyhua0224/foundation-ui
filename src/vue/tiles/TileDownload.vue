@@ -7,7 +7,7 @@ export const tileIds = ['download']
 // Everything the old tile did stays: the system the person last chose (read and written like the guide and the dialog), the recommended client with its
 // official or partner tag and version, the download of its main file, copying and sharing its link, and the way to the downloads page.
 //   方形: the name leads; the icon and the system's menu over it, 下载 under it.
-//   中: the icon leads; beside it the system's menu, the name, the tag and version and 下载.
+//   中: the icon leads; beside it the system's menu and the name; under both, across the tile, the tag, the version and 下载.
 //   The system's menu holds the systems, then copy, share and 打开下载页.
 import { computed, ref, watch } from 'vue'
 import MIcon from '../MIcon.vue'
@@ -16,7 +16,7 @@ import MClientTag from '../MClientTag.vue'
 import { CLIENT_OS, OS_ICON, osChipName } from '../../clients/catalogue.js'
 import { readOs, writeOs } from '../../clients/osChoice.js'
 import { clientUrl, connectTexts, recommendForOs } from '../../clients/recommend.js'
-import { assetOsOf, releaseRows } from '../../clients/assets.js'
+import { assetOsOf, releaseRows, shortVersion } from '../../clients/assets.js'
 import { sizeB2 } from './b2.js'
 import { designProps } from './tileData.js'
 
@@ -31,7 +31,10 @@ watch(os, (v) => writeOs(v))
 const rec = computed(() => recommendForOs(os.value))
 const rows = computed(() => (d.value.assetsOf ? releaseRows(d.value.assetsOf(rec.value.client), assetOsOf(rec.value.target), locale.value) : []))
 const best = computed(() => rows.value.find((r) => r.recommended) || rows.value[0] || null)
-const version = computed(() => String(d.value.versionOf ? d.value.versionOf(rec.value.client) || '' : '').replace(/^v/i, ''))
+// the version is read from the release data of the client, which `rows` asks for: without that read the tile showed no version until another card had loaded it
+const version = computed(() => { void rows.value; return String(d.value.versionOf ? d.value.versionOf(rec.value.client) || '' : '').replace(/^v/i, '') })
+// the version as the tile shows it (shortVersion: no build part, eleven characters at most; the full text is the tooltip), so the tag, the version and 下载 share one row at any length
+const versionShown = computed(() => shortVersion(version.value))
 const mainUrl = computed(() => best.value?.url || clientUrl(rec.value.client, locale.value))
 const name = computed(() => rec.value.client.label || rec.value.client.name)
 // the name is never cut: a long one (Moonlight macOS Enhanced) takes three lines on 方形 and the icon gives them the room, a short one (VoidLink) is set larger
@@ -59,12 +62,14 @@ function pick(item) {
       <button type="button" class="m-b2__btn m-b2dl__go" @click.stop="download"><MIcon name="download" />{{ C.download }}</button>
     </template>
     <template v-else>
-      <span class="m-b2dl__icon"><MIcon :name="rec.client.icon" /></span>
-      <div class="m-b2dl__side">
-        <MMenuChip class="m-b2dl__os" :label="osChipName(os, locale)" :aria-label="C.osChoice" :icon="OS_ICON[os]" :items="menu" @click.stop @select="pick" />
-        <b class="m-b2dl__name">{{ name }}</b>
-        <div class="m-b2dl__foot"><small><MClientTag :official="rec.official" :locale="locale" /><template v-if="version"> v{{ version }}</template></small><button type="button" class="m-b2__btn" @click.stop="download"><MIcon name="download" />{{ C.download }}</button></div>
+      <div class="m-b2dl__main">
+        <span class="m-b2dl__icon"><MIcon :name="rec.client.icon" /></span>
+        <div class="m-b2dl__side">
+          <MMenuChip class="m-b2dl__os" :label="osChipName(os, locale)" :aria-label="C.osChoice" :icon="OS_ICON[os]" :items="menu" @click.stop @select="pick" />
+          <b class="m-b2dl__name">{{ name }}</b>
+        </div>
       </div>
+      <div class="m-b2dl__foot"><small :title="version ? `v${version}` : undefined"><MClientTag :official="rec.official" :locale="locale" /><template v-if="version"> v{{ versionShown }}</template></small><button type="button" class="m-b2__btn" @click.stop="download"><MIcon name="download" />{{ C.download }}</button></div>
     </template>
   </section>
 </template>

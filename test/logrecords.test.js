@@ -50,7 +50,8 @@ test('records: a host line has every Platform field and a continuation stays in 
   const records = parseRecords(text, { now: 1760000000000 })
   assert.equal(records.length, 2)
   const first = records[0]
-  assert.equal(first.timeUnixNs, '1793584800123000000')
+  // The host line carries no zone, so it is read in the machine's zone; derive the expectation the same way.
+  assert.equal(first.timeUnixNs, String(BigInt(new Date(2026, 10, 2, 10, 0, 0, 123).getTime()) * 1000000n))
   assert.equal(first.observedNs, '1760000000000000000')
   assert.equal(first.severity, SEVERITY_NUMBER.WARN)
   assert.equal(first.severityText, 'Warning')

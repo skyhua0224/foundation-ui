@@ -6,7 +6,7 @@
    3. A row of pills (快捷操作) that does not fit scrolls sideways under an edge fade, and gives up its title word first. */
 .m-dash__cell :is(
   .m-tile__head > span, .m-tnum__cap, .m-b2enc__note, .m-b2plate small, .m-b2item small, .m-b2recent__mini b, .m-b2recent__grid small, .m-b2lib__grid small, .m-b2opt > span,
-  .m-calm__cap, .m-calh__head > span, .m-calh__fact, .m-calo__tiles b, .m-calh__blocks small, .m-calh__now small,
+  .m-calm__cap, .m-caln__sub > span, .m-calh__head > span, .m-calh__fact, .m-calo__tiles b, .m-calh__blocks small, .m-calh__now small,
   .m-tnet__facts dd, .m-tfacts__cap, .m-rc__text b, .m-rc__text small, .m-rc__note, .m-rc__client, .m-rc__jump span,
   .m-dsmall__title, .m-dsmall__sub, .m-dcard__title, .m-dpair__latest, .m-dnics__text b, .m-dblock__text b, .m-dapps__name, .m-dsponsor__row b, .m-dtile__word,
   .m-tenc__name, .m-tload__model, .m-b3e__lines li span, .m-b3l__newest span, .m-b3r__cap
@@ -49,7 +49,6 @@
 /* (TileInfoB3 caps the numeral at 17 % of the tile's height) */
 
 /* 8. the centre of a ring stays above the layer of the running wave (a layer with will-change paints over a plain grid item) */
-.m-tring__centre { position: relative; z-index: 1; }
 
 /* 9. 大 host card: the row of chips wraps and the chips that do not fit whole are taken out (data-fit-rows, fitRows.js), never scrolled or clipped by a max-height; a button of a tile gives up a few pixels of its height before the tile cuts it */
 .m-b2__btn { flex: 0 1 36px; min-height: 26px; }
@@ -63,7 +62,7 @@
 .m-b3n.is-m .m-b3n__gen { position: relative; }
 /* the generated hero is meant to be seen: a lighter scrim than a photo's (the words stay on its dark foot), and a large tile with one post is that post, not half a tile */
 /* only a soft scrim under the title: the hero keeps its colour over most of the tile */
-.m-b3n.has-banner:has(.m-b3n__gen) .m-b3n__lead::after { background: linear-gradient(to top, color-mix(in srgb, var(--md-sys-color-scrim) 56%, transparent), color-mix(in srgb, var(--md-sys-color-scrim) 26%, transparent) 26%, transparent 50%); }
+.m-b3n.has-banner:has(.m-b3n__gen) .m-b3n__lead::after { background: linear-gradient(to top, color-mix(in srgb, var(--md-sys-color-scrim) 90%, transparent), color-mix(in srgb, var(--md-sys-color-scrim) 84%, transparent) 38%, color-mix(in srgb, var(--md-sys-color-scrim) 58%, transparent) 58%, transparent 80%); }
 .m-b3n.is-l:not(:has(.m-b3n__rest)) .m-b3n__lead { flex: 1 1 100%; }
 /* the hero's lightness and chroma (announcements/hero.js): vivid in light, a little deeper in dark */
 .m-b3n__gen, .m-ahero { --hl: .64; --hc: .2; }
@@ -101,7 +100,6 @@ html[data-bs-theme='dark'] .m-b3n__gen, html[data-theme='dark'] .m-b3n__gen, htm
 
 /* 15. component tiles at 方形 (驱动, USB, 麦克风 …): the title may take two lines, so the glyph and the state sit in one row of the plate and the version line stays under it, inside the tile */
 .m-b2comp.is-s .m-b2plate { flex: none; flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px; margin-top: 6px; padding: 8px 10px; }
-.m-b2comp.is-s .m-b2plate .m-b2glyph { --g: 28px; }
 .m-b2comp.is-s .m-b2__state { margin-top: 0; }
 .m-b2comp.is-s .m-b2__cap { margin-top: 4px !important; }
 
@@ -111,7 +109,7 @@ html[data-bs-theme='dark'] .m-b3n__gen, html[data-theme='dark'] .m-b3n__gen, htm
 
 /* 17. 客户端 中: the count is a size smaller beside the first row, so the row (the device, its state) stays whole; tabs that do not all fit show the chosen one with its place and a press moves on */
 .m-b2table.is-m .m-tnum--l { --tn: 44px; }
-.m-b2table__pos { margin-left: 6px; font: var(--m-tile-text-12); font-style: normal; opacity: .75; display: none; }
+.m-b2table__pos { margin-left: 6px; font: var(--m-tile-text-12); font-style: normal; display: none; }
 .m-b2table__tabs.is-cycle { overflow: visible; padding-right: 0; -webkit-mask-image: none; mask-image: none; }
 .m-b2table__tabs.is-cycle button:not(.is-on) { display: none; }
 .m-b2table__tabs.is-cycle .m-b2table__pos { display: inline; }
@@ -122,3 +120,6 @@ html[data-bs-theme='dark'] .m-b3n__gen, html[data-theme='dark'] .m-b3n__gen, htm
 /* 19. 手柄 (status) 方形: the art is the tile's hero, at least 40 px high (the art fills 92 % of it); the state is a short line under the name */
 .m-dash__cell .m-b2pad.is-s .m-b2plate { flex: 1 1 40px; min-height: 40px; padding: 2px 10px; }
 .m-dash__cell .m-b2pad.is-s .m-b2plate .m-ctl { max-height: 92%; }
+
+/* a one-line note under a toggle tile (对正在进行的串流生效) that has to wrap splits into even lines: the last line is never one character (「效」) */
+.m-dash__cell .m-b3a__note { text-wrap: balance; }

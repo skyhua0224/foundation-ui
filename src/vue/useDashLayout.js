@@ -1,7 +1,7 @@
 import { computed, reactive, watch } from 'vue'
 import { CARD_META, DEFAULT_ORDER, defaultVisible } from './homeCards.js'
 import { MAX_PINS } from '../pins/registry.js'
-import { SIZE_KEYS } from './homeSizes.js'
+import { ALL_SIZE_KEYS } from './homeSizes.js'
 import { migrateLayout } from './layoutMigrate.js'
 
 /**
@@ -11,6 +11,8 @@ import { migrateLayout } from './layoutMigrate.js'
  * size (s, m, l) the person chose for a card, a card without one has its default size.
  */
 export const LAYOUT_VERSION = 8
+/** Sizes a tile no longer has, and the size a layout that kept it gets instead: 网卡 has no 方形 (it needs a name, a speed and the way to change the adapter), a saved 方形 is 中. */
+export const RETIRED_SIZES = Object.freeze({ net: Object.freeze({ s: 'm' }) })
 /** The id of a pinned tile: the setting it controls (or opens). */
 export const pinIdOf = (spec) => `pin:${spec.type}:${spec.key}`
 const PIN_TYPES = ['setting', 'link']
@@ -43,14 +45,16 @@ export function useDashLayout(storageKey, storage = globalThis.localStorage) {
         // version 6 ships the star card (due after the first pairing or stream, back at every stream after 以后再说): after the host card and the pairing card; the person's own order is kept
         if ((v.v || 0) < 6 && order.includes('hero')) { order = order.filter((id) => id !== 'star'); order.splice(Math.max(order.indexOf('hero'), order.indexOf('pair')) + 1, 0, 'star') }
         const overrides = Object.fromEntries(Object.entries(v.overrides || {}).filter(([id, x]) => known(id) && typeof x === 'boolean'))
-        const sizes = Object.fromEntries(Object.entries(v.sizes || {}).filter(([id, x]) => known(id) && SIZE_KEYS.includes(x)))
+        const sizes = Object.fromEntries(Object.entries(v.sizes || {}).filter(([id, x]) => known(id) && ALL_SIZE_KEYS.includes(x)))
         // version 7: the overview is smart by default (the tiles follow what the host is doing); a layout saved before keeps what the person arranged (manual), a layout nobody touched is smart
         const touched = Object.keys(overrides).length || Object.keys(sizes).length || Object.keys(pins).length
         const mode = (v.v || 0) >= 7 ? (v.mode === 'manual' ? 'manual' : 'smart') : touched ? 'manual' : 'smart'
         const strings = (x) => (Array.isArray(x) ? x.filter((i) => typeof i === 'string').slice(0, 64) : [])
         const sectionOf = Object.fromEntries(Object.entries(v.sectionOf || {}).filter(([id, n]) => known(id) && Number.isInteger(n) && n >= 0 && n < 8))
         const loaded = { order, overrides, sizes, pins, mode, accepted: strings(v.accepted), hiddenSuggest: strings(v.hiddenSuggest), sectionOf, sectionCount: Number.isInteger(v.sectionCount) && v.sectionCount >= 0 && v.sectionCount <= 8 ? v.sectionCount : 0 }
-        const { state: migrated, migrated: changed } = migrateLayout(loaded, v.v)
+        // a size a tile no longer has is read as its replacement only after the legacy migration has seen what the person saved (a saved 方形 is a choice of theirs, not the default)
+        const { state: legacy, migrated: changed } = migrateLayout(loaded, v.v)
+        const migrated = { ...legacy, sizes: Object.fromEntries(Object.entries(legacy.sizes || {}).map(([id, k]) => [id, RETIRED_SIZES[id]?.[k] || k])) }
         if (changed) { try { storage?.setItem(key, JSON.stringify({ v: LAYOUT_VERSION, order: migrated.order, overrides: migrated.overrides, sizes: migrated.sizes, pins: migrated.pins, mode: migrated.mode, accepted: migrated.accepted, hiddenSuggest: migrated.hiddenSuggest, sectionOf: migrated.sectionOf, sectionCount: migrated.sectionCount })) } catch { /* storage unavailable */ } }
         return migrated
       }
@@ -89,7 +93,7 @@ export function useDashLayout(storageKey, storage = globalThis.localStorage) {
       const target = visibleIds[i + delta]
       if (i >= 0 && target) moveTo(id, target)
     },
-    setSize(id, size) { if (valid(id) && SIZE_KEYS.includes(size)) state.sizes = { ...state.sizes, [id]: size } },
+    setSize(id, size) { if (valid(id) && ALL_SIZE_KEYS.includes(size)) state.sizes = { ...state.sizes, [id]: size } },
     setVisible(id, on) { if (valid(id)) state.overrides = { ...state.overrides, [id]: !!on } },
     /** Pin a setting (a tile with its control, or a link to its page): shown, after the last card that is shown. false when the layout is full or the spec is not a pin. */
     addPin(spec) {

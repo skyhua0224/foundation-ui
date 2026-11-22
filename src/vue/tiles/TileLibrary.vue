@@ -30,7 +30,7 @@ const title = computed(() => `${props.card.title} · ${count.value}`)
   <section class="m-tile m-cal m-b2" :class="[`m-b2--${id}`, `is-${size}`, id === 'apps' ? 'm-b2apps' : 'm-b2lib']" :data-size="size" data-accent="secondary">
     <template v-if="empty || !items.length">
       <header class="m-calm__head"><MIcon :name="d.icon || 'apps'" /><span class="m-calm__title">{{ empty?.title || card.title }}</span></header>
-      <div class="m-b2empty"><span class="m-b2glyph"><MIcon :name="d.icon || 'apps'" /></span><b>{{ empty?.value || d.empty }}</b><button v-if="empty?.action || addLabel" type="button" class="m-b2__btn is-tonal" @click.stop="emit('act', empty?.action || { type: 'add-app' })">{{ empty?.action?.label || addLabel }}</button></div>
+      <div class="m-empty-basic"><b>{{ empty?.value || d.empty }}</b><button v-if="empty?.action || addLabel" type="button" class="m-b2__btn is-tonal" @click.stop="emit('act', empty?.action || { type: 'add-app' })">{{ empty?.action?.label || addLabel }}</button></div>
     </template>
     <template v-else-if="id === 'apps' && size === 's'">
       <header class="m-calm__head"><MIcon :name="d.icon || 'apps'" /><span class="m-calm__title">{{ title }}</span></header>

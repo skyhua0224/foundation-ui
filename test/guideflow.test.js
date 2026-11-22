@@ -50,10 +50,10 @@ test('guideEntry without a version keeps the first-run rule of before', () => {
   assert.equal(guideEntry({ setupCompleted: false, pairedCount: 0, progress: { finished: true, visited: [] } }), null)
 })
 
-test('an upgrade leaves out what is done: the password, the setup, and the client steps once a client is paired', () => {
-  assert.deepEqual(upgradeSkips({ accountExists: true, setupCompleted: true, pairedCount: 2 }), ['account', 'setup', 'hostdone', 'install', 'address', 'pair'])
-  assert.deepEqual(upgradeSkips({ accountExists: false, setupCompleted: false, pairedCount: 0 }), [])
-  assert.deepEqual(upgradeSkips({ accountExists: true, setupCompleted: true, pairedCount: null }), ['account', 'setup'])
+test('an upgrade leaves out what is done: the password, and the update channel once the person chose one', () => {
+  assert.deepEqual(upgradeSkips({ accountExists: true, channelChosen: true }), ['account', 'channel'])
+  assert.deepEqual(upgradeSkips({ accountExists: false, channelChosen: false }), [])
+  assert.deepEqual(upgradeSkips({ accountExists: true }), ['account'])
 })
 
 test('an address is named by how a client reaches it', () => {
@@ -90,27 +90,41 @@ test('the first stream check has sound, mouse, keyboard and picture checks and t
   assert.match(read('MGuideFlow.vue'), /<MGuideTry/)
 })
 
-test('pairing and the setup offer 跳到下一页 beside skipping the guide; the guide ends with an offer to open the test tools', () => {
+test('the guide has no 跳到下一页 any more: the pairing step ends with 下一步 and the PIN card has 「配对」', () => {
   const flow = read('MGuideFlow.vue')
-  assert.match(flow, /showSkipStep = computed\(\(\) => [^\n]*\['setup', 'pair'\]/)
-  assert.match(flow, /@click="skipStep"/)
-  assert.match(flow, /function openTools\(\) \{ finish\('tools'\)/)
-  assert.equal(guideTexts('zh').skipStep, '跳到下一页')
+  assert.doesNotMatch(flow, /showSkipStep|skipStep|finishWithTools|openTools/)
+  assert.match(flow, /<MButton class="m-guide__pairgo"/)
+  assert.equal(guideTexts('zh').pair.send, '配对')
+  assert.equal(guideTexts('zh').next, '下一步')
 })
 
-test('scanning the game libraries and adding by hand stay in the guide: a sheet, and back to the guide', () => {
-  const flow = read('MGuideFlow.vue'); const sheet = read('MGuideAppsSheet.vue')
-  assert.match(flow, /<MGuideAppsSheet/)
-  assert.match(flow, /appsSheet\.value = mode; return/)
-  assert.match(sheet, /scanGames/); assert.match(sheet, /addGames/)
-  assert.ok(sheet.includes("open = ''"), 'a button returns to the guide')
+test('the game libraries are scanned in the background from the first screen on; the done page lists what was found to tick and adds the chosen', async () => {
+  const flow = read('MGuideFlow.vue'); const done = read('MGuideDone.vue'); const lib = read('guideLibrary.js')
+  assert.match(flow, /useGuideLibrary\(\(\) => props\.callbacks\)/)
+  assert.match(flow, /onMounted\(\(\) => \{ void scanLibrary\(\) \}\)/, 'the scan starts with the guide')
+  assert.match(lib, /cb\.scanGames\(\[\.\.\.LIBRARY_SOURCES\]\)/); assert.match(lib, /LIBRARY_SOURCES = Object\.freeze\(\['steam', 'epic', 'gog'\]\)/)
+  assert.match(lib, /library\.picked = library\.games\.map\(\(g\) => g\.key\)/, 'everything found is ticked, the person unticks')
+  assert.match(lib, /cb\.addGames\(chosen\)/)
+  assert.match(lib, /library\.status = 'unsupported'/, 'a host that cannot scan shows nothing')
+  assert.match(done, /role="checkbox"/); assert.match(done, /emit\('add'\)/)
+  assert.match(done, /v-if="showLibrary"/)
+  // behaviour: found, ticked, a part added
+  const { useGuideLibrary } = await import('../src/vue/guideLibrary.js')
+  const added = []
+  const g = useGuideLibrary(() => ({ scanGames: async (sources) => ({ ok: true, games: [{ key: 'a', name: 'A', platform: sources[0] }, { key: 'b', name: 'B', platform: 'gog' }] }), addGames: async (list) => { added.push(...list.map((x) => x.key)); return { ok: true, added: list.length } } }))
+  await g.scanLibrary()
+  assert.equal(g.library.status, 'ready'); assert.deepEqual(g.library.picked, ['a', 'b'])
+  g.toggleGame('b'); assert.deepEqual(g.library.picked, ['a'])
+  await g.addLibrary()
+  assert.deepEqual(added, ['a']); assert.equal(g.library.added, 1); assert.deepEqual(g.library.games.map((x) => x.key), ['b'])
+  const none = useGuideLibrary(() => ({})); await none.scanLibrary(); assert.equal(none.library.status, 'unsupported')
+  const failing = useGuideLibrary(() => ({ scanGames: async () => { throw new Error('down') } })); await failing.scanLibrary(); assert.equal(failing.library.status, 'failed')
 })
 
-test('closing, skipping or finishing stores the version of the flow; an upgrade starts at the top and does not wait to skip', () => {
+test('closing, skipping or finishing stores the version of the flow; an upgrade starts at the top', () => {
   const flow = read('MGuideFlow.vue')
   assert.match(flow, /progress\.version = props\.version/)
-  assert.match(flow, /function close\(\) \{ save\(\{ closed: props\.version \|\| '-' \}\); emit\('close'\) \}/, 'the X stores that this version was closed, which stops the guide from opening on its own again')
-  assert.match(flow, /props\.mode === 'upgrade' \? 0 : props\.skipDelay/)
+  assert.match(flow, /function close\(\) \{ funnel\.close\(\); save\(\{ closed: props\.version \|\| '-' \}\); emit\('close'\) \}/, 'the X stores that this version was closed, which stops the guide from opening on its own again')
 })
 
 test('every first-run step has the same window: no rule sets the window width by step (the remote access and pairing steps were wider on a desktop and not full screen on a phone)', () => {
@@ -118,4 +132,12 @@ test('every first-run step has the same window: no rule sets the window width by
   assert.ok(!/data-step[^{]*\{[^}]*--m-onboard-w/.test(css), 'no selector on data-step sets --m-onboard-w')
   assert.match(css, /@media \(max-width: 599\.98px\) \{ \.m-onboard \{ --m-onboard-w: 100vw;/)
   assert.match(css, /\.m-onboard \{[^}]*--m-onboard-w: min\(92vw, 880px\)/)
+})
+
+test('the guide reports its funnel through the product: a step shown, skip, finish, close and each optional page opened', () => {
+  assert.match(read('MGuideFlow.vue'), /createGuideFunnel\(\{ send: \(p\) => props\.callbacks\.funnel\?\.\(p\), mode: props\.mode \}\)/)
+  assert.match(read('MGuideFlow.vue'), /watch\(id, \(value\) => \{ if \(value\) funnel\.enter\(value\) \}, \{ immediate: true \}\)/)
+  assert.match(read('MGuideFlow.vue'), /function close\(\) \{ funnel\.close\(\)/)
+  assert.match(read('MGuideFlow.vue'), /funnel\.skip\(\)/); assert.match(read('MGuideFlow.vue'), /funnel\.finish\(\)/)
+  assert.match(read('MGuideFlow.vue'), /const openOptional = \(page\) => \{ funnel\.optional\(page\); sub\.value = page \}/)
 })

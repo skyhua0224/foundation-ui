@@ -31,7 +31,9 @@ export function fitElement(el) {
   let room = el.clientWidth
   const tile = el.closest('.m-b2plate') || el.closest('.m-tile, .m-dcard, .m-dsmall') // the inner plate of a tile is the room, not the whole tile
   if (tile) { const t = tile.getBoundingClientRect(), pc = getComputedStyle(tile), lim = t.right - (parseFloat(pc.paddingRight) || 0) - el.getBoundingClientRect().left; room = room > 0 ? Math.min(room, lim) : lim }
-  const k = fitScale(el.scrollWidth, room, Math.max(FIT_MIN, Math.min(1, MIN_PX / size))) // never below 11 px: a value that would need less wraps at its own size
+  // a padded value (the button of an empty state) shrinks its text only: the padding stays, so it is not part of what is measured
+  const pad = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0) + (parseFloat(cs.borderLeftWidth) || 0) + (parseFloat(cs.borderRightWidth) || 0)
+  const k = fitScale(el.scrollWidth - pad, room - pad, Math.max(FIT_MIN, Math.min(1, MIN_PX / size))) // never below 11 px: a value that would need less wraps at its own size
   if (k === 1) return
   if (k === null) { el.setAttribute('data-fit-wrap', ''); return }
   el.style.fontSize = `${(size * k).toFixed(2)}px`

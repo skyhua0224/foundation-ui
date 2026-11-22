@@ -1,4 +1,5 @@
 export default {
+  "pairGetQr": "Отримати QR-код",
   "stackPin": "Закріпити цю картку",
   "stackUnpin": "Відкріпити",
   "stackPinned": "Закріплено: {name}",

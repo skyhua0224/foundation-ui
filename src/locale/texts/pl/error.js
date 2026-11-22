@@ -86,7 +86,7 @@ export default {
   "errorsNoticeLink": "O programie › Prywatność",
   "privacyMore": "Co jest wysyłane, a co nie",
   "privacyTitle": "Raporty błędów i statystyki użycia",
-  "privacyLead": "Każdy przełącznik działa osobno. Gdy jest wyłączony, nic tego rodzaju nie jest wysyłane.",
+  "privacyLead": "Każdy przełącznik działa osobno. Wyłączenie wysyła jeden mały zapis o wyłączeniu (który przełącznik, produkt i jego wersja oraz anonimowy numer tego komputera); potem nic tego rodzaju nie jest wysyłane.",
   "lblCollected": "Wysyłane",
   "lblNever": "Nigdy nie wysyłane",
   "lblWhere": "Dokąd",

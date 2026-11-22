@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { boxOf, sizePx, sizesOf, unitPx } from '../src/vue/homeSizes.js'
-import { smallOf } from '../src/vue/homeSmall.js'
+import { smallOf, shortHardware, shortTitle } from '../src/vue/homeSmall.js'
 import { CARD_META } from '../src/vue/homeCards.js'
 
 // every card has a small view: the box of S is the same for all (2 x 1), and the generic small view reads a title and a value from any kind of card
@@ -35,7 +35,7 @@ test('the generic small view has an icon, a name and a value for every kind of c
 
 test('a tile says something about its value: second line, trend, progress, chip, or an empty state with its action', () => {
   const hero = smallOf({ id: 'hero', kind: 'hero', title: '本主机', data: { icon: 'dns', title: 'Skyward', statusLabel: '运行中', statusTone: 'ok', pairs: [{ label: '已运行', value: '3h 12m' }, { label: '已配对', value: '2' }] } }, {})
-  assert.deepEqual([hero.value, hero.title, hero.secondary], ['运行中', '本主机', 'Skyward · 已运行 3h 12m · 已配对 2'])
+  assert.deepEqual([hero.value, hero.title, hero.secondary], ['运行中', '本主机', 'Skyward · 已运行 3h 12m'])
   const vdd = smallOf({ id: 'vdd', kind: 'vdd', title: '虚拟显示器', data: { state: 'ready', stateLabel: '已启用', value: '2160p', unit: '240 Hz', sub: '3840×2160', chips: [{ label: 'HDR 开', tone: 'ok' }], tone: 'ok' } }, {})
   assert.deepEqual([vdd.value, vdd.unit, vdd.secondary], ['2160p', undefined, '已启用 · 3840×2160'])
   assert.deepEqual(vdd.pills, [{ label: '240 Hz' }, { label: 'HDR 开', tone: 'ok' }]); assert.equal(vdd.display, undefined)
@@ -50,5 +50,26 @@ test('a tile says something about its value: second line, trend, progress, chip,
   assert.equal(apps2.covers.length, 3); assert.equal(apps2.more, 1)
   const pair = smallOf({ id: 'pair', kind: 'widget', title: '配对客户端', data: { type: 'pair', count: 5, latest: { name: 'Pixel 9', icon: 'smartphone' } } }, {})
   assert.equal(pair.avatars.length, 3); assert.equal(pair.more, 2)
-  assert.equal(smallOf({ id: 'hero', kind: 'hero', title: '本主机', data: { statusLabel: '运行中' } }, {}).pulse, true)
+  assert.equal(smallOf({ id: 'hero', kind: 'hero', title: '本主机', data: { statusLabel: '运行中' } }, {}).state, 'ok', 'the state is a dot beside the word, not a drawn circle')
+  assert.equal(smallOf({ id: 'hero', kind: 'hero', title: '本主机', data: { statusLabel: '运行中' } }, {}).pulse, undefined)
+  assert.equal(smallOf({ id: 'pair', kind: 'widget', title: '配对客户端', data: { type: 'pair', count: 2, latest: { name: 'ali' } } }, { latestClient: '最近：{name}' }).secondary, '最近：ali')
+})
+
+test('a processor or a graphics card has a short name that is whole in a small tile', () => {
+  const cases = [
+    ['13th Gen Intel(R) Core(TM) i7-13700K', 'i7-13700K'],
+    ['AMD Ryzen 7 7800X3D 8-Core Processor', 'Ryzen 7 7800X3D'],
+    ['Intel(R) Core(TM) Ultra 7 265K', 'Core Ultra 7 265K'],
+    ['NVIDIA GeForce RTX 4070', 'RTX 4070'],
+    ['AMD Radeon RX 7800 XT', 'RX 7800 XT'],
+    ['Intel(R) Arc(TM) A770 Graphics', 'Arc A770'],
+    ['Apple M2 Pro', 'M2 Pro'],
+    ['Ryzen 9', 'Ryzen 9'],
+    ['', ''],
+  ]
+  for (const [raw, short] of cases) assert.equal(shortHardware(raw), short, raw)
+})
+
+test('a long Latin title of a small tile loses the maker\'s name', () => {
+  assert.equal(shortTitle('Foundation Virtual Display'), 'Virtual Display'); assert.equal(shortTitle('Foundation'), 'Foundation'); assert.equal(shortTitle('Frame rate'), 'Frame rate'); assert.equal(shortTitle('基地虚拟显示器驱动程序'), '基地虚拟显示器驱动程序')
 })

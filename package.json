@@ -8,6 +8,7 @@
   "exports": {
     ".": "./src/index.js",
     "./vue": "./src/vue/index.js",
+    "./home/perf": "./src/vue/homePerfInputs.js",
     "./popup": "./src/popup.js",
     "./tray": "./src/tray/trayModel.js",
     "./tray/*": "./src/tray/*",
@@ -20,6 +21,8 @@
     "./icons": "./src/icons/icons.js",
     "./announcements": "./src/announcements/index.js",
     "./telemetry": "./src/telemetry/index.js",
+    "./build/private-sourcemaps": "./src/build/privateSourcemaps.js",
+    "./build/sourcemap": "./src/build/sourcemap.js",
     "./community": "./src/community/index.js",
     "./update": "./src/update/index.js",
     "./auth": "./src/auth/index.js",
@@ -28,7 +31,10 @@
     "./status": "./src/status/index.js",
     "./service": "./src/service/index.js",
     "./diagnostics": "./src/diagnostics/index.js",
+    "./reset": "./src/reset/index.js",
     "./doctor": "./src/doctor/index.js",
+    "./driverGuard": "./src/driverGuard/index.js",
+    "./driver-guard": "./src/driverGuard/index.js",
     "./apps": "./src/apps/index.js",
     "./settings": "./src/settings/index.js",
     "./settings/*": "./src/settings/*",
@@ -47,7 +53,8 @@
   "scripts": {
     "build:tokens": "node --import ./scripts/register.mjs scripts/build-tokens.mjs",
     "build:icons": "node scripts/build-icons.mjs",
-    "test": "node --import ./scripts/register.mjs --import ./scripts/no-network.mjs --test \"test/*.test.js\""
+    "test": "node --import ./scripts/register.mjs --import ./scripts/no-network.mjs --test \"test/*.test.js\"",
+    "test:shard": "node --import ./scripts/register.mjs --import ./scripts/no-network.mjs --test"
   },
   "dependencies": {
     "@material/material-color-utilities": "^0.4.0",

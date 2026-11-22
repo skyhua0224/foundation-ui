@@ -9,7 +9,7 @@ const memory = () => {
   const m = new Map()
   return { getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: (k) => m.delete(k), m }
 }
-const QQ_README = 'https://qm.qq.com/cgi-bin/qm/qr?k=5qnkzSaLIrIaU4FvumftZH_6Hg7fUuLD&jump_from=webapi'
+const QQ_README = 'https://qm.qq.com/q/vIVhpjDMic'
 const QQ_NEW = 'https://qm.qq.com/cgi-bin/qm/qr?k=NEWKEY&jump_from=webapi'
 const doc = (links) => ({ schema: 1, links })
 const answer = (body, status = 200) => ({ ok: status >= 200 && status < 300, status, headers: { get: () => null }, text: async () => (typeof body === 'string' ? body : JSON.stringify(body)) })

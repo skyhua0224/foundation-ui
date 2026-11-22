@@ -1,7 +1,7 @@
 import { computed, nextTick, ref, watch } from 'vue'
 import { useNotify } from '../../notify/store.js'
 import { GROUPS } from '../homeCards.js'
-import { UNIT_GAP, effectiveSize } from '../homeSizes.js'
+import { UNIT_GAP, effectiveSize, sizesOf } from '../homeSizes.js'
 import { isStackId } from '../stackModel.js'
 import { useFlip } from '../flipGroup.js'
 import { reducedMotion } from '../../appearance/motion.js'
@@ -29,8 +29,8 @@ export function useDashEditSheet(D) {
   const sheetSections = computed(() => GROUPS.map((g) => ({ id: g, title: T.value['gGroup_' + g] || g, cards: sheetCards.value.filter((c) => c.group === g) })).filter((x) => x.cards.length))
   const GROUP_ICON = { host: 'dns', stream: 'cast_connected', perf: 'speed', device: 'devices', control: 'tune', start: 'rocket_launch', resources: 'public', personal: 'palette' }
   const sheetSize = ref({})
-  // size chosen in the sheet per card, used when it is added; every preview starts at the small size
-  const sheetKeyOf = (c) => sheetSize.value[c.id] || 's'
+  // The bitrate control starts as a strip; the other previews start at the small size.
+  const sheetKeyOf = (c) => sheetSize.value[c.id] || (c.id === 'ctl-bitrate' ? sizesOf(c.id, c, windowClass.value, tall.value).size : 's')
   const sheetBox = (card) => { const c = { ...card, hasDetail: hasDetailOf(card) }; if (dockLayout.value) return dockBox(c, units.value); const key = effectiveSize(c, sheetKeyOf(c), windowClass.value, 'manual', { height: tall.value }); return { ...c, ...boxIn(c, key, units.value), size: key, sizeKey: key, sizeKeys: sizeKeysOf(c) } }
   // previews are drawn at the real size the card has on this page (a unit of the grid and the row heights of this density), then scaled down
   const ROW_PX = computed(() => rowPxIn(gridOf(width.value).unit))
@@ -88,7 +88,8 @@ export function useDashEditSheet(D) {
   const titleOf = (id) => allCards.value.find((c) => c.id === id)?.title || id
   function addCard(id) {
     layout.setVisible(id, true)
-    layout.setSize(id, sheetSize.value[id] || 's')
+    const card = allCards.value.find((c) => c.id === id)
+    if (card) layout.setSize(id, sheetKeyOf(card))
     const last = shownIds.value[shownIds.value.length - 1]
     if (last && last !== id) layout.moveTo(id, last)
     say(`${T.value.addCard}: ${titleOf(id)}`)

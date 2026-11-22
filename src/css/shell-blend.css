@@ -13,7 +13,7 @@ html { --m-list-mix: 50%; --m-list-fill: color-mix(in srgb, var(--m-frame-fill) 
 html.m-has-wallpaper { --m-list-mix: 45%; }
 html.m-has-wallpaper { --m-list-alpha: .92; }
 /* the bottom bar of a narrow window is frosted the same way */
-html.m-has-wallpaper .m-rail--bar { background: color-mix(in srgb, var(--md-sys-color-surface-container) 90%, transparent); backdrop-filter: blur(18px) saturate(1.15); }
+html.m-has-wallpaper .m-rail--bar:not(.m-rail--side) { background: color-mix(in srgb, var(--md-sys-color-surface-container) 90%, transparent); backdrop-filter: blur(18px) saturate(1.15); }
 
 /* ---- one scrim for every modal ----
    A page inside the control panel's frame dims its own part and the shell dims the rest (the rail, the list, the caption bar). A blur on only one of them made the

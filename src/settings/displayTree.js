@@ -53,7 +53,7 @@ export const DISPLAY_TREE = Object.freeze([
       Object.freeze({ id: 'format', keys: ['codec_strategy', 'hevc_mode', 'av1_mode'], main: ['codec_strategy'] }),
       Object.freeze({ id: 'encoder', keys: ['encoder'], main: ['encoder'] }),
       Object.freeze({ id: 'effective', keys: [], readOnly: true }),
-      Object.freeze({ id: 'advanced', keys: ['min_threads'], prefixes: ['nvenc_', 'qsv_', 'amd_', 'vt_', 'sw_'], except: ['nvenc_vdd_force_vsync'], expander: true }),
+      Object.freeze({ id: 'advanced', keys: ['min_threads'], prefixes: ['nvenc_', 'qsv_', 'amd_', 'vt_', 'sw_', 'vaapi_'], except: ['nvenc_vdd_force_vsync'], expander: true }),
     ]),
   }),
   Object.freeze({
@@ -66,7 +66,7 @@ export const DISPLAY_TREE = Object.freeze([
   Object.freeze({
     place: 'advanced', page: 'display-advanced', icon: 'tune', labelKey: 'shell.display_advanced', windows: false, last: true,
     sections: Object.freeze([
-      Object.freeze({ id: 'capture', keys: ['capture', 'capture_compute_shader', 'wgc_disable_secure_desktop', 'minimum_fps_target'], live: ['wgc_mode'] }),
+      Object.freeze({ id: 'capture', keys: ['capture', 'capture_compute_shader', 'wgc_disable_secure_desktop', 'minimum_fps_target', 'input_activity_boost', 'input_activity_boost_fps', 'input_activity_boost_window_ms', 'downscaling_quality'], live: ['wgc_mode'] }),
       Object.freeze({ id: 'gpu', keys: ['adapter_name'] }),
       Object.freeze({ id: 'compat', keys: [], links: [{ id: 'app_overrides', to: 'apps' }] }),
       Object.freeze({ id: 'sync', keys: ['nvenc_vdd_force_vsync', 'mat_live'] }),

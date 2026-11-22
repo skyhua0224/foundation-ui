@@ -5,14 +5,14 @@ import { buildCatalogue } from '../src/vue/homeCatalogue.js'
 import { CATALOGUE_TEXTS } from '../src/vue/homeCatalogueTexts.js'
 import { CARD_META, sponsorCardData } from '../src/vue/homeCards.js'
 import { catalogueMeta } from '../src/vue/homeCatalogue.js'
-import { offeredOf, sizePx } from '../src/vue/homeSizes.js'
+import { UNIT_PX, offeredOf, sizePx } from '../src/vue/homeSizes.js'
 import { createVddStore } from '../src/vue/useVddStore.js'
 import { VIVI } from '../src/about/mascot.js'
 
 // The tiles of B3 on sample data, for the evidence of round 30 only: every value here is made up in this file (no host). Each tile is drawn in a cell of the overview's
 // size (one unit = 176 px, the standard density) through MDashCardView, so the same page shows the tile as before (no flag) and with its design (?tiles=bold).
 const q = new URLSearchParams(location.search)
-const T = { ...CATALOGUE_TEXTS.zh, __locale: 'zh' }
+const T = { ms: 'ms', ...CATALOGUE_TEXTS.zh, __locale: 'zh' }
 const NOW = Date.parse('2026-11-04T11:20:00')
 const pad = (n) => String(n).padStart(2, '0')
 const stamp = (h, m) => { const d = new Date(NOW - h * 3600000 - m * 60000); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:00` }
@@ -35,7 +35,8 @@ const base = (o = {}) => ({
 })
 // the states a tile is shown in (the first is its usual one)
 const STATES = {
-  update: [['有新版本', {}], ['已最新', { host: { version: '1.4.3', update: '' } }], ['长版本号', { host: { version: '2026.1102.1', update: '2026.1103.1' } }], ['长版本号已最新', { host: { version: '2026.1102.1', update: '' } }]],
+  budget: [['帧预算：有分段', { session: { client_name: 'Pixel 9', uptimeMs: 3723000, fps: 120, bitrate: 48000, latencyMs: 6.15, pipeCaptureToConvertMs: 0.04, pipeConvertMs: 0.15, pipeEncodeQueueMs: 0.01, pipeEncodeMs: 5.94, pipePacketToBroadcastMs: 0.01, pipeTotalMs: 6.15 } }], ['部分缺失（只有转换与编码）', { session: { client_name: 'Pixel 9', uptimeMs: 3723000, fps: 60, bitrate: 48000, latencyMs: 12.4, pipeConvertMs: 0.8, pipeEncodeMs: 11.6 } }], ['全缺（只有主机延迟）', { session: { client_name: 'Pixel 9', uptimeMs: 3723000, fps: 120, bitrate: 48000, latencyMs: 6.1 } }], ['超出一帧', { session: { client_name: 'Pixel 9', uptimeMs: 3723000, fps: 240, bitrate: 48000, latencyMs: 6.2, pipeCaptureToConvertMs: 0.2, pipeConvertMs: 0.5, pipeEncodeQueueMs: 0.9, pipeEncodeMs: 4.3, pipePacketToBroadcastMs: 0.3, pipeTotalMs: 6.2 } }]],
+  update: [['有新版本', {}], ['已最新', { host: { version: '1.4.3', update: '' } }], ['长版本号', { host: { version: '2026.1102.1', update: '2026.1103.1' } }], ['长版本号已最新', { host: { version: '2026.1102.1', update: '' } }], ['测试版（Panel 的标签）', { host: { version: '2026.1116.22909 杂鱼', update: '有可用更新' } }], ['测试版已最新', { host: { version: '2026.1116.22909 杂鱼', update: '' } }], ['本地构建（6 位）', { host: { version: '2026.1112.025657', update: '' } }], ['稳定版', { host: { version: '2026.1031.141735', update: '2026.1116.22909' } }], ['手动构建', { host: { version: 'manual-20261116-123456-dev', update: '' } }], ['不规则文本', { host: { version: 'v2026.1116.22909-杂鱼-测试版-abcdef0123', update: '有可用更新' } }]],
   'act-update': [['有新版本', {}], ['已最新', { host: { version: '1.4.3', update: '' } }]],
   errors: [['有错误', {}], ['无错误', { logText: '', logs: { rows: [] } }]],
   logs: [['有日志', {}], ['无日志', { logs: { rows: [] } }]],
@@ -61,7 +62,7 @@ const cardOf = (id, x) => {
 }
 const IDS = (q.get('ids') || 'act-restart,act-pair,act-update,ctl-controller,ctl-encoder,ctl-fps,ctl-vdd,pers-colour,pers-theme,pers-wallpaper,announcements,errors,logs,update,tip,sponsor,vivi').split(',')
 const only = Object.fromEntries((q.get('sizes') || '').split(',').filter(Boolean).map((p) => { const [id, s] = p.split(':'); return [id, s.split('.')] }))
-const unit = 176
+const unit = UNIT_PX
 const rows = IDS.flatMap((id) => (STATES[id] || [['', {}]]).map(([label, o]) => {
   const card = cardOf(id, base(o))
   if (!card) return null

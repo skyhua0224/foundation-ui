@@ -49,9 +49,9 @@ test('the bitrate command: the tile says what the host does with the number, and
   const session = { client_name: 'Pixel 9', bitrate: 56000 }
   const on = recentCatalogue({ session, canRuntime: true, config: { max_bitrate: 50000 } }, T)['live-bitrate']
   assert.deepEqual([on.client, on.now, on.min, on.max, on.cap], ['Pixel 9', 56, 1, 50, 50])
-  assert.ok(on.note.includes('50 Mbps') && /预算/.test(on.note), on.note)
+  assert.ok(on.note.includes('50 Mbps') && /上限/.test(on.note), on.note)
   const free = recentCatalogue({ session, canRuntime: true, config: { max_bitrate: 0 } }, T)['live-bitrate']
-  assert.deepEqual([free.cap, free.max], [0, 800], 'with no ceiling the control reaches the 800 Mbps the note says'); assert.ok(free.note.includes('800 Mbps'))
+  assert.deepEqual([free.cap, free.max], [0, 800], 'with no ceiling the control reaches 800 Mbps'); assert.ok(/不设上限/.test(free.note), free.note)
   assert.equal(recentCatalogue({ session, canRuntime: false, config: {} }, T)['live-bitrate'], null, 'the host takes the command from this computer only')
   assert.equal(recentCatalogue({ session: null, canRuntime: true, config: {} }, T)['live-bitrate'], null)
   const tile = src('../src/vue/tiles/TileLive.vue')
@@ -84,7 +84,9 @@ test('every size of the tile has a hero: nothing used yet is the tile\'s shape, 
   const v = smallOf({ id: 'recent-actions', title: '最近操作', data: empty }, T)
   assert.deepEqual([v.empty, v.action.label, v.action.type, v.action.value], [true, '打开设置', 'open', 'settings'])
   const tile = src('../src/vue/tiles/TileRecent.vue')
-  assert.ok(tile.includes('<MTileEmpty icon="history" shape="cookie"') && tile.includes('<MTileShape :icon="rows[0].icon" shape="clover" size="64px" />'))
+  assert.ok(tile.includes('<header class="m-calm__head"><MIcon name="history" />') && tile.includes('<div class="m-empty-basic">'), 'the empty tile uses the same compact header and body as the other tiles')
+  assert.ok(tile.includes('<MTileShape :icon="rows[0].icon" shape="clover" size="36px" />'))
+  assert.ok(tile.includes('<small :title="rows[0].appliesText">{{ rows[0].appliesText }}</small>'), 'the full applicability text remains available when truncated')
   assert.ok(src('../src/css/tiles-recent.css').includes('.m-rc.is-l .m-rc__rows, .m-rc.is-xl .m-rc__rows { grid-auto-rows: minmax(48px, 1fr); }'))
 })
 

@@ -4,7 +4,7 @@ import { computed, reactive } from 'vue'
  * The one notification system of a window. Three places, no other:
  *   snack(message, { action, onAction, timeout })  a short result that passes (MNotifyHost, one at a time, bottom centre)
  *   banner(page, { id, tone, icon, title, text, actions })  a standing problem of one page, shown under the title of that page (MPageBanners)
- *   system(id, { tone, icon, title, text, actions })  a state of the host or the app that stays until it is solved, in the status button of the caption bar (MStatusBell)
+ *   system(id, { tone, icon, title, text, actions, dismissible, revision, onDismiss })  a state of the host or the app that stays until it is solved, in the status button of the caption bar (MStatusBell); onDismiss(id) runs when the person closes a dismissible one
  * Nothing is drawn above the caption bar.
  */
 export function createNotifyStore() {
@@ -53,6 +53,8 @@ export function createNotifyStore() {
     if (!item?.dismissible) return
     state.dismissed[id] = keyOf(id, item)
     delete state.systems[id]
+    // a notice that outlives the window (an answer of the developers) is told that the person closed it
+    try { item.onDismiss?.(id) } catch { /* the notice is gone either way */ }
   }
   const TONE_RANK = { error: 0, warn: 1, info: 2 }
   const systems = computed(() => Object.values(state.systems).sort((a, b) => (TONE_RANK[a.tone] ?? 3) - (TONE_RANK[b.tone] ?? 3)))

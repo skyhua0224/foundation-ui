@@ -56,12 +56,12 @@ test('the product icon is the cloudless vector of SunshineQ, with its source on 
   assert.equal(existsSync(new URL('../src/assets/app/app-icon-256.png', import.meta.url)), false, 'the cloud PNG set is gone')
 })
 
-test('no wheel trap: a stack turns only for a sideways wheel, the dock row hands the wheel on at its ends, the update notes size to their content', () => {
+test('no wheel trap: a stack turns only for a sideways wheel, the dock has no row to take the wheel, the update notes size to their content', () => {
   const stack = read('../src/vue/MDashStack.vue')
   assert.match(stack, /const stackWheelTurn = \(e\) => \(Math\.abs\(e\.deltaX\) >= 6 && Math\.abs\(e\.deltaX\) > Math\.abs\(e\.deltaY\)/)
   assert.doesNotMatch(stack, /turn\(e\.deltaY/)
   const dock = read('../src/vue/dash/dashDock.js')
-  assert.match(dock, /event\.deltaY < 0 && row\.scrollLeft <= 0\) \|\| \(event\.deltaY > 0 && row\.scrollLeft >= max - 1\)\) return/)
+  assert.ok(!/onDockWheel|scrollLeft/.test(dock), 'the dock is not a row that scrolls: the wheel is the page\'s')
   assert.match(read('../src/css/expressive.css'), /\.m-update__lines\.is-open \{ max-height: none; overflow: visible; \}/)
 })
 

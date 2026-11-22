@@ -1,4 +1,5 @@
 export default {
+  "pairGetQr": "QR kodunu al",
   "stackPin": "Bu kartı sabitle",
   "stackUnpin": "Kaldır",
   "stackPinned": "Sabit: {name}",

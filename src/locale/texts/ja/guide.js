@@ -3,18 +3,18 @@ export default {
   "close": "閉じる",
   "back": "戻る",
   "next": "次へ",
-  "skip": "ガイドをスキップ",
-  "skipStep": "次のページへ",
-  "skipIn": "ガイドをスキップ ({n})",
+  "skipThis": "このステップをスキップ",
   "finishTools": "完了してテストツールを開く",
   "finish": "完了",
+  "follow": "フォロー：",
+  "followBilibili": "Bilibili",
+  "followSite": "公式サイト",
   "stepOf": "{total} ステップ中 {n}",
   "steps": "手順",
   "openSource": {
-    "text": "Foundation Sunshine はオープンソースの自由なソフトウェアです（GPL-3.0）。個人、事業者、メディアによる販売は許可していません。代金を払った場合は、すぐに返金を求めてください。",
-    "link": "GitHub で見る",
-    "more": "もっと見る",
-    "less": "閉じる"
+    "title": "無料・オープンソース",
+    "text": "Foundation Sunshine は GPL-3.0 のオープンソースソフトウェアです。個人、事業者、メディアによる販売は許可していません。",
+    "link": "GitHub で見る"
   },
   "intro": {
     "followSystem": "システムに従う",
@@ -33,6 +33,9 @@ export default {
   "copied": "コピーしました",
   "helpRow": "セットアップ、クライアントの導入、ペアリング、最初の接続をもう一度行います。",
   "titles": {
+    "channel": "更新チャンネル",
+    "done": "準備完了",
+    "hostdone": "このコンピューターの設定が完了しました",
     "whatsnew": "新機能",
     "intro": "ようこそ",
     "account": "WebUI パネルのアカウント",
@@ -41,10 +44,10 @@ export default {
     "setup": "グラフィックとディスプレイ",
     "install": "クライアントを入れる",
     "address": "入れたクライアントとペアリング",
-    "pair": "デバイスをペアリング",
+    "pair": "接続してペアリング",
     "webaccess": "電話とその他のデバイス",
     "remote": "リモートアクセス",
-    "connect": "最初のストリームを確認",
+    "connect": "試してみる",
     "apps": "ゲームを追加",
     "update": "更新方法"
   },
@@ -54,30 +57,131 @@ export default {
     "address": "同じネットワークならクライアントがこのパソコンを見つけます。見つからなければアドレスを入力します。",
     "pair": "コードを読み取るか、クライアントの PIN を入力します。",
     "webaccess": "任意です。WebUI パネルを開ける人を選びます。選ばなければ現状のままです。",
-    "remote": "任意です。このネットワークの外から接続するときだけ必要です。",
+    "remote": "自宅の外からこのコンピューターへストリームするときだけ必要です。ほとんどの人には不要です。",
     "connect": "クライアントでこのパソコンを開き、Desktop を選びます。",
-    "apps": "任意です。あとからアプリのページでも追加できます。"
+    "apps": "任意です。あとからアプリのページでも追加できます。",
+    "hostdone": "次はプレイする端末です。クライアントをインストールし、ペアリングして接続します。"
+  },
+  "hostdone": {
+    "done": "このコンピューターはストリームできる状態です。",
+    "download": "プレイする端末用のクライアントを入手",
+    "note": "次の手順でインストール、ペアリング、初回接続を行います。"
   },
   "whatsnew": {
     "items": [
       {
+        "icon": "sports_esports",
         "title": "最初のストリームを自分で確認",
         "text": "音、マウス、キーボード、映像、遅延時計はガイドとテストツールの両方にあります。"
       },
       {
+        "icon": "download",
         "title": "ひとつのインストール画面",
         "text": "ガイド、デバイスの接続、ダウンロードページで同じクライアント一覧、ファイル、QR コードを使います。"
       },
       {
+        "icon": "public",
         "title": "リモートアクセスを確認",
         "text": "このパソコンに外から届くか、何を変えるかをガイドが調べます。"
       },
       {
+        "icon": "system_update_alt",
         "title": "更新方法",
         "text": "更新の入手先を選びます。MirrorChyan の CDK は任意です。"
       }
     ],
     "note": "この画面は新しいバージョンごとに一度だけ開きます。スキップできます。"
+  },
+  "welcome": {
+    "modes": {
+      "system": "システムに合わせる",
+      "light": "ライト",
+      "dark": "ダーク"
+    }
+  },
+  "channel": {
+    "channel": "更新チャンネル",
+    "stable": "安定版（推奨）",
+    "stableText": "テスト済みで、ほとんどの人に適しています。",
+    "beta": "ベータ版",
+    "betaText": "新機能と修正を早く受け取れます。小さな問題がある場合があります。",
+    "source": "更新の取得元",
+    "failed": "保存できませんでした。もう一度お試しください。"
+  },
+  "trynow": {
+    "more": "その他のダウンロード方法"
+  },
+  "pairing": {
+    "found": "クライアントがこのコンピューターを見つけたら、表示された PIN を入力してください。",
+    "pinCard": "PIN でペアリング"
+  },
+  "done": {
+    "library": "ゲームライブラリ",
+    "scanning": "バックグラウンドでゲームライブラリをスキャンしています…",
+    "found": "{n} 個のゲームが見つかりました。追加するものを選んでください。",
+    "addPicked": "選択した {n} 個を追加",
+    "added": "{n} 個を追加しました。",
+    "none": "ゲームが見つかりませんでした。後でアプリのページから追加できます。",
+    "failed": "ゲームライブラリをスキャンできませんでした。",
+    "rescan": "再スキャン",
+    "unsupported": "このホストはまだゲームライブラリをスキャンできません。",
+    "unavailable": "現在利用できません",
+    "reasons": {
+      "setup": "このホストからディスプレイを取得できませんでした。",
+      "webaccess": "このページはすでにホストの Web UI です。",
+      "remote": "このホストはまだネットワークを確認できません。ホストを更新してください。"
+    },
+    "start": "使い始める",
+    "save": "保存",
+    "optional": "任意：必要になったら設定",
+    "optionalNote": "どれも必須ではありません。設定しなくても始められます。",
+    "advanced": "詳細",
+    "back": "完了",
+    "open": "設定",
+    "items": {
+      "appearance": {
+        "title": "テーマカラーと背景",
+        "text": "壁紙、テーマカラー、ぼかし"
+      },
+      "motion": {
+        "title": "アニメーション",
+        "text": "画面アニメーションの強さ"
+      },
+      "setup": {
+        "title": "表示と HDR",
+        "text": "グラフィックカード、ストリームする画面、HDR"
+      },
+      "webaccess": {
+        "title": "Web 管理",
+        "text": "別の端末のブラウザーからこのコンピューターを管理"
+      },
+      "remote": {
+        "title": "リモートストリームとネットワーク",
+        "text": "自宅の外からこのコンピューターへストリームするときだけ必要です。ほとんどの人には不要です。"
+      }
+    }
+  },
+  "remoteGuide": {
+    "checkTitle": "ネットワーク確認",
+    "checking": "このコンピューターのネットワークを確認しています…",
+    "again": "再確認",
+    "recommend": "推奨",
+    "other": "他の方法",
+    "facts": {
+      "publicYes": "グローバルアドレス：外部から到達可能",
+      "publicNo": "グローバルアドレス：なし（プロバイダーが共有）",
+      "publicPossible": "グローバルアドレス：ルーターにあり。ポートを開放する必要があります",
+      "publicUnknown": "グローバルアドレス：未検出",
+      "upnpOn": "ルーターがポートを自動で開放（UPnP）：オン",
+      "upnpOff": "ルーターがポートを自動で開放（UPnP）：オフ",
+      "meshYes": "メッシュツール：{name} 導入済み",
+      "meshNo": "メッシュツール：未導入"
+    },
+    "recMesh": "メッシュネットワーク経由で接続",
+    "recMeshText": "このコンピューターには接続先のグローバルアドレスがありません。メッシュネットワークなら不要です。",
+    "recDirect": "直接接続できます",
+    "recDirectText": "外部からこのコンピューターに到達できます。メッシュネットワークも使えます。",
+    "homeOnly": "自宅だけで遊ぶなら設定は不要です。"
   },
   "account": {
     "username": "ユーザー名",
@@ -93,6 +197,12 @@ export default {
     "exists": "アカウントは既にあります。"
   },
   "setup": {
+    "hdrState": {
+      "UNKNOWN": "HDR：不明",
+      "ENABLED": "HDR：オン",
+      "DISABLED": "HDR：オフ"
+    },
+    "hdrWin10": "Windows 10 では Foundation Virtual Display に HDR がありません（Windows 11 22H2 以降）。HDR は、画面とエンコーダーが対応していれば、要求したクライアントに提供されます。",
     "preps": {
       "no_operation": "何もしない",
       "ensure_active": "選んだディスプレイを有効にする",
@@ -125,6 +235,11 @@ export default {
     "permission": "初回起動時にローカルネットワークへのアクセスを尋ねます。許可しないと、このパソコンを見つけられません。",
     "project": "プロジェクトページ",
     "devices": {
+      "windows": "Windows",
+      "macos": "macOS",
+      "linux": "Linux",
+      "android": "Android",
+      "ios": "iPhone / iPad",
       "harmony": "HarmonyOS",
       "tv": "テレビ"
     },
@@ -132,39 +247,74 @@ export default {
       "macos": "初回起動が止められたら、プロジェクトの説明に従ってください。",
       "ios": "App Store から。",
       "harmony": "AppGallery から。",
-      "tv": "Android TV: Moonlight V+ の APK。"
+      "tv": "Android TV：Moonlight V+ の APK。"
     }
   },
   "address": {
-    "discovery": "自動検出",
-    "discoveryText": "クライアントの一覧に出ます。それを選びます。",
+    "listed": "クライアントに「{name}」が自動で表示されます。クリックしてください。",
+    "listedNoName": "クライアントにこのコンピューターが自動で表示されます。クリックしてください。",
     "notShowing": "出ませんか？",
-    "manual": "クライアントの「パソコンを追加」に、接続方法ごとのアドレスを入力します。下から自分の方法を選んでください。",
-    "pick": "クライアントの接続方法",
+    "typeThis": "クライアントでコンピューターを追加し、次を入力します：",
+    "scan": "またはクライアントでこれをスキャン",
+    "usual": "よくある原因：スマートフォンがゲスト Wi-Fi にいる、プロキシまたは VPN が有効になっている。このコンピューターの Wi-Fi に接続し、プロキシまたは VPN を切ってください。",
+    "portKept": ":{port} も入力してください。このコンピューターのポートは既定値ではありません。",
+    "others": "他の接続方法",
+    "othersHelp": "これらのネットワークでは、クライアントがいるネットワークのアドレスを入力してください。",
     "kinds": {
       "lan": "ローカルネットワーク",
+      "zerotier": "ZeroTier",
+      "tailscale": "Tailscale",
+      "easytier": "EasyTier",
       "public": "公開アドレス",
       "other": "その他のネットワーク"
     },
-    "fill": "{way} では、クライアントに {address} を入力します。",
-    "thisPc": "このパソコン",
-    "find": "調べ方",
-    "windowsHow": "Win + R で cmd を開き、ipconfig を実行します。使っているイーサネットまたは WLAN の IPv4 アドレスを使います。",
-    "linuxHow": "ip addr を実行し、使っているインターフェースの inet アドレスを使います。",
-    "macosHow": "システム設定 > ネットワークで、使っている接続を開くと IP アドレスがあります。",
-    "example": "例: 192.168.1.100",
-    "noSource": "このホストはネットワークアドレスを報告していません。",
+    "none": "このコンピューターはネットワークアドレスを報告していません。",
+    "recheck": "再確認",
+    "checking": "確認中…",
+    "diagnostics": "診断を開く",
     "port": {
+      "title": "詳細：ポート",
+      "show": "表示",
+      "hide": "非表示",
+      "lead": "ポートはすべてベースポートから数えます。ルーターまたはファイアウォールでこれらを開放してください。",
+      "base": "ベースポート",
+      "roles": {
+        "https": "ペアリング",
+        "http": "クライアントアドレス",
+        "web": "WebUI パネル",
+        "rtsp": "ストリームのネゴシエーション",
+        "video": "映像",
+        "control": "操作",
+        "audio": "音声",
+        "microphone": "マイク"
+      },
+      "tcp": "TCP",
+      "udp": "UDP",
+      "optional": "ストリームには不要",
+      "field": "新しいベースポート",
+      "save": "ポートを保存",
+      "saved": "保存しました",
+      "same": "これが使用中のポートです。",
+      "format": "数字のみ。",
+      "range": "{min} から {max} の範囲で入力してください。",
+      "pendingTitle": "{port} を使うには再起動してください。",
+      "pendingText": "それまではホストは {active} で待ち受けます。再起動後、クライアントは {address} を入力し、WebUI パネルはポート {web} に移ります。",
+      "restart": "今すぐ再起動",
+      "restarting": "再起動中…",
+      "taken": "他のプログラムがこれらのポートの一つを使っている場合、再起動後の確認で示されます。",
       "check": "ポートを確認",
       "checking": "確認中…",
       "checkAgain": "もう一度確認",
       "checkUnsupported": "このホストはまだポートを確認できません。更新後は診断で見られます。",
       "checkFailed": "確認を実行できませんでした。",
       "checkNone": "ポートについて報告するものはありません。",
-      "checkOpen": "診断を開く"
+      "checkOpen": "診断を開く",
+      "failed": "ポートを保存できませんでした。"
     }
   },
   "pair": {
+    "showQr": "別の機器が読み取るコードを表示",
+    "scanHow": "クライアントで「スキャン」を選び、このコードを写してください。",
     "qr": "クライアントで読み取る",
     "qrNote": "この手順を開いている数分間だけ有効です。",
     "qrRefresh": "新しいコード",
@@ -185,8 +335,7 @@ export default {
     "hint": "このパソコンを開くと、クライアントに 4 桁の PIN が出ます。",
     "already": "ペアリング済みのデバイス",
     "another": "もう一台ペアリング",
-    "unavailable": "ペアリング済みクライアントの一覧を読めませんでした。",
-    "showQr": "別の機器が読み取るコードを表示"
+    "unavailable": "ペアリング済みクライアントの一覧を読めませんでした。"
   },
   "connect": {
     "waiting": "クライアントがストリームを始めるのを待っています…",
@@ -220,6 +369,7 @@ export default {
   },
   "apps": {
     "sources": "探すライブラリ",
+    "skip": "あとで",
     "start": "探す",
     "again": "もう一度探す",
     "found": "{n} 件のゲーム",
@@ -236,14 +386,54 @@ export default {
     "backToGuide": "ガイドに戻る",
     "scan": "ゲームライブラリを探す",
     "scanText": "Steam、Epic、GOG。結果を確認してから追加します。",
+    "launchTouch": "タッチ",
+    "launchPc": "キーボード、マウス、ゲームパッド",
     "scanOnly": "このホストはまだゲームライブラリを探せません。ホストを更新してください。",
     "manual": "手で追加",
     "manualText": "名前とメインプログラム。",
-    "skip": "今はしない",
     "done": "準備できました",
-    "open": "開く"
-  },
-  "follow": "フォロー：",
-  "followBilibili": "Bilibili",
-  "followSite": "公式サイト"
+    "open": "開く",
+    "warnings": {
+      "steam.not_found": "このコンピューターに Steam が見つかりません。",
+      "steam.empty": "Steam に追加できるゲームがありません。",
+      "epic.unsupported": "Epic ライブラリは Windows でのみスキャンします。",
+      "epic.not_found": "このコンピューターに Epic Games ランチャーが見つかりません。",
+      "epic.empty": "Epic に追加できるゲームがありません。",
+      "gog.unsupported": "GOG ライブラリは Windows でのみスキャンします。",
+      "gog.unavailable": "レジストリを読めなかったため、GOG はスキャンしていません。",
+      "gog.not_found": "このコンピューターに GOG が見つかりません。",
+      "gog.empty": "GOG に追加できるゲームがありません。",
+      "directory.symlinks": "シンボリックリンクはスキップしました。",
+      "directory.depth": "スキャンは深さの上限で停止しました。",
+      "directory.time": "スキャンは時間の上限で停止しました。",
+      "directory.unreadable": "一部のフォルダーを読めませんでした。",
+      "xbox.unsupported": "Xbox ライブラリは Windows でのみスキャンします。",
+      "xbox.not_found": "このコンピューターに Xbox のゲームが見つかりません。",
+      "xbox.empty": "Xbox のゲームフォルダーに追加できるゲームがありません。",
+      "ea.unsupported": "EA ライブラリは Windows でのみスキャンします。",
+      "ea.not_found": "このコンピューターに EA app が見つかりません。",
+      "ea.empty": "EA app に追加できるゲームがありません。",
+      "ubisoft.unsupported": "Ubisoft ライブラリは Windows でのみスキャンします。",
+      "ubisoft.not_found": "このコンピューターに Ubisoft Connect が見つかりません。",
+      "ubisoft.empty": "Ubisoft Connect に追加できるゲームがありません。",
+      "battlenet.unsupported": "Battle.net ライブラリは Windows でのみスキャンします。",
+      "battlenet.not_found": "このコンピューターに Battle.net が見つかりません。",
+      "battlenet.empty": "Battle.net に追加できるゲームがありません。",
+      "riot.unsupported": "Riot ライブラリは Windows でのみスキャンします。",
+      "riot.not_found": "このコンピューターに Riot Client が見つかりません。",
+      "riot.empty": "Riot Client に追加できるゲームがありません。",
+      "hoyoplay.unsupported": "HoYoPlay ライブラリは Windows でのみスキャンします。",
+      "hoyoplay.not_found": "このコンピューターに HoYoPlay のゲームが見つかりません。",
+      "hoyoplay.empty": "HoYoPlay に追加できるゲームがありません。",
+      "wegame.unsupported": "WeGame ライブラリは Windows でのみスキャンします。",
+      "wegame.not_found": "このコンピューターに WeGame が見つかりません。",
+      "wegame.empty": "WeGame に追加できるゲームがありません。",
+      "sparxie.unsupported": "タッチコンポーネントは Windows でのみスキャンします。",
+      "sparxie.absent": "タッチコンポーネントがインストールされていないため、スキップしました。",
+      "sparxie.empty": "タッチコンポーネントにはまだゲームプロファイルがありません。",
+      "sparxie.unreadable": "タッチコンポーネントの設定を読めませんでした。",
+      "user.absent": "サインインしている人がいないため、全ユーザー共通のライブラリだけをスキャンしました。",
+      "unknown": "1 つのライブラリをスキャンできませんでした。"
+    }
+  }
 }

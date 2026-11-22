@@ -118,6 +118,9 @@ const SLOP = 6
 let pend = null
 function down(event) {
   if (props.disabled || event.button > 0) return
+  // The slider takes the focus itself (the handle, in begin) and keeps the press. Left to the browser, the compatibility mousedown of a press on the track moves the focus to the page
+  // after the handle took it: the focus leaves a surface that commits on focus loss (the DLSS NR page of the Panel) before the release, and the value jumps back. A press on the handle, which is focusable, never lost it.
+  event.preventDefault()
   clearTimeout(keyTimer); keyTimer = 0
   touchy.value = event.pointerType === 'touch' || event.pointerType === 'pen'
   if (touchy.value) {
@@ -155,6 +158,8 @@ function endPend(event, tap) {
   if (tap && p) {
     let index = 0
     if (isRange.value) index = Math.abs(p.v - values.value[0]) <= Math.abs(p.v - values.value[1]) ? 0 : 1
+    // the handle takes the focus as a mouse press gives it (the field that had it is left, as a press on the track left it before); then the value is written
+    root.value.querySelectorAll('[role=slider]')[index]?.focus({ preventScroll: true })
     emit('commit', setAt(index, p.v))
   }
 }

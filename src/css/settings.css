@@ -20,7 +20,7 @@
 .m-cards__card.is-on .m-cards__art { border-radius: 28px 14px 28px 14px; background: color-mix(in srgb, var(--md-sys-color-surface) 62%, transparent); color: var(--md-sys-color-primary-text); }
 .m-cards__art > svg, .m-cards__art > .m-ctl { width: 100%; max-height: 96px; }
 .m-cards__label { font: var(--m-title-small, 600 14px/20px sans-serif); padding: 0 4px; }
-.m-cards__text { font: var(--m-body-small, 400 12px/16px sans-serif); padding: 0 4px; opacity: .9; }
+.m-cards__text { font: var(--m-body-small, 400 12px/16px sans-serif); padding: 0 4px; }
 .m-cards__mark { position: absolute; top: 18px; right: 18px; font-size: 22px; color: var(--md-sys-color-primary-text); }
 
 /* ----- MChipSet ----- */
@@ -85,8 +85,11 @@
 .m-pick__opt:hover { background: color-mix(in srgb, var(--md-sys-color-on-surface) 6%, var(--m-card)); }
 .m-pick__opt:focus-visible { outline: 2px solid var(--md-sys-color-primary); outline-offset: -2px; }
 .m-pick__opt.is-on { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); }
+.m-pick__opt.is-disabled { cursor: default; color: var(--md-sys-color-on-surface-variant); }
+.m-pick__opt.is-disabled:hover { background: var(--m-card); }
+.m-pick__opt.is-disabled .m-pick__text > span { opacity: 0.6; }
 .m-pick__text { flex: 1; min-width: 0; display: flex; flex-direction: column; font: var(--m-body-large); }
-.m-pick__text small { font: var(--m-body-small); opacity: .8; }
+.m-pick__text small { font: var(--m-body-small); }
 .m-pick__empty { margin: 16px; text-align: center; font: var(--m-body-medium); color: var(--md-sys-color-on-surface-variant); }
 
 /* ----- MControllerArt ----- */

@@ -3,6 +3,7 @@
 // a card or a group is a sub-page of the gamepad page, the way is 输入 › 手柄 › 触觉与震动.
 import { localizedKeyLabel } from './dualsenseLabels.js'
 import { SETTINGS_CATEGORIES } from './model.js'
+import { ds5Availability } from './availability.js'
 
 /** Everyday options, one card each (key ids). Keys 82-84 are the lightbar colour, edited by the colour row. */
 export const DS5_CARDS = Object.freeze([
@@ -41,21 +42,24 @@ export const gamepadPath = (label) => [label(SETTINGS_CATEGORIES.input.labelKey)
 
 /**
  * Search entries of the DualSense keys. label(key) resolves a locale key; locale picks the key labels (zh or en);
- * altLocale adds the other language as keywords so either finds the row.
+ * altLocale adds the other language as keywords so either finds the row. Every entry says whether the key can be used (`availability`, settings/availability.js): the host's own status and reason code,
+ * `nativePath` false when the host has no native DualSense path, and `requiresOf(descriptor)` -> { key, title, on } for a key that needs another setting on.
  */
-export function dualsenseEntries({ keys = [], label, locale, altLocale = null }) {
+export function dualsenseEntries({ keys = [], label, locale, altLocale = null, nativePath = true, requiresOf = null }) {
   const where = gamepadPath(label)
   return keys.map((descriptor) => {
     const place = ds5PlaceOf(descriptor)
+    const availability = ds5Availability(descriptor, { locale, nativePath, requires: requiresOf ? requiresOf(descriptor) : null })
     return {
       id: `ds5:${descriptor.key}`,
       keyName: descriptor.key,
       title: localizedKeyLabel(descriptor, locale),
-      path: [...where, place.titleKey ? label(place.titleKey) : ''].filter(Boolean).join(' › '),
+      path: [...where, place.titleKey && availability?.state !== 'unavailable' ? label(place.titleKey) : ''].filter(Boolean).join(' › '),
       icon: 'sports_esports',
       keywords: [altLocale ? localizedKeyLabel(descriptor, altLocale) : '', descriptor.label, descriptor.key.replace(/[._]/g, ' ')].filter(Boolean).join(' '),
       route: 'config',
       params: { tab: 'input', ...(place.sub ? { sub: place.sub } : {}), focus: `ds5:${descriptor.key}` },
+      availability,
     }
   })
 }

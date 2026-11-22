@@ -40,7 +40,10 @@ test('every language has the words of the type choice and of the two ways out, a
 })
 
 test('the error dialog and the diagnostics page have no way to a public repository, in any language', () => {
-  for (const f of ['src/vue/MErrorHost.vue', 'src/vue/MDiagnostics.vue', 'src/vue/devmode/DevReport.vue']) assert.doesNotMatch(read(f), /issueUrl|crashIssueUrl|reportIssueUrl|newIssueUrl|issues\/new|T\.issue\b/, f)
+  for (const f of ['src/vue/MErrorHost.vue', 'src/vue/MDiagnostics.vue']) assert.doesNotMatch(read(f), /issueUrl|crashIssueUrl|reportIssueUrl|newIssueUrl|issues\/new|T\.issue\b/, f)
+  // the panel has one quiet link to the plain new-issue page: nothing the person wrote or any report content is put into the address
+  const panel = read('src/vue/feedback/MFeedbackPanel.vue')
+  assert.match(panel, /REPO_ISSUES_URL/); assert.doesNotMatch(panel, /issueUrl\(|searchParams|reportIssueUrl|newIssueUrl/)
   for (const l of ['en', 'zh', 'de', 'fr', 'es', 'it', 'ja', 'ko', 'ru', 'pt', 'pt_BR', 'pl', 'cs', 'sv', 'tr', 'uk', 'bg', 'zh_TW', 'en_GB']) {
     const t = errorTexts(l)
     for (const k of ['queued', 'rejected', 'limited', 'queuedOffline', 'queuedHeld', 'stopNoServer', 'stopSave', 'stopSentFail', 'whatSentLead']) assert.ok(!/github/i.test(t[k]), `${l}.${k}`)

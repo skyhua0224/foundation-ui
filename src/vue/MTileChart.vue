@@ -43,11 +43,16 @@ onBeforeUnmount(() => ro?.disconnect())
 
 const drawn = useDrawnPoints(() => props.points, useOnScreen(root))
 const finite = computed(() => drawn.value.filter((v) => Number.isFinite(v)))
+// a history of a few samples is a short flat line with a dot at its end: it reads like the handle of a slider and says nothing. The chart is drawn from MIN_SAMPLES samples on.
+const MIN_SAMPLES = 8
+const enough = computed(() => finite.value.length >= MIN_SAMPLES)
 // the samples on screen and the one that slides out on the left
-const shown = computed(() => finite.value.slice(-(props.window + 1)))
+// a line or an area spans the box edge to edge from the first samples on (it grows to its window), so a short history is a whole chart and not a stub with a dot at its end
+const win = computed(() => (props.kind === 'bars' ? props.window : Math.max(2, Math.min(props.window, finite.value.length))))
+const shown = computed(() => finite.value.slice(-(win.value + 1)))
 const range = computed(() => {
   if (props.max != null) return { lo: 0, hi: props.max }
-  const p = finite.value.slice(-props.window)
+  const p = finite.value.slice(-win.value)
   if (!p.length) return { lo: 0, hi: 1 }
   const hi = Math.max(...p), lo = Math.min(...p), d = hi - lo
   // bars always start at zero (a bar's length is its value)
@@ -57,7 +62,7 @@ const range = computed(() => {
 })
 // with the now dot the newest point stays one dot inside the right edge and the line runs on flat to the edge (as in Stocks)
 const inset = computed(() => (props.dot && props.kind !== 'bars' ? 16 : 0))
-const step = computed(() => (props.kind === 'bars' ? box.value.w / props.window : (box.value.w - inset.value) / Math.max(1, props.window - 1)))
+const step = computed(() => (props.kind === 'bars' ? box.value.w / win.value : (box.value.w - inset.value) / Math.max(1, win.value - 1)))
 // the end dot has a 6 px radius and a 8 px halo: the line keeps 14 px from the top and the bottom of its box so the dot and its ring are never on the box's edge (hero band, 码率, 帧率, 内存)
 const vin = computed(() => (props.dot && props.kind !== 'bars' ? Math.min(14, box.value.h * 0.3) : 0))
 const yOf = (v) => { const { lo, hi } = range.value; const h = box.value.h - props.base - 2 * vin.value; const t = (Math.min(Math.max(v, lo), hi) - lo) / Math.max(hi - lo, 1e-9); return vin.value + h - t * h * (1 - props.pad) }
@@ -107,8 +112,8 @@ const targetY = computed(() => (props.target != null && box.value.h ? yOf(props.
 
 <template>
   <div ref="root" class="m-tchart" :class="`m-tchart--${kind}`" aria-hidden="true">
-    <svg v-if="gridYs.length || targetY" class="m-tchart__grid" :width="box.w" :height="box.h"><line v-for="y in gridYs" :key="y" x1="0" :x2="box.w" :y1="y" :y2="y" /><line v-if="targetY" class="m-tchart__target" x1="0" :x2="box.w" :y1="targetY" :y2="targetY" /></svg>
-    <svg v-if="box.w" ref="svg" class="m-tchart__svg" :width="svgW" :height="box.h" :viewBox="`0 0 ${svgW} ${box.h}`" :style="{ transform: rest }">
+    <svg v-if="enough && (gridYs.length || targetY)" class="m-tchart__grid" :width="box.w" :height="box.h"><line v-for="y in gridYs" :key="y" x1="0" :x2="box.w" :y1="y" :y2="y" /><line v-if="targetY" class="m-tchart__target" x1="0" :x2="box.w" :y1="targetY" :y2="targetY" /></svg>
+    <svg v-if="box.w && enough" ref="svg" class="m-tchart__svg" :width="svgW" :height="box.h" :viewBox="`0 0 ${svgW} ${box.h}`" :style="{ transform: rest }">
       <defs v-if="kind === 'area'">
         <linearGradient :id="gid" gradientUnits="userSpaceOnUse" x1="0" :y1="0" x2="0" :y2="box.h">
           <stop offset="0" class="m-tchart__stop0" />
@@ -125,6 +130,6 @@ const targetY = computed(() => (props.target != null && box.value.h ? yOf(props.
         <path :d="paths.line" class="m-tchart__line" />
       </template>
     </svg>
-    <span v-if="dot && kind !== 'bars' && last && paths.line" ref="dotEl" class="m-tchart__dot" :style="{ transform: dotRest }" />
+    <span v-if="enough && dot && kind !== 'bars' && last && paths.line" ref="dotEl" class="m-tchart__dot" :style="{ transform: dotRest }" />
   </div>
 </template>

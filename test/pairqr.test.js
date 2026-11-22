@@ -52,6 +52,37 @@ test('stop gives the pairing window back after the grace and a code that arrives
   } finally { mock.timers.reset() }
 })
 
+test('a manually requested code expires without automatic renewal', async (t) => {
+  t.mock.timers.enable({ apis: ['setInterval', 'setTimeout'] })
+  const { q, calls } = make({ api: { autoRenew: false } })
+  await q.begin()
+  t.mock.timers.tick(4000)
+  await settle()
+  assert.equal(q.view.state, 'expired')
+  assert.equal(q.view.image, '')
+  assert.equal(calls.start, 1)
+})
+
+test('a renewal that finishes after expiry cannot show a stale QR code', async (t) => {
+  t.mock.timers.enable({ apis: ['setInterval', 'setTimeout'] })
+  let renderCount = 0
+  let finishRender
+  const q = createPairQr({
+    start: async () => ({ url: 'https://host/pair', expires_in: 2 }),
+    poll: async () => ({ status: 'waiting' }),
+    cancel: async () => {},
+    render: async () => ++renderCount === 1 ? 'initial' : new Promise((resolve) => { finishRender = resolve }),
+  })
+  await q.begin()
+  t.mock.timers.tick(1000); await settle()
+  assert.equal(renderCount, 2)
+  t.mock.timers.tick(1000); await settle()
+  assert.equal(q.view.state, 'expired')
+  finishRender('late image'); await settle()
+  assert.equal(q.view.state, 'expired')
+  assert.equal(q.view.image, '')
+})
+
 test('a client that pairs ends the countdown', async () => {
   mock.timers.enable({ apis: ['setInterval'] })
   try {
@@ -60,6 +91,32 @@ test('a client that pairs ends the countdown', async () => {
     mock.timers.tick(2000); await settle()
     assert.equal(q.view.state, 'paired'); assert.equal(calls.paired, 1)
   } finally { mock.timers.reset() }
+})
+
+test('a pairing reported by an in-flight poll after expiry is accepted once, but not after refresh', async (t) => {
+  t.mock.timers.enable({ apis: ['setInterval', 'setTimeout'] })
+  const pending = []
+  let paired = 0
+  const q = createPairQr({
+    start: async () => ({ url: 'https://host/pair', expires_in: 3 }),
+    poll: () => new Promise((resolve) => pending.push(resolve)),
+    cancel: async () => {}, render: async () => 'image', autoRenew: false,
+    onPaired: () => { paired++ },
+  })
+  await q.begin()
+  t.mock.timers.tick(2000); await settle()
+  t.mock.timers.tick(1000); await settle()
+  assert.equal(q.view.state, 'expired')
+  pending.shift()({ status: 'paired' }); await settle()
+  assert.equal(q.view.state, 'paired'); assert.equal(paired, 1)
+
+  await q.begin(true)
+  t.mock.timers.tick(2000); await settle()
+  t.mock.timers.tick(1000); await settle()
+  await q.begin(true)
+  pending.shift()({ status: 'paired' }); await settle()
+  assert.equal(q.view.state, 'ready'); assert.equal(paired, 1)
+  q.stop()
 })
 
 test('a host that refuses shows the error state, not a stale code', async () => {

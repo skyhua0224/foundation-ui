@@ -3,18 +3,18 @@ export default {
   "close": "Kapat",
   "back": "Geri",
   "next": "İleri",
-  "skip": "Kılavuzu atla",
-  "skipStep": "Sonraki sayfaya geç",
-  "skipIn": "Kılavuzu atla ({n})",
+  "skipThis": "Bu adımı atla",
   "finishTools": "Bitir ve test araçlarını aç",
   "finish": "Bitir",
+  "follow": "Bizi izleyin: ",
+  "followBilibili": "Bilibili",
+  "followSite": "Site",
   "stepOf": "Adım {n} / {total}",
   "steps": "Adımlar",
   "openSource": {
-    "text": "Foundation Sunshine açık kaynaklı ve özgür bir yazılımdır (GPL-3.0). Bu proje hiçbir kişiye, işletmeye veya medya hesabına onu satma yetkisi vermemiştir. Onun için ödeme yaptıysanız hemen iade isteyin.",
-    "link": "GitHub'da görüntüle",
-    "more": "Daha fazla göster",
-    "less": "Daha az göster"
+    "title": "Ücretsiz ve açık kaynak",
+    "text": "Foundation Sunshine açık kaynaklı ve özgür bir yazılımdır (GPL-3.0). Bu proje hiç kimseye onu satma yetkisi vermemiştir.",
+    "link": "GitHub'da görüntüle"
   },
   "intro": {
     "followSystem": "Sistemi izle",
@@ -33,6 +33,9 @@ export default {
   "copied": "Kopyalandı",
   "helpRow": "Kurulumu, istemci kurulumunu, eşleştirmeyi ve ilk bağlantıyı yeniden yapın.",
   "titles": {
+    "channel": "Güncelleme kanalı",
+    "done": "Hazır",
+    "hostdone": "Bu bilgisayar ayarlanmış",
     "whatsnew": "Yenilikler",
     "intro": "Hoş geldiniz",
     "account": "WebUI paneli hesabını ayarlayın",
@@ -41,10 +44,10 @@ export default {
     "setup": "Ekran kartı ve monitör",
     "install": "İstemci kur",
     "address": "Kurulu bir istemciden eşleştir",
-    "pair": "Cihaz eşleştir",
+    "pair": "Bağlan ve eşleştir",
     "webaccess": "Telefon ve diğer aygıtlar",
     "remote": "Uzaktan erişim",
-    "connect": "İlk yayın denetimi",
+    "connect": "Dene",
     "apps": "Oyun ekle",
     "update": "Güncelleme yöntemi"
   },
@@ -54,34 +57,131 @@ export default {
     "address": "Aynı ağda istemci bu bilgisayarı kendisi bulur; değilse bir adres girin.",
     "pair": "Kodu tarayın ya da istemcinin gösterdiği PIN'i girin.",
     "webaccess": "İsteğe bağlı. WebUI panelini kimlerin açabileceğini seçin; siz seçmedikçe hiçbir şey değişmez.",
-    "remote": "İsteğe bağlı. Yalnızca bu ağın dışından bağlanmak için gerekir.",
+    "remote": "Yalnızca ev dışından bu bilgisayara yayın yapmak için gerekir; çoğu kişiye gerekmez.",
     "connect": "İstemcide bu bilgisayarı açın ve Masaüstü'yü seçin.",
-    "apps": "İsteğe bağlı. Bunları daha sonra uygulamalar sayfasından ekleyebilirsiniz."
+    "apps": "İsteğe bağlı. Bunları daha sonra uygulamalar sayfasından ekleyebilirsiniz.",
+    "hostdone": "Şimdi oynayacağınız cihaz: bir istemci kurun, eşleştirin ve bağlanın."
+  },
+  "hostdone": {
+    "done": "Bu bilgisayar yayına hazır.",
+    "download": "Oynayacağınız cihaz için istemciyi edinin",
+    "note": "Sonraki adımlar onu kurar, eşleştirir ve ilk bağlantıyı yapar."
   },
   "whatsnew": {
-    "items": {
-      "0": {
+    "items": [
+      {
         "icon": "sports_esports",
         "title": "Denetleyebileceğiniz ilk yayın",
         "text": "Ses, fare, klavye ve görüntü testleri ile gecikme saati, kılavuzda ve Test araçları'nda."
       },
-      "1": {
+      {
         "icon": "download",
         "title": "Tek kurulum görünümü",
         "text": "Kılavuzda, Cihaz bağlantısında ve indirme sayfasında aynı istemci listesi, dosyalar ve QR kod."
       },
-      "2": {
+      {
         "icon": "public",
         "title": "Uzaktan erişim denetlendi",
         "text": "Kılavuz, bu bilgisayara dışarıdan erişilip erişilemediğini ve neyin değiştirileceğini sınar."
       },
-      "3": {
+      {
         "icon": "system_update_alt",
         "title": "Güncelleme yöntemi",
         "text": "Güncellemelerin nereden geleceğini seçin; MirrorChyan CDK'i isteğe bağlıdır."
       }
-    },
+    ],
     "note": "Bu pencere her yeni sürümde bir kez açılır. Atlayabilirsiniz."
+  },
+  "welcome": {
+    "modes": {
+      "system": "Sistemi izle",
+      "light": "Açık",
+      "dark": "Koyu"
+    }
+  },
+  "channel": {
+    "channel": "Güncelleme kanalı",
+    "stable": "Kararlı (önerilir)",
+    "stableText": "Test edildi, çoğu kişiye uygun.",
+    "beta": "Beta",
+    "betaText": "Yeni özellikler ve düzeltmeler daha erken; küçük sorunlar olabilir.",
+    "source": "Güncellemeler nereden gelir",
+    "failed": "Kaydedilmedi. Tekrar deneyin."
+  },
+  "trynow": {
+    "more": "Daha fazla indirme seçeneği"
+  },
+  "pairing": {
+    "found": "İstemci bu bilgisayarı bulduğunda gösterdiği PIN'i yazın.",
+    "pinCard": "PIN ile eşleştir"
+  },
+  "done": {
+    "library": "Oyun kitaplığı",
+    "scanning": "Oyun kitaplıkları arka planda taranıyor…",
+    "found": "{n} oyun bulundu. Eklemek istediklerinizi işaretleyin.",
+    "addPicked": "Seçilen {n} oyunu ekle",
+    "added": "{n} eklendi.",
+    "none": "Oyun bulunamadı. Daha sonra uygulamalar sayfasından ekleyebilirsiniz.",
+    "failed": "Oyun kitaplıkları taranamadı.",
+    "rescan": "Yeniden tara",
+    "unsupported": "Bu ana makine henüz oyun kitaplıklarını tarayamıyor.",
+    "unavailable": "Şu anda kullanılamıyor",
+    "reasons": {
+      "setup": "Bu ana makineden ekran okunamadı.",
+      "webaccess": "Bu sayfa zaten ana makinenin web arayüzü.",
+      "remote": "Bu ana makine henüz ağını denetleyemiyor. Ana makineyi güncelleyin."
+    },
+    "start": "Kullanmaya başla",
+    "save": "Kaydet",
+    "optional": "İsteğe bağlı: gerektiğinde ayarla",
+    "optionalNote": "Bunların hiçbiri zorunlu değil. Onlar olmadan da başlayabilirsiniz.",
+    "advanced": "Gelişmiş",
+    "back": "Bitti",
+    "open": "Ayarla",
+    "items": {
+      "appearance": {
+        "title": "Tema rengi ve arka plan",
+        "text": "Duvar kağıdı, tema rengi ve bulanıklık"
+      },
+      "motion": {
+        "title": "Animasyonlar",
+        "text": "Arayüz animasyonlarının gücü"
+      },
+      "setup": {
+        "title": "Ekran ve HDR",
+        "text": "Ekran kartı, yayın için ekran, HDR"
+      },
+      "webaccess": {
+        "title": "Web yönetimi",
+        "text": "Bu bilgisayarı başka bir cihazın tarayıcısından yönet"
+      },
+      "remote": {
+        "title": "Uzaktan yayın ve ağ",
+        "text": "Yalnızca ev dışından bu bilgisayara yayın yapmak için gerekir; çoğu kişiye gerekmez."
+      }
+    }
+  },
+  "remoteGuide": {
+    "checkTitle": "Ağ denetimi",
+    "checking": "Bu bilgisayarın ağı denetleniyor…",
+    "again": "Yeniden denetle",
+    "recommend": "Önerilen",
+    "other": "Diğer yollar",
+    "facts": {
+      "publicYes": "Genel adres: dışarıdan erişilebilir",
+      "publicNo": "Genel adres: yok (sağlayıcı birini paylaşıyor)",
+      "publicPossible": "Genel adres: yönlendiricide var; bağlantı noktaları açılmalı",
+      "publicUnknown": "Genel adres: henüz algılanmadı",
+      "upnpOn": "Yönlendirici bağlantı noktalarını kendi açar (UPnP): açık",
+      "upnpOff": "Yönlendirici bağlantı noktalarını kendi açar (UPnP): kapalı",
+      "meshYes": "Mesh aracı: {name} kurulu",
+      "meshNo": "Mesh aracı: henüz kurulu değil"
+    },
+    "recMesh": "Mesh ağı üzerinden geri bağlan",
+    "recMeshText": "Bu bilgisayarın bağlanılacak genel adresi yok; mesh ağı buna gerek duymaz.",
+    "recDirect": "Doğrudan bağlantı çalışıyor",
+    "recDirectText": "Bu bilgisayara dışarıdan erişilebiliyor. Mesh ağı da çalışır.",
+    "homeOnly": "Yalnızca evde oynuyorsanız ayarlanacak bir şey yok."
   },
   "account": {
     "username": "Kullanıcı adı",
@@ -97,6 +197,12 @@ export default {
     "exists": "Zaten bir hesap var."
   },
   "setup": {
+    "hdrState": {
+      "UNKNOWN": "HDR: bilinmiyor",
+      "ENABLED": "HDR: açık",
+      "DISABLED": "HDR: kapalı"
+    },
+    "hdrWin10": "Windows 10'da Foundation Virtual Display'in HDR desteği yoktur (Windows 11 22H2 ve sonrası). HDR, ekran ve kodlayıcı destekliyorsa isteyen istemciye sunulur.",
     "preps": {
       "no_operation": "İşlem yok",
       "ensure_active": "Seçilen ekranı etkinleştir",
@@ -141,15 +247,19 @@ export default {
       "macos": "İlk başlatma engellenirse proje notlarını izleyin.",
       "ios": "App Store'dan.",
       "harmony": "AppGallery'den.",
-      "tv": "Android TV: Moonlight V+ APK."
+      "tv": "Android TV: Moonlight V+ APK'sı."
     }
   },
   "address": {
-    "discovery": "Otomatik keşif",
-    "discoveryText": "İstemcinin listesinde görünür. Üzerine tıklayın.",
+    "listed": "İstemci „{name}” adını kendi listeler. Üzerine tıklayın.",
+    "listedNoName": "İstemci bu bilgisayarı kendi listeler. Üzerine tıklayın.",
     "notShowing": "Görünmüyor mu?",
-    "manual": "İstemcinin \"bilgisayar ekle\" alanına, bağlandığınız yolda bu bilgisayara ait adresi yazın: aşağıdan kendi yolunuzu seçin.",
-    "pick": "İstemci nasıl bağlanır",
+    "typeThis": "İstemcide bilgisayar ekleyip şunu yazın:",
+    "scan": "Veya istemcide bunu tarayın",
+    "usual": "Yaygın nedenler: telefon konuk Wi-Fi ağında ya da bir proxy veya VPN açık. Bu bilgisayarın Wi-Fi ağına katılın ve proxy veya VPN'i kapatın.",
+    "portKept": ":{port} değerini koruyun. Bu bilgisayarın bağlantı noktası varsayılan değil.",
+    "others": "Diğer bağlantı yolları",
+    "othersHelp": "Bu ağlarda istemcinin bulunduğu ağa ait adresi yazın.",
     "kinds": {
       "lan": "Yerel ağ",
       "zerotier": "ZeroTier",
@@ -158,28 +268,53 @@ export default {
       "public": "Genel adres",
       "other": "Başka ağ"
     },
-    "fill": "{way} üzerinden istemciye {address} yazın.",
-    "thisPc": "Bu bilgisayar",
-    "find": "Nasıl bulunur",
-    "windows": "Windows",
-    "linux": "Linux",
-    "macos": "macOS",
-    "windowsHow": "Win + R'ye basın, cmd yazın ve ipconfig çalıştırın. Etkin Ethernet veya WLAN bağdaştırıcısının IPv4 adresini kullanın.",
-    "linuxHow": "ip addr çalıştırın ve etkin arayüzün inet adresini kullanın.",
-    "macosHow": "Sistem Ayarları > Ağ, etkin bağlantıyı seçin: IP adresi orada görünür.",
-    "example": "Örneğin 192.168.1.100.",
-    "noSource": "Bu ana bilgisayar ağ adreslerini bildirmedi.",
+    "none": "Bu bilgisayar bir ağ adresi bildirmedi.",
+    "recheck": "Yeniden denetle",
+    "checking": "Denetleniyor…",
+    "diagnostics": "Tanılamayı aç",
     "port": {
+      "title": "Gelişmiş: bağlantı noktası",
+      "show": "Göster",
+      "hide": "Gizle",
+      "lead": "Tüm bağlantı noktaları temel bağlantı noktasından sayılır. Bunları yönlendiricide veya güvenlik duvarında açın.",
+      "base": "Temel bağlantı noktası",
+      "roles": {
+        "https": "Eşleştirme",
+        "http": "İstemci adresi",
+        "web": "WebUI paneli",
+        "rtsp": "Yayın anlaşması",
+        "video": "Video",
+        "control": "Denetim",
+        "audio": "Ses",
+        "microphone": "Mikrofon"
+      },
+      "tcp": "TCP",
+      "udp": "UDP",
+      "optional": "yayın için gerekmez",
+      "field": "Yeni temel bağlantı noktası",
+      "save": "Bağlantı noktasını kaydet",
+      "saved": "Kaydedildi",
+      "same": "Kullanılan bağlantı noktası bu.",
+      "format": "Yalnızca rakam.",
+      "range": "{min} ile {max} arasını kullanın.",
+      "pendingTitle": "{port} kullanmak için yeniden başlatın.",
+      "pendingText": "O zamana kadar ana makine {active} üzerinde dinler. Sonra istemciler {address} yazar ve WebUI paneli {web} bağlantı noktasına geçer.",
+      "restart": "Şimdi yeniden başlat",
+      "restarting": "Yeniden başlatılıyor…",
+      "taken": "Bu bağlantı noktalarından birini başka bir program tutuyorsa denetim yeniden başlatmadan sonra onu adlandırır.",
       "check": "Bağlantı noktalarını denetle",
       "checking": "Denetleniyor…",
       "checkAgain": "Yeniden denetle",
       "checkUnsupported": "Bu ana bilgisayar henüz bağlantı noktalarını denetlemiyor. Güncellemeden sonra tanıda görünür.",
       "checkFailed": "Denetim çalışmadı.",
       "checkNone": "Denetimin bağlantı noktaları hakkında bildireceği bir şey yok.",
-      "checkOpen": "Tanıyı aç"
+      "checkOpen": "Tanıyı aç",
+      "failed": "Bağlantı noktası kaydedilemedi."
     }
   },
   "pair": {
+    "showQr": "Başka bir aygıtın tarayacağı kodu göster",
+    "scanHow": "İstemcide „Tara”yı seçin ve bu kodu gösterin.",
     "qr": "İstemciyle tarayın",
     "qrNote": "Kod yalnızca bu adım açıkken, birkaç dakika boyunca çalışır.",
     "qrRefresh": "Yeni kod",
@@ -200,8 +335,7 @@ export default {
     "hint": "Bu bilgisayara tıkladıktan sonra istemci dört haneli bir PIN gösterir.",
     "already": "Eşleşmiş aygıtlar",
     "another": "Başka bir aygıt eşleştir",
-    "unavailable": "Eşleşmiş istemci listesi okunamadı.",
-    "showQr": "Başka bir aygıtın tarayacağı kodu göster"
+    "unavailable": "Eşleşmiş istemci listesi okunamadı."
   },
   "connect": {
     "waiting": "Bir istemcinin yayına başlaması bekleniyor…",
@@ -235,6 +369,7 @@ export default {
   },
   "apps": {
     "sources": "Taranacak kitaplıklar",
+    "skip": "Şimdi değil",
     "start": "Tara",
     "again": "Yeniden tara",
     "found": "{n} oyun bulundu",
@@ -251,14 +386,54 @@ export default {
     "backToGuide": "Kılavuza dön",
     "scan": "Oyun kitaplıklarını tara",
     "scanText": "Steam, Epic ve GOG. Sonucu gözden geçirin, sonra ekleyin.",
+    "launchTouch": "Dokunma",
+    "launchPc": "Klavye, fare ve oyun kolu",
     "scanOnly": "Bu ana bilgisayar henüz oyun kitaplıklarını tarayamıyor: ana bilgisayarı güncelleyin.",
     "manual": "El ile ekle",
     "manualText": "Bir ad ve ana program.",
-    "skip": "Şimdi değil",
     "done": "Her şey hazır",
-    "open": "Aç"
-  },
-  "follow": "Bizi izleyin: ",
-  "followBilibili": "Bilibili",
-  "followSite": "Site"
+    "open": "Aç",
+    "warnings": {
+      "steam.not_found": "Steam bu bilgisayarda bulunamadı.",
+      "steam.empty": "Steam'de eklenecek oyun yok.",
+      "epic.unsupported": "Epic kitaplığı yalnızca Windows'ta taranır.",
+      "epic.not_found": "Epic Games başlatıcısı bu bilgisayarda bulunamadı.",
+      "epic.empty": "Epic'te eklenecek oyun yok.",
+      "gog.unsupported": "GOG kitaplığı yalnızca Windows'ta taranır.",
+      "gog.unavailable": "Kayıt defteri okunamadı, bu yüzden GOG taranmadı.",
+      "gog.not_found": "GOG bu bilgisayarda bulunamadı.",
+      "gog.empty": "GOG'da eklenecek oyun yok.",
+      "directory.symlinks": "Sembolik bağlantılar atlandı.",
+      "directory.depth": "Tarama derinlik sınırında durdu.",
+      "directory.time": "Tarama süre sınırında durdu.",
+      "directory.unreadable": "Bazı klasörler okunamadı.",
+      "xbox.unsupported": "Xbox kitaplığı yalnızca Windows'ta taranır.",
+      "xbox.not_found": "Bu bilgisayarda Xbox oyunu bulunamadı.",
+      "xbox.empty": "Xbox oyun klasöründe eklenecek oyun yok.",
+      "ea.unsupported": "EA kitaplığı yalnızca Windows'ta taranır.",
+      "ea.not_found": "EA uygulaması bu bilgisayarda bulunamadı.",
+      "ea.empty": "EA uygulamasında eklenecek oyun yok.",
+      "ubisoft.unsupported": "Ubisoft kitaplığı yalnızca Windows'ta taranır.",
+      "ubisoft.not_found": "Ubisoft Connect bu bilgisayarda bulunamadı.",
+      "ubisoft.empty": "Ubisoft Connect'te eklenecek oyun yok.",
+      "battlenet.unsupported": "Battle.net kitaplığı yalnızca Windows'ta taranır.",
+      "battlenet.not_found": "Battle.net bu bilgisayarda bulunamadı.",
+      "battlenet.empty": "Battle.net'te eklenecek oyun yok.",
+      "riot.unsupported": "Riot kitaplığı yalnızca Windows'ta taranır.",
+      "riot.not_found": "Riot Client bu bilgisayarda bulunamadı.",
+      "riot.empty": "Riot Client'ta eklenecek oyun yok.",
+      "hoyoplay.unsupported": "HoYoPlay kitaplığı yalnızca Windows'ta taranır.",
+      "hoyoplay.not_found": "Bu bilgisayarda HoYoPlay oyunu bulunamadı.",
+      "hoyoplay.empty": "HoYoPlay'de eklenecek oyun yok.",
+      "wegame.unsupported": "WeGame kitaplığı yalnızca Windows'ta taranır.",
+      "wegame.not_found": "WeGame bu bilgisayarda bulunamadı.",
+      "wegame.empty": "WeGame'de eklenecek oyun yok.",
+      "sparxie.unsupported": "Dokunma bileşeni yalnızca Windows'ta taranır.",
+      "sparxie.absent": "Dokunma bileşeni kurulu değil, bu yüzden atlandı.",
+      "sparxie.empty": "Dokunma bileşeninde henüz oyun profili yok.",
+      "sparxie.unreadable": "Dokunma bileşeninin yapılandırması okunamadı.",
+      "user.absent": "Kimse oturum açmamış, bu yüzden yalnızca tüm bilgisayara ait kitaplıklar tarandı.",
+      "unknown": "Bir kitaplık taranamadı."
+    }
+  }
 }

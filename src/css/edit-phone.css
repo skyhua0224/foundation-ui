@@ -1,0 +1,84 @@
+/* Edit mode and the add sheet on a phone (card web-tiles-phone-1120; touch-feel-goal). Mouse and wide windows are untouched: the first two rules only keep the wide layout as it was.
+   - the tools of the add sheet are one group; on a wide window it is transparent to the layout (display: contents), on a phone it is a row of its own that scrolls sideways;
+   - the selected tile's actions are a bar at the bottom of the window where the pointer is a finger (the floating size picker over the tile was 26 px high and covered the tile above);
+   - the add button never covers the app's bottom bar (its place is set from the bar's height, MHomeDash.vue). */
+.m-dedit__tools { display: contents; }
+.m-dedit__close { order: 99; }
+.m-dedit__selbar { display: none; }
+
+@media (max-width: 599.98px), (max-height: 519.98px) {
+  .m-dedit.m-dedit--gallery { left: 8px; right: 8px; bottom: 8px; height: min(88dvh, 760px); padding: 12px; gap: 8px; border-radius: 28px; }
+  .m-dedit__head { flex-wrap: wrap; gap: 8px; }
+  .m-dedit__search { order: 0; flex: 1 1 0; }
+  .m-dedit__close { order: 1; flex: none; }
+  .m-dedit__tools { display: flex; order: 2; flex: 1 0 100%; align-items: center; gap: 8px; min-width: 0; overflow-x: auto; scrollbar-width: none; touch-action: pan-x; padding: 2px 0; }
+  .m-dedit__tools::-webkit-scrollbar { display: none; }
+  .m-dedit__tools > * { flex: none; }
+  .m-dedit__tools .m-dpill { height: 40px; padding: 0 16px 0 12px; border-radius: 20px; font-size: 13px; white-space: nowrap; }
+  .m-dedit__tools .m-dpill .m-icon { font-size: 20px; }
+  .m-dedit__layoutlabel { display: none; }
+  .m-dedit__tools .m-dsize.m-dedit__layout { margin: 0; }
+}
+/* a phone on its side: the sheet takes the whole height; the search, the tools and the close button share one row, the tools as icons; the categories are a rail at the left */
+@media (max-height: 519.98px) {
+  .m-dedit.m-dedit--gallery { top: 8px; bottom: 8px; left: 12px; right: 12px; height: auto; max-height: none; }
+  .m-dedit__head { flex-wrap: nowrap; }
+  .m-dedit__search { flex: 0 1 200px; min-width: 120px; }
+  .m-dedit__tools { order: 1; flex: 1 1 0; }
+  .m-dedit__close { order: 2; }
+  .m-dedit__tools .m-dpill { width: 40px; padding: 0; justify-content: center; }
+  .m-dedit__tools .m-dpill .m-dpill__t { display: none; }
+  .m-gal { grid-template-columns: 56px minmax(0, 1fr); gap: 12px; }
+  .m-gal__nav { flex-direction: column; overflow-x: hidden; overflow-y: auto; padding: 2px 0 8px; }
+  .m-gal__cat { width: 48px; padding: 0; justify-content: center; }
+  .m-gal__cat span, .m-gal__cat small { display: none; }
+}
+
+@media (pointer: coarse) {
+  /* a tile in edit mode: the page scrolls under a finger that lands on it (the tile is picked up by a press that holds still, dashDrag.js) */
+  .is-edit .m-dash__cell { touch-action: pan-y; }
+  /* the actions of the selected tile are in the bar below; the tiles keep the gap they have outside edit mode, so the page does not grow when editing begins */
+  .m-dash__sizes, .m-dash__handle { display: none; }
+  .is-edit .m-dash__grid { row-gap: var(--m-dash-gap, 12px); }
+  .m-dedit__selbar { display: flex; position: fixed; z-index: 80; left: 12px; right: 12px; bottom: 16px; max-width: 560px; margin: 0 auto; align-items: center; gap: 8px; min-height: 64px; padding: 8px 8px 8px 20px; border-radius: 32px; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); box-shadow: 0 6px 18px color-mix(in srgb, var(--md-sys-color-shadow) 24%, transparent); }
+  .m-dedit__selbar ~ .m-dedit__fab { display: none; }
+  @media (max-width: 380px) { .m-dedit__seltitle { display: none; } .m-dedit__selbar { justify-content: space-between; padding-left: 8px; } }
+  .m-dedit__seltitle { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: var(--m-label-large); }
+  .m-dedit__selsizes { flex: none; display: inline-flex; border-radius: 24px; overflow: hidden; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--md-sys-color-on-primary-container) 40%, transparent); }
+  .m-dedit__selsizes button { all: unset; box-sizing: border-box; min-width: 52px; height: 48px; padding: 0 14px; display: grid; place-items: center; cursor: pointer; font: var(--m-label-large); }
+  .m-dedit__selsizes button + button { box-shadow: inset 1px 0 0 color-mix(in srgb, var(--md-sys-color-on-primary-container) 40%, transparent); }
+  .m-dedit__selsizes button.is-on { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+  .m-dedit__selsizes button:focus-visible, .m-dedit__selbtn:focus-visible { outline: 2px solid var(--md-sys-color-primary); outline-offset: -2px; }
+  .m-dedit__selbtn { all: unset; box-sizing: border-box; flex: none; width: 48px; height: 48px; display: grid; place-items: center; border-radius: 24px; cursor: pointer; }
+  .m-dedit__selbtn .m-icon { font-size: 24px; }
+  .m-dedit__selbtn.is-danger { background: var(--md-sys-color-error-container); color: var(--md-sys-color-on-error-container); }
+  /* the add button: as before, but never over the bottom bar */
+  .m-dedit__fab { height: 56px; }
+  /* the sheet's controls are fingers' size */
+  .m-dedit__search { height: 48px; border-radius: 24px; }
+  .m-dedit__close { width: 48px; height: 48px; border-radius: 24px; }
+  .m-gal__cat { min-height: 48px; }
+  .m-gal__arrow, .m-gal__pager .m-gal__arrow { width: 48px; height: 48px; }
+  .m-gal__variant { height: 40px; }
+}
+
+/* The controls inside the tiles: a finger needs 40 px at least (48 where a tile has room for it). Where the tile's own fit leaves no room for taller controls the control keeps its size and a transparent
+   box around it takes the finger (two neighbours' boxes meet in the gap between them). The pitch of a row of small controls is 40 px: swatches, wallpaper sources. */
+@media (pointer: coarse) {
+  .m-b2dl .m-b2dl__go, .m-b2dl.is-s .m-b2dl__go { height: 44px; min-height: 44px; flex: 0 0 44px; }
+  .m-b2table__tabs > button { min-height: 40px; }
+  .m-tempty__act, .m-tempty--s .m-tempty__act { height: 40px; }
+  .m-b3d__more { height: 40px; margin-block: -8px -10px; border-radius: 20px; }
+  .m-b3w__srcs { gap: 4px; }
+  .m-b3w__srcs button { width: 40px; height: 40px; }
+  .m-b2opt { position: relative; }
+  .m-b2padtype .m-b2opt { height: 36px; }
+  .m-b2padtype .m-b2opt::after { content: ''; position: absolute; inset: -2px 0; }
+  .m-gr--access.is-s .m-b2opt { height: 37px; position: relative; }
+  .m-gr--access .m-b2opt::after { content: ''; position: absolute; inset: -3px 0; }
+}
+/* the colour discs of the 取色 strip keep their size and the row scrolls (ten discs of 36 px did not fit a phone and were squeezed to ovals of 19 px) */
+.m-b3s__discs { justify-content: flex-start; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; }
+.m-b3s__discs::-webkit-scrollbar { display: none; }
+.m-b3s__discs button { flex: none; }
+@media (pointer: coarse) { .m-b3s__discs { gap: 4px; } .m-b3s__discs button { width: 40px; height: 40px; } }

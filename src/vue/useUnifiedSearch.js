@@ -35,7 +35,7 @@ export function useUnifiedSearch({ docs, recentSettings = () => [], onChoose, on
   // the rows the arrow keys walk: the recent searches then the recent settings when the field is empty, else the results in display order
   const rows = computed(() => (idle.value
     ? [...quick.value.map((doc) => ({ kind: 'doc', doc })), ...recentQueries.value.map((q) => ({ kind: 'query', q })), ...settings.value.map((doc) => ({ kind: 'doc', doc }))]
-    : result.value.flat.map((doc) => ({ kind: 'doc', doc }))))
+    : (result.value.total ? result.value.flat : (result.value.suggest || []).map((x) => x.doc)).map((doc) => ({ kind: 'doc', doc }))))
   watch([query, open], () => { active.value = 0 })
 
   function show(prefill = '') { open.value = true; if (prefill) query.value = prefill }

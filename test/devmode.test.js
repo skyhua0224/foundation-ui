@@ -184,7 +184,7 @@ test('the context menu: 反馈此处问题 is for everyone; with developer mode 
   const ctx = (o = {}) => ({ T, cb: { openDevtools: () => {}, reportHere: () => {}, ...(o.cb || {}) }, caps: { product: 'panel', ...(o.caps || {}) }, platform: 'Win32', mode: 'system' })
   void body
   const plain = buildGroups(target, ctx())
-  assert.equal(plain.flat().find((i) => i.id === 'dev-report')?.label, '反馈此处问题', 'report here shows with developer mode off')
+  assert.equal(plain.flat().find((i) => i.id === 'dev-report')?.label, '反馈此处的问题', 'report here shows with developer mode off')
   assert.equal(plain.flat().some((i) => i.id === 'dev-head' || i.id === 'dev-tools'), false)
   const g = buildGroups(target, ctx({ caps: { developer: true } }))
   const sect = g.at(-1)

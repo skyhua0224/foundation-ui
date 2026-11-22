@@ -2,8 +2,10 @@
    (the art, the plate, the numeral) and its control; what does not fit gives way in this order: a gap, a control's height, a glyph that becomes the watermark of its plate. No text goes under 11 px. */
 
 /* 手柄类型 / 编码器 方形: three list buttons and the title fit 150 px at 28 px each; the restart note is behind the chevron (MPickSheet help) */
-.m-b2padtype.is-s .m-calm__head { min-height: 22px; }
-.m-b2padtype.is-s .m-b2padtype__body { margin-top: 4px; }
+.m-b2padtype.is-s .m-calm__head { min-height: 0; }
+.m-b2padtype.is-s .m-b2padtype__body { margin-top: 0; }
+/* a title of two lines (Gamepad type) leaves the three options inside the tile: tighter lines, and the head asks for no more than its text */
+.m-b2padtype.is-s .m-calm__title { line-height: 15px; }
 .m-b2padtype.is-s .m-b2opts { gap: 2px; }
 .m-b2padtype.is-s .m-b2opt { height: 28px; padding: 0 10px; gap: 4px; flex: none; }
 .m-b2padtype.is-s .m-b2opt .m-icon { display: none; }
@@ -29,12 +31,17 @@
 .m-b2dl.is-s .m-b2dl__name { font-size: 17px; line-height: 1.12; margin-top: 4px; }
 .m-b2dl.is-s.is-short .m-b2dl__name { font-size: 24px; }
 .m-b2dl.is-s .m-b2dl__top { min-height: 32px; }
+/* a name of three lines (Moonlight macOS Enhanced) is set a little smaller, so the button under it stays inside the tile */
+.m-b2dl.is-s.is-long .m-b2dl__name { font-size: 16px; line-height: 1.05; margin-top: 2px; }
 .m-b2dl.is-s .m-b2dl__go { height: 30px; min-height: 26px; flex: 0 1 30px; }
-.m-b2dl.is-m > .m-b2dl__icon { --ic: 100px; }
-.m-b2dl.is-m .m-b2dl__side { gap: 4px; }
+/* 中: the icon, the system's menu and the name share the first row; the tag, the version and 下载 take a row of their own across the whole tile (a row beside the icon was 5 px too wide in Chinese and 58 px in English) */
+.m-b2dl.is-m { flex-direction: column; align-items: stretch; justify-content: space-between; gap: 6px; }
+.m-b2dl__main { flex: 1 1 auto; min-height: 0; display: flex; align-items: center; gap: 12px; }
+.m-b2dl.is-m .m-b2dl__main > .m-b2dl__icon { --ic: 72px; }
+.m-b2dl.is-m .m-b2dl__side { flex: 1 1 0; gap: 4px; }
 .m-b2dl.is-m .m-b2dl__name { font-size: 20px; }
 .m-b2dl.is-m .m-mchip__btn { height: 28px; }
-.m-b2dl.is-m .m-b2__btn { height: 30px; min-height: 26px; flex: 0 1 30px; }
+.m-b2dl.is-m .m-b2__btn { height: 30px; min-height: 26px; flex: none; }
 
 /* 加密 中: the lock is the watermark of the plate, behind the words; the title, the mode and its note take the whole plate */
 .m-b2enc.is-m .m-b2plate { position: relative; padding: 8px 12px; }

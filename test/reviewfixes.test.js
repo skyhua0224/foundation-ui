@@ -54,10 +54,10 @@ test('R4: the global unsaved bar is hidden while the first-run window is open', 
   assert.match(read('../src/css/onboard.css'), /html\.m-onboarding \.m-pbar \{ display: none; \}/)
 })
 
-test('R5: the dock row fades and shows an arrow at an edge with more tiles, and the clock block is centred above the row', () => {
+test('R5: the dock has no row that scrolls (no fade, no arrow over a tile), and the clock block is centred above the tiles', () => {
   const vue = readDash()
   const css = read('../src/css/dash.css')
-  assert.match(vue, /is-more-r/); assert.match(vue, /dockScroll\(1\)/); assert.match(vue, /dockScroll\(-1\)/)
-  assert.match(css, /\.m-dock__row\.is-more-r \{[^}]*mask-image/)
-  assert.match(css, /\.m-dock__head \{ flex: 1; display: flex; flex-direction: column; justify-content: center;/)
+  assert.ok(!/is-more-r|dockScroll/.test(vue)); assert.ok(!/m-dock__more|m-dock__row/.test(css))
+  assert.match(css, /\.m-dock__grid \{ display: grid;[^}]*justify-content: center;/)
+  assert.match(css, /\.m-dock__head \{ flex: 1 0 auto; display: flex; flex-direction: column; justify-content: center;/)
 })

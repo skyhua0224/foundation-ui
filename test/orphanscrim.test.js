@@ -38,7 +38,8 @@ test('the scene drops the frame modals when the frame is hidden (the overlay goe
 test('the home counts the recent errors of a log that is not loaded as none (it threw on null before)', () => {
   assert.equal(recentErrorCount(null), 0); assert.equal(recentErrorCount(undefined), 0); assert.equal(recentErrorCount(''), 0); assert.equal(recentErrorCount(5), 0)
   assert.equal(recentErrorCount('[2026-11-01 10:00:00.000]: Error: boom\n[2026-11-01 10:00:01.000]: Warning: hm\n[2026-11-01 10:00:02.000]: Fatal: bad'), 2)
-  assert.ok(!/parseErrorLog\([^)]*\)\.length/.test(fs.readFileSync(path.join(root, '..', 'ds5-web-advanced/src_assets/common/assets/web/views/Home.vue'), 'utf8')), 'the Web home does not take .length of a possible null')
+  const webHome = path.join(root, '..', 'ds5-web-advanced/src_assets/common/assets/web/views/Home.vue')
+  if (fs.existsSync(webHome)) assert.ok(!/parseErrorLog\([^)]*\)\.length/.test(fs.readFileSync(webHome, 'utf8')), 'the Web home does not take .length of a possible null')
 })
 
 const answer = (body, status = 200) => async () => ({ ok: status >= 200 && status < 300, status, headers: new Headers({ 'content-type': 'application/json' }), text: async () => body, json: async () => JSON.parse(body) })

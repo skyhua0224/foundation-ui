@@ -19,7 +19,7 @@ const size = computed(() => (props.card.size === 'm' ? 'm' : 's'))
 const rows = computed(() => d.value.rows || [])
 const okN = computed(() => rows.value.filter((r) => r.tone === 'ok').length)
 const attention = computed(() => rows.value.find((r) => r.tone !== 'ok') || rows.value[0])
-const accent = computed(() => (rows.value.some((r) => r.tone === 'err') ? 'error' : rows.value.length && okN.value === rows.value.length ? 'ok' : 'secondary'))
+const accent = computed(() => (rows.value.some((r) => r.tone === 'err') ? 'error' : rows.value.length && okN.value === rows.value.length ? 'primary' : 'secondary'))
 const TONE_ICON = { ok: 'check_circle', err: 'error' }
 </script>
 

@@ -3,18 +3,18 @@ export default {
   "close": "Fechar",
   "back": "Voltar",
   "next": "Seguinte",
-  "skip": "Ignorar o guia",
-  "skipStep": "Ir para a página seguinte",
-  "skipIn": "Ignorar o guia ({n})",
+  "skipThis": "Ignorar este passo",
   "finishTools": "Terminar e abrir as ferramentas de teste",
   "finish": "Terminar",
+  "follow": "Siga-nos: ",
+  "followBilibili": "Bilibili",
+  "followSite": "Sítio",
   "stepOf": "Passo {n} de {total}",
   "steps": "Passos",
   "openSource": {
-    "text": "O Foundation Sunshine é software livre e de código aberto (GPL-3.0). Este projeto não autorizou nenhuma pessoa, empresa ou conta de média a vendê-lo. Se pagou por ele, peça já um reembolso.",
-    "link": "Ver no GitHub",
-    "more": "Mostrar mais",
-    "less": "Mostrar menos"
+    "title": "Gratuito e de código aberto",
+    "text": "O Foundation Sunshine é software livre e de código aberto (GPL-3.0). Este projeto não autorizou ninguém a vendê-lo.",
+    "link": "Ver no GitHub"
   },
   "intro": {
     "followSystem": "Seguir o sistema",
@@ -33,6 +33,9 @@ export default {
   "copied": "Copiado",
   "helpRow": "Percorra outra vez a configuração, a instalação de um cliente, o emparelhamento e a primeira ligação.",
   "titles": {
+    "channel": "Canal de atualização",
+    "done": "Pronto",
+    "hostdone": "Este computador está configurado",
     "whatsnew": "Novidades",
     "intro": "Bem-vindo",
     "account": "Configure a conta do painel WebUI",
@@ -41,10 +44,10 @@ export default {
     "setup": "Placa gráfica e ecrã",
     "install": "Instalar um cliente",
     "address": "Emparelhe a partir de um cliente instalado",
-    "pair": "Emparelhar um dispositivo",
+    "pair": "Ligar e emparelhar",
     "webaccess": "Telemóvel e outros dispositivos",
     "remote": "Acesso remoto",
-    "connect": "Teste da primeira transmissão",
+    "connect": "Experimentar",
     "apps": "Adicionar jogos",
     "update": "Método de atualização"
   },
@@ -54,34 +57,131 @@ export default {
     "address": "Na mesma rede, o cliente encontra este computador sozinho; caso contrário, escreva um endereço.",
     "pair": "Leia o código ou escreva o PIN que o cliente mostra.",
     "webaccess": "Opcional. Escolha quem pode abrir o painel WebUI; nada muda enquanto não escolher.",
-    "remote": "Opcional. Só é preciso para ligar de fora desta rede.",
+    "remote": "Só é preciso para transmitir para este computador a partir de fora de casa; a maioria não precisa.",
     "connect": "No cliente, abra este computador e escolha Ambiente de trabalho.",
-    "apps": "Opcional. Pode adicioná-los mais tarde na página de aplicações."
+    "apps": "Opcional. Pode adicioná-los mais tarde na página de aplicações.",
+    "hostdone": "Agora o dispositivo com que vai jogar: instale um cliente, emparelhe-o e ligue-se."
+  },
+  "hostdone": {
+    "done": "Este computador está pronto para transmitir.",
+    "download": "Obtenha o cliente para o dispositivo com que vai jogar",
+    "note": "Os passos seguintes instalam-no, emparelham-no e fazem a primeira ligação."
   },
   "whatsnew": {
-    "items": {
-      "0": {
+    "items": [
+      {
         "icon": "sports_esports",
         "title": "Uma primeira transmissão que pode verificar",
         "text": "Os testes de som, rato, teclado e imagem, e o relógio de latência, estão no guia e nas Ferramentas de teste."
       },
-      "1": {
+      {
         "icon": "download",
         "title": "Uma só vista de instalação",
         "text": "A mesma lista de clientes, ficheiros e código QR no guia, em Ligar um dispositivo e na página de descarregar."
       },
-      "2": {
+      {
         "icon": "public",
         "title": "Acesso remoto verificado",
         "text": "O guia testa se este computador é alcançável de fora e o que mudar."
       },
-      "3": {
+      {
         "icon": "system_update_alt",
         "title": "Método de atualização",
         "text": "Escolha de onde vêm as atualizações; um CDK do MirrorChyan é opcional."
       }
-    },
+    ],
     "note": "Esta janela abre uma vez por cada nova versão. Pode ignorá-la."
+  },
+  "welcome": {
+    "modes": {
+      "system": "Seguir o sistema",
+      "light": "Claro",
+      "dark": "Escuro"
+    }
+  },
+  "channel": {
+    "channel": "Canal de atualização",
+    "stable": "Estável (recomendado)",
+    "stableText": "Testado, adequado à maioria.",
+    "beta": "Beta",
+    "betaText": "Novas funções e correções mais cedo; pode haver pequenos problemas.",
+    "source": "De onde vêm as atualizações",
+    "failed": "Não foi guardado. Tente outra vez."
+  },
+  "trynow": {
+    "more": "Mais opções de transferência"
+  },
+  "pairing": {
+    "found": "Quando o cliente encontrar este computador, escreva o PIN que mostra.",
+    "pinCard": "Emparelhar com o PIN"
+  },
+  "done": {
+    "library": "Biblioteca de jogos",
+    "scanning": "A analisar as bibliotecas de jogos em segundo plano…",
+    "found": "Encontrados {n} jogos. Marque os que quer adicionar.",
+    "addPicked": "Adicionar os {n} selecionados",
+    "added": "{n} adicionados.",
+    "none": "Não foram encontrados jogos. Pode adicioná-los mais tarde na página de aplicações.",
+    "failed": "Não foi possível analisar as bibliotecas de jogos.",
+    "rescan": "Analisar outra vez",
+    "unsupported": "Este host ainda não consegue analisar bibliotecas de jogos.",
+    "unavailable": "Indisponível agora",
+    "reasons": {
+      "setup": "Não foi lido nenhum ecrã deste host.",
+      "webaccess": "Esta página já é a interface web do host.",
+      "remote": "Este host ainda não consegue verificar a rede. Atualize o host."
+    },
+    "start": "Começar a usar",
+    "save": "Guardar",
+    "optional": "Opcional: configurar quando precisar",
+    "optionalNote": "Nada disto é obrigatório. Pode começar sem.",
+    "advanced": "Avançado",
+    "back": "Concluído",
+    "open": "Configurar",
+    "items": {
+      "appearance": {
+        "title": "Cor do tema e fundo",
+        "text": "Papel de parede, cor do tema e desfoque"
+      },
+      "motion": {
+        "title": "Animações",
+        "text": "Intensidade das animações da interface"
+      },
+      "setup": {
+        "title": "Ecrã e HDR",
+        "text": "Placa gráfica, ecrã para a transmissão, HDR"
+      },
+      "webaccess": {
+        "title": "Gestão web",
+        "text": "Gerir este computador a partir do navegador de outro dispositivo"
+      },
+      "remote": {
+        "title": "Transmissão remota e rede",
+        "text": "Só é preciso para transmitir para este computador a partir de fora de casa; a maioria não precisa."
+      }
+    }
+  },
+  "remoteGuide": {
+    "checkTitle": "Verificação da rede",
+    "checking": "A verificar a rede deste computador…",
+    "again": "Verificar outra vez",
+    "recommend": "Recomendado",
+    "other": "Outras formas",
+    "facts": {
+      "publicYes": "Endereço público: acessível de fora",
+      "publicNo": "Endereço público: nenhum (o operador partilha um)",
+      "publicPossible": "Endereço público: o router tem um; é preciso abrir portas",
+      "publicUnknown": "Endereço público: ainda não detetado",
+      "upnpOn": "O router abre as portas sozinho (UPnP): ligado",
+      "upnpOff": "O router abre as portas sozinho (UPnP): desligado",
+      "meshYes": "Ferramenta mesh: {name} instalada",
+      "meshNo": "Ferramenta mesh: ainda não instalada"
+    },
+    "recMesh": "Ligar de volta por uma rede mesh",
+    "recMeshText": "Este computador não tem endereço público; uma rede mesh não precisa.",
+    "recDirect": "A ligação direta funciona",
+    "recDirectText": "Este computador é acessível de fora. Uma rede mesh também funciona.",
+    "homeOnly": "Se só joga em casa, não há nada a configurar."
   },
   "account": {
     "username": "Nome de utilizador",
@@ -97,6 +197,12 @@ export default {
     "exists": "Já existe uma conta."
   },
   "setup": {
+    "hdrState": {
+      "UNKNOWN": "HDR: desconhecido",
+      "ENABLED": "HDR: ligado",
+      "DISABLED": "HDR: desligado"
+    },
+    "hdrWin10": "No Windows 10, o Foundation Virtual Display não tem HDR (Windows 11 22H2 e posteriores). O HDR é oferecido a um cliente que o peça quando o ecrã e o codificador podem.",
     "preps": {
       "no_operation": "Sem operação",
       "ensure_active": "Ativar o ecrã escolhido",
@@ -145,11 +251,15 @@ export default {
     }
   },
   "address": {
-    "discovery": "Deteção automática",
-    "discoveryText": "Aparece na lista do cliente. Toque nele.",
+    "listed": "O cliente lista «{name}» sozinho. Clique nele.",
+    "listedNoName": "O cliente lista este computador sozinho. Clique nele.",
     "notShowing": "Não aparece?",
-    "manual": "Na entrada do cliente «adicionar computador», escreva o endereço que este computador tem no caminho por onde se liga: escolha o seu abaixo.",
-    "pick": "Como o cliente se liga",
+    "typeThis": "No cliente, adicione um computador e escreva:",
+    "scan": "Ou leia este código no cliente",
+    "usual": "Causas comuns: o telemóvel está num Wi-Fi de convidados, ou há um proxy ou VPN ligado. Entre no Wi-Fi deste computador e desligue o proxy ou a VPN.",
+    "portKept": "Mantenha :{port}. A porta deste computador não é a predefinida.",
+    "others": "Outras formas de ligar",
+    "othersHelp": "Nestas redes, escreva o endereço que pertence à rede em que está o cliente.",
     "kinds": {
       "lan": "Rede local",
       "zerotier": "ZeroTier",
@@ -158,28 +268,53 @@ export default {
       "public": "Endereço público",
       "other": "Outra rede"
     },
-    "fill": "Por {way}, escreva {address} no cliente.",
-    "thisPc": "Este computador",
-    "find": "Como encontrar",
-    "windows": "Windows",
-    "linux": "Linux",
-    "macos": "macOS",
-    "windowsHow": "Prima Win + R, escreva cmd e execute ipconfig. Use o endereço IPv4 do adaptador Ethernet ou WLAN ativo.",
-    "linuxHow": "Execute ip addr e use o endereço inet da interface ativa.",
-    "macosHow": "Definições do Sistema > Rede, escolha a ligação ativa: o endereço IP aparece aí.",
-    "example": "Por exemplo 192.168.1.100.",
-    "noSource": "Este host não comunicou os seus endereços de rede.",
+    "none": "Este computador não comunicou nenhum endereço de rede.",
+    "recheck": "Verificar outra vez",
+    "checking": "A verificar…",
+    "diagnostics": "Abrir o diagnóstico",
     "port": {
+      "title": "Avançado: porta",
+      "show": "Mostrar",
+      "hide": "Ocultar",
+      "lead": "Cada porta conta a partir da porta base. Abra-as no router ou na firewall.",
+      "base": "Porta base",
+      "roles": {
+        "https": "Emparelhamento",
+        "http": "Endereço do cliente",
+        "web": "Painel WebUI",
+        "rtsp": "Negociação da transmissão",
+        "video": "Vídeo",
+        "control": "Controlo",
+        "audio": "Áudio",
+        "microphone": "Microfone"
+      },
+      "tcp": "TCP",
+      "udp": "UDP",
+      "optional": "não é preciso para transmitir",
+      "field": "Nova porta base",
+      "save": "Guardar porta",
+      "saved": "Guardado",
+      "same": "É a porta em uso.",
+      "format": "Só dígitos.",
+      "range": "Use de {min} a {max}.",
+      "pendingTitle": "Reinicie para usar {port}.",
+      "pendingText": "Até lá, o host escuta em {active}. Depois, os clientes escrevem {address} e o painel WebUI passa para a porta {web}.",
+      "restart": "Reiniciar agora",
+      "restarting": "A reiniciar…",
+      "taken": "Se outro programa ocupar uma destas portas, a verificação indica-o após o reinício.",
       "check": "Verificar as portas",
       "checking": "A verificar…",
       "checkAgain": "Verificar outra vez",
       "checkUnsupported": "Este anfitrião ainda não verifica as portas. Depois da atualização, está no diagnóstico.",
       "checkFailed": "A verificação não correu.",
       "checkNone": "A verificação não tem nada a dizer sobre as portas.",
-      "checkOpen": "Abrir o diagnóstico"
+      "checkOpen": "Abrir o diagnóstico",
+      "failed": "Não foi possível guardar a porta."
     }
   },
   "pair": {
+    "showQr": "Mostrar um código para outro dispositivo ler",
+    "scanHow": "No cliente, escolha «Ler» e aponte a este código.",
     "qr": "Leia com o cliente",
     "qrNote": "O código só funciona enquanto este passo estiver aberto, durante alguns minutos.",
     "qrRefresh": "Novo código",
@@ -200,8 +335,7 @@ export default {
     "hint": "O cliente mostra um PIN de quatro dígitos depois de tocar neste computador.",
     "already": "Dispositivos emparelhados",
     "another": "Emparelhar outro",
-    "unavailable": "Não foi possível ler a lista de clientes emparelhados.",
-    "showQr": "Mostrar um código para outro dispositivo ler"
+    "unavailable": "Não foi possível ler a lista de clientes emparelhados."
   },
   "connect": {
     "waiting": "À espera que um cliente comece a transmitir…",
@@ -235,6 +369,7 @@ export default {
   },
   "apps": {
     "sources": "Bibliotecas a pesquisar",
+    "skip": "Agora não",
     "start": "Pesquisar",
     "again": "Pesquisar de novo",
     "found": "{n} jogos encontrados",
@@ -251,14 +386,54 @@ export default {
     "backToGuide": "Voltar ao guia",
     "scan": "Pesquisar bibliotecas de jogos",
     "scanText": "Steam, Epic e GOG. Reveja o resultado e adicione.",
+    "launchTouch": "Toque",
+    "launchPc": "Teclado, rato e comando",
     "scanOnly": "Este host ainda não consegue pesquisar bibliotecas de jogos: atualize o host.",
     "manual": "Adicionar à mão",
     "manualText": "Um nome e o programa principal.",
-    "skip": "Agora não",
     "done": "Está tudo pronto",
-    "open": "Abrir"
-  },
-  "follow": "Siga-nos: ",
-  "followBilibili": "Bilibili",
-  "followSite": "Sítio"
+    "open": "Abrir",
+    "warnings": {
+      "steam.not_found": "O Steam não foi encontrado neste computador.",
+      "steam.empty": "O Steam não tem jogos para adicionar.",
+      "epic.unsupported": "A biblioteca Epic só é analisada no Windows.",
+      "epic.not_found": "O launcher do Epic Games não foi encontrado neste computador.",
+      "epic.empty": "O Epic não tem jogos para adicionar.",
+      "gog.unsupported": "A biblioteca GOG só é analisada no Windows.",
+      "gog.unavailable": "Não foi possível ler o registo, por isso o GOG não foi analisado.",
+      "gog.not_found": "O GOG não foi encontrado neste computador.",
+      "gog.empty": "O GOG não tem jogos para adicionar.",
+      "directory.symlinks": "As ligações simbólicas foram ignoradas.",
+      "directory.depth": "A análise parou no limite de profundidade.",
+      "directory.time": "A análise parou no limite de tempo.",
+      "directory.unreadable": "Algumas pastas não puderam ser lidas.",
+      "xbox.unsupported": "A biblioteca Xbox só é analisada no Windows.",
+      "xbox.not_found": "Não foram encontrados jogos Xbox neste computador.",
+      "xbox.empty": "A pasta de jogos Xbox não tem jogos para adicionar.",
+      "ea.unsupported": "A biblioteca EA só é analisada no Windows.",
+      "ea.not_found": "A aplicação EA não foi encontrada neste computador.",
+      "ea.empty": "A aplicação EA não tem jogos para adicionar.",
+      "ubisoft.unsupported": "A biblioteca Ubisoft só é analisada no Windows.",
+      "ubisoft.not_found": "O Ubisoft Connect não foi encontrado neste computador.",
+      "ubisoft.empty": "O Ubisoft Connect não tem jogos para adicionar.",
+      "battlenet.unsupported": "A biblioteca Battle.net só é analisada no Windows.",
+      "battlenet.not_found": "O Battle.net não foi encontrado neste computador.",
+      "battlenet.empty": "O Battle.net não tem jogos para adicionar.",
+      "riot.unsupported": "A biblioteca Riot só é analisada no Windows.",
+      "riot.not_found": "O Riot Client não foi encontrado neste computador.",
+      "riot.empty": "O Riot Client não tem jogos para adicionar.",
+      "hoyoplay.unsupported": "A biblioteca HoYoPlay só é analisada no Windows.",
+      "hoyoplay.not_found": "Não foram encontrados jogos HoYoPlay neste computador.",
+      "hoyoplay.empty": "O HoYoPlay não tem jogos para adicionar.",
+      "wegame.unsupported": "A biblioteca WeGame só é analisada no Windows.",
+      "wegame.not_found": "O WeGame não foi encontrado neste computador.",
+      "wegame.empty": "O WeGame não tem jogos para adicionar.",
+      "sparxie.unsupported": "O componente tátil só é analisado no Windows.",
+      "sparxie.absent": "O componente tátil não está instalado, por isso foi ignorado.",
+      "sparxie.empty": "O componente tátil ainda não tem perfis de jogos.",
+      "sparxie.unreadable": "Não foi possível ler a configuração do componente tátil.",
+      "user.absent": "Ninguém tem sessão iniciada, por isso só foram analisadas as bibliotecas de todo o computador.",
+      "unknown": "Não foi possível analisar uma biblioteca."
+    }
+  }
 }

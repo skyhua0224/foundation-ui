@@ -35,7 +35,7 @@ const view = computed(() => {
   if (i === 'act-clients' || i === 'act-pair') return { state: n(x.count) ? fill(L.value.paired, { n: x.count }) : n(x.count) === 0 ? L.value.unpaired : '' }
   if (i === 'act-logs') return n(x.errors) ? { state: fill(L.value.errors24, { n: x.errors }), alert: true } : n(x.errors) === 0 ? { state: L.value.noErrors } : {}
   if (i === 'act-update') return x.update ? { state: fill(L.value.updateTo, { v: x.update }), accent: 'tertiary' } : x.version ? { state: `${L.value.current} · ${x.version}` } : {}
-  if (i === 'act-stop') return { state: [x.client, n(x.uptimeMs) !== null ? clock(x.uptimeMs) : ''].filter(Boolean).join(' · '), accent: 'tertiary', glyph: 'stop' }
+  if (i === 'act-stop') return { state: [x.client, n(x.uptimeMs) !== null ? clock(x.uptimeMs) : ''].filter(Boolean).join(' · '), glyph: 'stop', alert: true, quiet: true }
   if (i === 'act-diagnostics') { const c = checks(); return c ? { state: fill(L.value.ready, { a: c.ok, b: c.all }), alert: c.ok < c.all } : {} }
   if (i === 'act-settings') return { state: x.facts || '' }
   if (i === 'act-downloads') { try { return { state: String(recommendForOs(readOs())?.client?.name || '') } } catch { return {} } }
@@ -45,9 +45,9 @@ const go = () => { if (!props.preview) emit('act', { type: d.value.act, value: d
 </script>
 
 <template>
-  <button type="button" class="m-tile m-cal m-cala m-b3a" :class="{ 'has-state': !!view.state, 'is-alert': view.alert, 'is-quiet': card.quiet }" data-size="s" :data-accent="view.accent || 'secondary'" :data-act="id"
+  <button type="button" class="m-tile m-cal m-cala m-b3a" :class="{ 'has-state': !!view.state, 'is-alert': view.alert, 'is-quiet': card.quiet || view.quiet }" data-size="s" :data-accent="view.accent || 'secondary'" :data-act="id"
     :aria-label="[card.title, view.state].filter(Boolean).join(' · ')" @click="go">
-    <span class="m-cala__glyph"><MIcon :name="view.glyph || d.icon" /></span>
+    <span class="m-cala__glyph"><MIcon :name="view.glyph || d.icon" :fill="(view.glyph || d.icon) === 'stop'" /></span>
     <MIcon v-if="OUT.has(id)" class="m-b3a__out" name="open_in_new" />
     <span class="m-b3a__text"><b class="m-cala__name">{{ card.title }}</b><small v-if="view.state" class="m-b3a__state m-dnum" data-redact="client">{{ view.state }}</small></span>
   </button>

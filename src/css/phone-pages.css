@@ -1,0 +1,45 @@
+/* Phone pages (card web-pages-phone-1120): what the audit of every Web UI page at 320-932 px found. A finger needs the rows to keep their title, and a short window needs the sheets to keep their body. */
+
+/* a settings row has up to four trailing controls (pin menu, info, value, switch): at phone width they took 160 px of a 326 px row and the title was left with three lines or one glyph per line. The pin menu stays the long press of the row (MItem), its button leaves the row but stays in the tab order, so the keyboard still reaches the menu; the info button and the switch keep their 48 px hit slop (40 + 8 px gap, the switch 52 px). */
+@media (pointer: coarse) and (max-width: 440px) {
+  .m-item__more { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); opacity: 0; pointer-events: none; }
+  .m-item > .m-item__trail { gap: 8px; }
+  .m-item__title { text-wrap: balance; }
+}
+
+/* the three access scopes of the network page: three columns of 100 px at phone width left four glyphs per line; each scope is a row with its picture at the start */
+@container (max-width: 480px) {
+  .m-webaccess .m-cards[style*='--m-cards-cols'] { grid-template-columns: minmax(0, 1fr); }
+  .m-webaccess .m-cards__card { display: grid; grid-template-columns: 64px minmax(0, 1fr); grid-template-areas: 'art label' 'art text'; column-gap: 14px; row-gap: 2px; align-items: center; padding: 10px 48px 10px 10px; }
+  .m-webaccess .m-cards__art { grid-area: art; min-height: 64px; height: 64px; font-size: 32px; }
+  .m-webaccess .m-cards__label { grid-area: label; align-self: end; padding: 0; }
+  .m-webaccess .m-cards__text { grid-area: text; align-self: start; padding: 0; }
+  .m-webaccess .m-cards__mark { top: 50%; right: 14px; translate: 0 -50%; }
+}
+
+/* a phone on its side (320-430 px high): a sheet or dialog uses the whole height, a head and a foot of 8 px paddings, so the body keeps room for its first field */
+@media (max-height: 479.98px) and (pointer: coarse) {
+  .m-sheet--end, .m-sheet--center { max-height: 100dvh; }
+  .m-sheet--end .m-sheet__panel, .m-sheet--center .m-sheet__panel { max-height: 100dvh; }
+  .m-sheet__head { padding-block: 8px 0; }
+  .m-sheet__body { padding-top: 4px; padding-bottom: 12px; }
+  .m-sheet__actions { padding-block: 8px 12px; }
+}
+
+
+/* the offered modes and the chips of the picker: two rows of chips 34 and 28 px high, 6 px apart, had slops that met in the middle of the gap, so the finger reached 34 and 28 px; the chips are finger-sized and the rows far enough apart for both slops */
+@media (pointer: coarse) {
+  .m-mpick__chip { height: 40px; border-radius: 20px; }
+  .m-mpick__out { gap: 12px 8px; }
+  .m-mpick__outchip { padding-block: 8px; border-radius: 12px; }
+}
+
+/* the small controls of the connect dialog: copy, share, the release links and the download pill had no slop at all */
+@media (any-pointer: coarse) {
+  .m-connect :is(.m-assets__copy, .m-dpill, .m-linkact__btn, .m-conn__link) { position: relative; }
+  .m-connect :is(.m-assets__copy, .m-dpill, .m-linkact__btn, .m-conn__link)::after { content: ''; position: absolute; inset-block: min(0px, calc((100% - var(--m-hit)) / 2)); inset-inline: min(0px, calc((100% - var(--m-hit)) / 2)); }
+}
+
+/* the foot of the sign-in page (language, four links) is 344 px wide: at 320 px the browser widened the page and the card slid out of the window; the foot wraps */
+.m-login__foot { flex-wrap: wrap; row-gap: 4px; }
+.m-login__links { flex-wrap: wrap; justify-content: flex-end; }

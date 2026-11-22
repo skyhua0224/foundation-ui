@@ -86,7 +86,7 @@ export default {
   "errorsNoticeLink": "Hakkında › Gizlilik",
   "privacyMore": "Nelerin gönderildiği, nelerin gönderilmediği",
   "privacyTitle": "Hata raporları ve kullanım istatistikleri",
-  "privacyLead": "Her anahtar ayrı çalışır. Kapalıyken o türden hiçbir şey gönderilmez.",
+  "privacyLead": "Her anahtar ayrı çalışır. Birini kapatmak, kapatıldığına dair tek bir küçük kayıt gönderir (hangi anahtar, ürün ve sürümü, bu bilgisayarın anonim numarası); ondan sonra o türden hiçbir şey gönderilmez.",
   "lblCollected": "Gönderilen",
   "lblNever": "Asla gönderilmeyen",
   "lblWhere": "Nereye",

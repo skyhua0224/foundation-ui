@@ -1,5 +1,5 @@
-// Tile sizes of the home, like widgets on a phone and a tablet (round27-xl; docs/home-tiles.md, "Sizes"). The ladder in square units, one unit = the dock's square (176 px at
-// the standard density, scaled by it):
+// Tile sizes of the home, like widgets on a phone and a tablet (round27-xl; docs/home-tiles.md, "Sizes"). The ladder in square units, one unit = GRID_UNIT_PX (148 px at
+// the standard density, scaled by it; the same on every window, see columnsOf):
 //   s 方形 1 x 1 (Apple WidgetKit systemSmall) · m 中 2 x 1 (systemMedium) · l 大 2 x 2 (systemLarge) · xl 特大 4 x 2 (systemExtraLarge, iPadOS and macOS)
 //   · xlp 特大竖 2 x 4 (systemExtraLargePortrait, iOS/iPadOS/macOS 27), and the strip 条: one row of controls, 2 or 4 units wide and less than a unit high, a kind of its own.
 // Each tile declares its own range from its content (homeRanges.js); the size the person chose is a preference, the size drawn is `effectiveSize`: the preference clamped to
@@ -13,22 +13,35 @@ export const ALL_SIZE_KEYS = Object.freeze([...SIZE_KEYS, 'strip'])
 const RANK = { s: 0, m: 1, l: 2, xl: 3, xlp: 3 }
 /** [columns, rows] in square units. */
 export const SIZE_UNITS = Object.freeze({ s: Object.freeze([1, 1]), m: Object.freeze([2, 1]), l: Object.freeze([2, 2]), xl: Object.freeze([4, 2]), xlp: Object.freeze([2, 4]) })
-/** The unit at the standard density (the dock's square), the strip's height, the gap between tiles. */
-export const UNIT_PX = 176
+/** The unit of the overview grid: one square, in CSS px at the standard density. It is the same on every window and every screen (the same size at the same OS scale): a bigger window holds more
+ *  columns and rows of standard tiles, a smaller one fewer, never a bigger or smaller tile. 148 px (a column pitch of 160 px with the 12 px gap) is the square the tiles were drawn, fitted and shown to the owner at (149.7 px at 1280 x 800), and it packs the common windows flush: the
+ *  content widths of a 1280, 1440, 1920 and 2560 px window are 7, 8, 11 and 15 columns of it with 12 px to spare. The small views are drawn for 140 px and up; a 2 x 1 tile is 308 px. The strip's height, the gap between tiles. */
+export const UNIT_PX = 148
+/** The most columns the overview grid has. A wider pane keeps the tiles at their size and gets wider margins on both sides: the grid sits in the middle (the catalogue has a limited number of tiles with data, and a grid wider than that
+ *  would show holes instead of tiles). 12 columns are 12 x 148 + 11 x 12 = 1908 px. */
+export const MAX_COLUMNS = 12
 export const STRIP_PX = 56
 export const UNIT_GAP = 12
 const DENSITY = { smaller: 0.875, standard: 1, larger: 1.125 }
-/** The unit the grid aims at follows the pane: UNIT_PX from UNIT_FULL_AT (1600) up, UNIT_MIN_PX in a pane of UNIT_SMALL_AT (1000) or less, in between on a line. A small window shows more, smaller cells (a person sees more at once), a big one keeps the 176 px square; every size keeps its tile, the unit stays above the 140 px the small views are drawn for. */
-export const UNIT_MIN_PX = 140
-const UNIT_SMALL_AT = 1000
-const UNIT_FULL_AT = 1600
-export const aimOf = (width) => (width <= UNIT_SMALL_AT ? UNIT_MIN_PX : width >= UNIT_FULL_AT ? UNIT_PX : UNIT_MIN_PX + ((width - UNIT_SMALL_AT) / (UNIT_FULL_AT - UNIT_SMALL_AT)) * (UNIT_PX - UNIT_MIN_PX))
-/** How many square columns a content width holds at a density, and the side of one (the packer makes every ladder row as tall as a column is wide). */
+/** How many square columns a content width holds at a density, and the side of one: always the fixed unit (scaled by the density the person chose); only a pane narrower than two units and a gap
+ *  (a phone) gets a smaller one, so two columns still fit. The grid is as wide as its columns and sits in the middle of the pane. */
 export function columnsOf(width, density = 'standard') {
-  const u = aimOf(width) * (DENSITY[density] || 1)
-  const n = Math.max(2, Math.floor((width + UNIT_GAP) / (u + UNIT_GAP)))
-  return { columns: n, unit: Math.floor(((width - (n - 1) * UNIT_GAP) / n) * 100) / 100 }
+  const u = Math.round(UNIT_PX * (DENSITY[density] || 1))
+  const n = Math.max(2, Math.min(MAX_COLUMNS, Math.floor((width + UNIT_GAP) / (u + UNIT_GAP))))
+  const fit = Math.floor(((width - (n - 1) * UNIT_GAP) / n) * 100) / 100
+  // A narrow pane (a phone, a small window, a tablet standing up) is filled edge to edge: the columns share the whole width, so the grid's edges are the other cards' edges and the margins are the
+  // same on both sides (a fixed unit left a strip of up to a column's width, and the grid sat narrower than the card above it). The unit stays within [the standard, FLEX_MAX]; a wider pane keeps the standard unit.
+  if (width < FLEX_BELOW) return { columns: n, unit: Math.min(Math.round(UNIT_FLEX_MAX * (DENSITY[density] || 1)), fit) }
+  return { columns: n, unit: Math.min(u, fit) }
 }
+/** Below this pane width (px) the columns share the whole width; from it on the unit is the standard one and the grid sits in the middle. */
+export const FLEX_BELOW = 800
+/** The largest a unit gets while a narrow pane is filled (px at the standard density). */
+export const UNIT_FLEX_MAX = 200
+/** How many standard tiles complete the last row of a grid of `columns` columns holding `count` tiles (0 when the row is full or there are none). */
+export const missingInRow = (count, columns) => (count > 0 && columns > 0 ? (columns - (count % columns)) % columns : 0)
+/** The width of a grid of `columns` units. */
+export const gridWidthOf = (columns, unit) => columns * unit + (columns - 1) * UNIT_GAP
 export const unitPx = (width, density = 'standard') => columnsOf(width, density).unit
 /** The box of a size in pixels for a unit: [width, height]. */
 export function sizePx(key, unit, strip = 4) {
@@ -213,7 +226,7 @@ export function hasNoData(d) {
     case 'recent': return !(d.rows && d.rows.length)
     case 'news': return !d.quiet && !(d.items && d.items.length)
     // the public address not set: the card's point (the address clients reach) is missing; its smallest size says 未设置 and leads to setting it
-    case 'address': return !d.saved
+    case 'address': return !d.saved && (!d.view || d.view.state === 'unset')
     default: return false
   }
 }

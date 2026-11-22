@@ -17,6 +17,13 @@ Material 3 Expressive tokens, styles and Vue 3 components for the Foundation con
   <img alt="The Foundation UI gallery: navigation rail, settings page with selectable rows, sliders and switches" src="docs/images/gallery-light.png">
 </picture>
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/guide-dark.png">
+  <img alt="The first-run guide: the finished page with the game library, optional settings and advanced entries" src="docs/images/guide-light.png">
+</picture>
+
+The first-run guide ends on a page that finds the game library and lists what can be set later.
+
 ## Features
 
 - **Theme and tokens** – colour schemes generated from one seed per theme with HCT (`@material/material-color-utilities`), light and dark, five scheme variants, three colour styles, contrast levels, a black-surface option and dynamic colour from an image. Shape, type (Roboto Flex) and spring motion tokens, with springs turned into CSS `linear()` easing.

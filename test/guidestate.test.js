@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { buildGuideSteps, readProgress, writeProgress } from '../src/vue/guideModel.js'
 import { guideEntry } from '../src/vue/guideEntry.js'
-import { ACTIVE_WINDOW_S, HEARTBEAT_MAX, HEARTBEAT_S, activeElsewhere, createHostSaver, hostPatchOf, hostProgressOf, isPhoneLike, resumeIndex, saveGuideHost } from '../src/vue/guideHost.js'
+import { ACTIVE_WINDOW_S, HEARTBEAT_MAX, HEARTBEAT_S, activeElsewhere, createHostSaver, hostPatchOf, hostProgressOf, isPhoneLike, progressSavePatch, resumeIndex, saveGuideHost } from '../src/vue/guideHost.js'
 
 const memory = () => { const m = new Map(); return { getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: (k) => m.delete(k) } }
 const NOW = 1_800_000_000_000
@@ -23,7 +23,7 @@ test('cross-device: the steps done on any device are the progress; a stored posi
   const steps = buildGuideSteps()
   const host = hostProgressOf({ guide_done: 'intro,consent,account,appearance,motion' })
   assert.deepEqual(host.done, ['intro', 'account', 'appearance', 'motion'], 'the retired consent step of an older run is left out')
-  assert.equal(steps[resumeIndex(steps, host.done)].id, 'setup', 'a second device opens at the first step not done')
+  assert.equal(steps[resumeIndex(steps, host.done)].id, 'channel', 'a second device opens at the first step not done; what an older run did in the host part (look, animations) is not a step of the new flow')
   assert.equal(steps[resumeIndex(steps, [])].id, 'intro')
   assert.equal(resumeIndex(steps, steps.map((s) => s.id)), steps.length - 1, 'everything done: the last step')
   // the steps the phone did make this device continue the run even though this one stored nothing
@@ -99,4 +99,26 @@ test('cross-device: a guide that stays on one step keeps its claim on the host, 
   const claim = (ageS) => ({ active: { device: 'phone', at: NOW / 1000 - ageS } })
   assert.equal(activeElsewhere(claim(HEARTBEAT_S + 5), 'pc', NOW), true)
   assert.equal(activeElsewhere(claim(ACTIVE_WINDOW_S + 1), 'pc', NOW), false)
+})
+
+test('an upgrade pass never takes back "finished" on the host (the installer and the other devices started the whole guide again)', async () => {
+  // the host says the guide was finished on an earlier version; the upgrade flow resets its own copy of the flag and then saves a step and a close
+  const written = []
+  const api = { getJson: async () => ({ guide_finished: 'true', guide_closed: '1.3.8', sunshine_name: 'PC' }), postJson: async (_path, body) => { written.push(body); return { status: true } } }
+  const save = createHostSaver(api)
+  await save(progressSavePatch({ done: ['intro'], finished: false, closed: '', ended: false, device: 'pc', now: 1_800_000_000 }))
+  await save(progressSavePatch({ done: ['intro'], finished: false, closed: '1.3.9', ended: true, device: 'pc', now: 1_800_000_001 }))
+  assert.equal(written.length, 2)
+  for (const body of written) assert.equal(body.guide_finished, 'true', 'what was finished stays finished')
+  assert.equal(written[1].guide_closed, '1.3.9')
+  assert.equal(written[1].guide_active, '', 'a closed guide no longer claims the host')
+  // finishing is written, and so is a deliberate start over
+  assert.equal(hostPatchOf(progressSavePatch({ done: [], finished: true, closed: '1.3.9', ended: true, device: 'pc', now: 1 })).guide_finished, 'true')
+  assert.equal(hostPatchOf({ finished: false }).guide_finished, 'false')
+  assert.ok(!('finished' in progressSavePatch({ done: [], finished: false, closed: '', ended: false, device: 'pc', now: 1 })))
+  assert.deepEqual(progressSavePatch({ done: ['intro'], finished: false, closed: '', ended: false, device: 'pc', now: 5 }).active, { device: 'pc', at: 5 })
+  // the flow saves through it, and nowhere writes the flag by hand
+  const flow = readFileSync(new URL('../src/vue/MGuideFlow.vue', import.meta.url), 'utf8')
+  assert.match(flow, /saveGuideProgress\?\.\(progressSavePatch\(/)
+  assert.doesNotMatch(flow, /saveGuideProgress\?\.\(\{[^}]*finished: progress\.finished/)
 })

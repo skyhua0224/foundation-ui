@@ -1,0 +1,11 @@
+/* The answer of the developers to one piece of feedback (vue/feedback/MFeedbackReplySheet.vue). */
+.fb-reply .m-sheet__body { display: flex; flex-direction: column; }
+.fb-reply__body { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.fb-reply__about { display: flex; align-items: center; gap: 14px; padding: 12px 16px 12px 12px; border-radius: 24px; background: color-mix(in srgb, var(--md-sys-color-primary) 10%, var(--md-sys-color-surface-container-highest)); }
+.fb-reply__ico { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; font-size: 22px; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
+.fb-reply__ico.is-fixed { background: var(--md-sys-color-tertiary-container); color: var(--md-sys-color-on-tertiary-container); }
+.fb-reply__who { min-width: 0; display: flex; flex-direction: column; }
+.fb-reply__who small { font: var(--m-label-medium); color: var(--md-sys-color-on-surface-variant); }
+.fb-reply__who b { font: var(--m-title-medium-emphasized); overflow-wrap: anywhere; }
+.fb-reply__text { margin: 0; font: var(--m-body-large); color: var(--md-sys-color-on-surface); white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; }
+.fb-reply__when { margin: 0; font: var(--m-label-medium); color: var(--md-sys-color-on-surface-variant); }

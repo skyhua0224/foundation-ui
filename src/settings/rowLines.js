@@ -12,9 +12,11 @@
 //   rtss        { installed } of RivaTuner Statistics Server, an optional third-party component: unless installed there is no `rtss` row and the 系统 line does not name it
 //               (no such source: the row stays, as before)
 //   mic         the host's microphone status (as read from /api/microphone/status)                                   usb   { ready, attached_devices } of the USB/IP transport
+//   audio       the playback devices of the host (GET /api/audio/devices `render`), to show the chosen device by its name: the setting holds an id, which is never shown
 // Row ids: `config:<tab>` and `password` (the settings), `clients`, `apps`, `downloads`, `gamepad`, `microphone`, `usb`, `vdd`, `quality`, `components`, `diagnostics`,
 // `toolbox`, `session`, `rtss`, `service`, `panel`, `help`, `assistant`, and `rail:<id>` for the categories of the settings hub.
 import { microphoneState } from '../status/model.js'
+import { audioDeviceName } from './audioDevice.js'
 import { encoderName } from './model.js'
 import { VDD_PREP, vddModeOf, vddOn } from './virtualDisplay.js'
 
@@ -65,7 +67,7 @@ const ZH = {
     'rail:audio': '音频输出、麦克风',
     'rail:system': '组件状态、Sunshine 服务、网络概览、诊断与日志、工具箱、延迟时钟、测试工具、计时器、RTSS',
   },
-  audioOn: '音频串流 开', audioOff: '音频串流 关', vddMode: { physical: '使用物理显示器', ondemand: '按需创建基地虚拟显示器', persistent: '基地虚拟显示器常驻' }, auto: '自动选择', paired: '{n} 台已配对', streaming: '{n} 台串流中', apps: '{n} 个应用', port: '端口 {n}', upnp: 'UPnP {v}', on: '开', off: '关',
+  audioOn: '音频串流 开', audioOff: '音频串流 关', audioDevice: '所选设备', vddMode: { physical: '使用物理显示器', ondemand: '按需创建基地虚拟显示器', persistent: '基地虚拟显示器常驻' }, auto: '自动选择', paired: '{n} 台已配对', streaming: '{n} 台串流中', apps: '{n} 个应用', port: '端口 {n}', upnp: 'UPnP {v}', on: '开', off: '关',
   allOk: '{n} 个组件全部正常', needsWork: '{n} 项需要处理',
   dsReady: '已就绪', dsActive: '正在使用', dsProblem: '需要处理',
   mic: { waiting: '等待使用', active: '正在使用', idle: '空闲', streaming: '串流中', capturing: '采集中', starting: '启动中', stopping: '停止中', faulted: '有故障', missing: '未安装', disabled: '已关闭' },
@@ -121,7 +123,7 @@ const EN = {
     'rail:audio': 'Audio output, microphone',
     'rail:system': 'Components, Sunshine service, network overview, diagnostics and logs, toolbox, latency clock, test tools, timer, RTSS',
   },
-  audioOn: 'Audio streaming on', audioOff: 'Audio streaming off', vddMode: { physical: 'Physical display', ondemand: 'Foundation Virtual Display on demand', persistent: 'Foundation Virtual Display stays' }, auto: 'Automatic', paired: '{n} paired', streaming: '{n} streaming', apps: '{n} apps', port: 'Port {n}', upnp: 'UPnP {v}', on: 'on', off: 'off',
+  audioOn: 'Audio streaming on', audioOff: 'Audio streaming off', audioDevice: 'Selected device', vddMode: { physical: 'Physical display', ondemand: 'Foundation Virtual Display on demand', persistent: 'Foundation Virtual Display stays' }, auto: 'Automatic', paired: '{n} paired', streaming: '{n} streaming', apps: '{n} apps', port: 'Port {n}', upnp: 'UPnP {v}', on: 'on', off: 'off',
   allOk: '{n} components working', needsWork: '{n} need attention',
   dsReady: 'Ready', dsActive: 'In use', dsProblem: 'Needs attention',
   mic: { waiting: 'Waiting for use', active: 'In use', idle: 'Idle', streaming: 'Streaming', capturing: 'Capturing', starting: 'Starting', stopping: 'Stopping', faulted: 'Fault', missing: 'Not installed', disabled: 'Off' },
@@ -148,7 +150,7 @@ const list = (v, ...keys) => { if (Array.isArray(v)) return v; for (const k of k
 const codec = (v) => str(v) !== '' && str(v) !== '1'
 
 /** The live state of each row that has one (real data only); a row without a source has no entry. */
-export function liveLines({ locale, config, clients, apps, components, ds, mic, usb } = {}) {
+export function liveLines({ locale, config, clients, apps, components, ds, mic, usb, audio } = {}) {
   const T = rowTexts(locale)
   const out = {}
   const cfg = config && typeof config === 'object' ? config : null
@@ -164,7 +166,7 @@ export function liveLines({ locale, config, clients, apps, components, ds, mic, 
     const shown = vddModeOf(cfg) === 'physical' ? (str(cfg.output_name) ? T.output.physical : T.auto) : T.output.virtual
     out['display-output'] = [shown, T.prep[prep]].filter(Boolean).join(' · ')
     out.vdd = T.vddMode[vddModeOf(cfg)]
-    out['audio-output'] = [cfg.stream_audio === undefined || cfg.stream_audio === '' || vddOn(cfg.stream_audio) ? T.audioOn : T.audioOff, str(cfg.audio_sink)].filter(Boolean).join(' · ')
+    out['audio-output'] = [cfg.stream_audio === undefined || cfg.stream_audio === '' || vddOn(cfg.stream_audio) ? T.audioOn : T.audioOff, audioDeviceName(str(cfg.audio_sink), audio, T.audioDevice)].filter(Boolean).join(' · ')
     const rule = (name) => (cfg[name] === 'no_operation' ? T.fixed : cfg[name] === 'manual' ? T.fixedValue : T.follow)
     out['display-modes'] = [cfg.resolution_change === undefined && cfg.refresh_rate_change === undefined ? '' : rule('resolution_change'), resolution, refresh ? `${refresh.replace(/\s*hz$/i, '')}Hz` : ''].filter(Boolean).join(' · ')
     if (!out['display-modes']) delete out['display-modes']

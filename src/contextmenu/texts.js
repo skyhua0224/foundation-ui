@@ -5,7 +5,7 @@ export const CONTEXT_TEXTS = Object.freeze({
     undo: '撤销', redo: '重做', cut: '剪切', copy: '复制', paste: '粘贴', pastePlain: '粘贴为纯文本', delete: '删除', selectAll: '全选',
     searchSelection: '搜索设置「{text}」', explain: '用米塔 AI 解释', open: '打开', openBrowser: '在浏览器中打开', copyLink: '复制链接地址',
     copyImage: '复制图片', copyImageUrl: '复制图片地址', saveImage: '另存为',
-    back: '后退', forward: '前进', reload: '刷新', print: '打印', inspect: '检查元素', copyRoute: '复制当前路由', developer: '开发者', feedbackHere: '反馈此处问题', devTools: '开发者工具', devToolsHint: '按 F12 打开浏览器的开发者工具', devReport: '在 Issue 中报告此处', page: '页面', backToMenu: '返回',
+    back: '后退', forward: '前进', reload: '刷新', print: '打印', inspect: '检查元素', copyRoute: '复制当前路由', developer: '开发者', feedbackHere: '反馈此处的问题', devTools: '开发者工具', devToolsHint: '按 F12 打开浏览器的开发者工具', devReport: '在 Issue 中报告此处', page: '页面', backToMenu: '返回',
     search: '搜索', connect: '连接设备', doctor: '运行体检', appearance: '外观', light: '浅色', dark: '深色', system: '跟随系统',
     pet: '桌宠', restartHost: '重启 Sunshine', openWebUi: '打开 Web UI', restartConfirm: '重启 Sunshine？正在进行的串流会中断。',
     resize: '调整大小', sizeS: '方形', sizeM: '中', sizeL: '大', sizeXL: '特大', removeTile: '移除', removeTileConfirm: '移除这个磁贴？需要时可以在编辑概览里加回。', editOverview: '编辑概览',

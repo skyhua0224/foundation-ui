@@ -1,30 +1,61 @@
 import { CLIENTS, clientsForOs } from '../clients/catalogue.js'
 import { sessionClientLabel } from './clientLabel.js'
-import { derivedPorts } from './hostAddress.js'
 import { formatOf, hdrOf, modesFor } from '../settings/codecFormat.js'
 // Pure model of the guided first run (MGuideFlow): the steps, the progress that survives a restart, the rule that opens the guide on
 // its own, and the small decisions of single steps (device and client, LAN address, pairing, sessions). No DOM and no Vue, so it can
 // be tested on its own. Nothing here talks to the host: the product passes the real data in and receives the actions out.
 
-// The one first-run flow of both products. `intro` is the first screen (the project, the plain open-source notice, the one-time notice about what is sent and where to turn it off, and the language, 跟随系统 by default; nothing is asked about it). `account` is only offered where the product has no account yet (the control panel on a host without credentials);
-// `webaccess` is optional (who may open the Web UI: only this computer, the local network or the internet; the choice is shown as it is saved, nothing changes unless the person picks another);
-// `remote` is optional (how the client will reach this computer from outside the network). `update` (the update method) is only for a product that keeps an update source
-// (the control panel): the Web UI skips it.
-// Two parts: the host first (language, look, graphics card and display, then the optional who-may-open, remote access and update method; `hostdone` ends it with the client downloads), then the client
-// (`install`, `address`, `pair`, `connect`, `apps`). Nobody is sent to a client in the middle of setting up the host.
-export const GUIDE_STEP_IDS = Object.freeze(['whatsnew', 'intro', 'account', 'appearance', 'motion', 'setup', 'webaccess', 'remote', 'update', 'hostdone', 'install', 'address', 'pair', 'connect', 'apps'])
+// The first-run flow of both products: six steps and a done page (owner 2026-11-16). `intro` is the first screen (the project, the plain open-source notice, the one-time notice about what is sent and where to
+// turn it off, the language and the look; nothing is asked about usage statistics). `account` is only offered where the product has no account yet (the control panel on a host without credentials).
+// `channel` is the update channel, 稳定版 or 测试版, a step of its own with a plain sentence for each (stable is the default; a person who chose before keeps the choice and an upgrade skips the step).
+// `install` is one recommended download with its code; `pair` finds this computer by itself first and has the PIN and the code for the rest; `connect` is the first stream check. `done` ends it: the game
+// library found in the background, 「开始使用」, and the optional pages (`GUIDE_OPTIONAL`) as buttons that open one of the old pages and come back. An upgrade is `whatsnew`, then `channel` when it was never
+// chosen, then `done`. The ids of the old flow stay valid: progress saved by an older version maps onto the new flow (`legacyStepOf`).
+export const GUIDE_STEP_IDS = Object.freeze(['whatsnew', 'intro', 'account', 'channel', 'appearance', 'motion', 'setup', 'webaccess', 'remote', 'update', 'hostdone', 'install', 'address', 'pair', 'connect', 'apps', 'done'])
+export const GUIDE_FLOW = Object.freeze(['intro', 'account', 'channel', 'install', 'pair', 'connect', 'done'])
+export const GUIDE_FLOW_UPGRADE = Object.freeze(['whatsnew', 'channel', 'done'])
+/** The pages the done page offers, in the order it lists them. Each is a page of the old guide, opened as a sub-flow. `advanced` ones are marked and not pushed. */
+export const GUIDE_OPTIONAL = Object.freeze([
+  { id: 'appearance', icon: 'palette', advanced: false },
+  { id: 'motion', icon: 'slow_motion_video', advanced: false },
+  { id: 'setup', icon: 'hdr_on', advanced: false },
+  { id: 'webaccess', icon: 'language', advanced: true },
+  { id: 'remote', icon: 'public', advanced: true },
+])
 
-const STEP_ICONS = Object.freeze({ whatsnew: 'new_releases', intro: 'language', account: 'account_circle', appearance: 'palette', motion: 'slow_motion_video', setup: 'tune', install: 'download', address: 'lan', pair: 'link', webaccess: 'smartphone', remote: 'public', connect: 'desktop_windows', apps: 'sports_esports', update: 'system_update_alt', hostdone: 'task_alt' })
+/** The update channels: 稳定版 (the default) and 测试版 (`prerelease` in the release data). Anything else is the default. */
+export const UPDATE_CHANNELS = Object.freeze(['stable', 'prerelease'])
+export const channelOf = (value) => (value === 'prerelease' || value === true ? 'prerelease' : 'stable')
+
+const STEP_ICONS = Object.freeze({ whatsnew: 'new_releases', intro: 'language', account: 'account_circle', channel: 'system_update_alt', appearance: 'palette', motion: 'slow_motion_video', setup: 'tune', install: 'download', address: 'lan', pair: 'link', webaccess: 'smartphone', remote: 'public', connect: 'desktop_windows', apps: 'sports_esports', update: 'system_update_alt', hostdone: 'task_alt', done: 'task_alt' })
 
 /**
- * The steps of the flow in order. `skip` drops steps that make no sense for this host (the account step when credentials exist).
+ * Where a person who stopped at a step of the old flow continues in the new one: the first step that is still to do. The host part of the old flow (look, animations, display, the optional pages) is over or
+ * is an optional page now, so those continue at the install step; the games are on the done page.
+ */
+export const LEGACY_STEP = Object.freeze({ appearance: 'intro', motion: 'install', setup: 'install', webaccess: 'install', remote: 'install', update: 'install', hostdone: 'install', address: 'pair', apps: 'done' })
+export const legacyStepOf = (id) => LEGACY_STEP[id] || id
+
+/**
+ * The steps of the flow in order. `skip` drops steps that make no sense for this host (the account step when credentials exist, the update channel step of an upgrade that already has a choice; `update` drops the update page of the done page).
  * Every step can be skipped by the person; `skip` is only about steps that are not offered at all.
  */
 export function buildGuideSteps({ skip = [], mode = 'fresh' } = {}) {
-  // `whatsnew` belongs to an upgrade, `intro` (the project, the language) to the first install
-  const drop = new Set([...skip, mode === 'upgrade' ? 'intro' : 'whatsnew'])
-  return GUIDE_STEP_IDS.filter((id) => !drop.has(id)).map((id) => ({ id, icon: STEP_ICONS[id], skippable: true }))
+  // an upgrade is what is new, then the done page. `skip` names the steps of this flow only; an id of the old flow (hostdone, address, appearance, setup …) has no step of its own any more and drops nothing
+  const drop = new Set(skip)
+  return (mode === 'upgrade' ? GUIDE_FLOW_UPGRADE : GUIDE_FLOW).filter((id) => !drop.has(id)).map((id) => ({ id, icon: STEP_ICONS[id], skippable: id !== 'done', ...(id === 'done' ? { optional: optionalPages({ skip }).map((page) => page.id) } : {}), ...(id === 'channel' ? { source: !skip.includes('update') } : {}) }))
 }
+
+/**
+ * The optional pages the host cannot offer now, { id: true }: no display was read (显示与 HDR; only once the setup was read), and the host has no network check (远程串流与组网). The done page lists them apart.
+ */
+export const unavailablePages = ({ setup, reach, setupRead = false } = {}) => ({
+  ...(setupRead && !(setup?.adapters || []).length && !(setup?.displayDevices || []).length ? { setup: true } : {}),
+  ...(reach?.status === 'unavailable' ? { remote: true } : {}),
+})
+
+/** The optional pages of the done page, minus the ones this product does not have (a product without an update source passes `skip: ['update']`: its channel step has no source part). */
+export const optionalPages = ({ skip = [] } = {}) => GUIDE_OPTIONAL.filter((page) => !skip.includes(page.id))
 
 /* ---- progress ---- */
 
@@ -78,7 +109,7 @@ export function clearProgress(storage, key) {
 /** Index of the step to show when the guide opens: the saved one while it is still part of the flow, else the first. */
 export function startIndex(steps, progress) {
   if (!progress || progress.finished) return 0
-  const at = steps.findIndex((step) => step.id === progress.step)
+  const at = steps.findIndex((step) => step.id === progress.step || step.id === legacyStepOf(progress.step))
   return at < 0 ? 0 : at
 }
 
@@ -153,13 +184,15 @@ const octets = (text) => {
   return numbers.every((n) => n <= 255) ? numbers : null
 }
 
-/** 0 private LAN (10/8, 172.16/12, 192.168/16), 1 shared address space (100.64/10), 2 other public; null = not usable (loopback, link-local, any, not IPv4). */
+/** 0 private LAN (10/8, 172.16/12, 192.168/16), 1 shared address space (100.64/10), 2 other public; null = not usable (loopback, link-local, benchmarking 198.18/15, any, not IPv4). */
 export function lanRank(address) {
   const o = octets(address)
   if (!o) return null
   const [a, b] = o
   if (a === 0 || a === 127 || a >= 224) return null
   if (a === 169 && b === 254) return null
+  // 198.18.0.0/15 is the benchmarking range (RFC 2544): a TUN of a proxy tool (Mihomo, Clash) puts its fake-IP gateway there; no phone on the network can be reached through it
+  if (a === 198 && (b === 18 || b === 19)) return null
   if (a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168)) return 0
   if (a === 100 && b >= 64 && b <= 127) return 1
   return 2
@@ -306,6 +339,9 @@ export function setupStateFromConfig(config, { showLanguage } = {}) {
     display: c.output_name || '',
     prep: c.display_device_prep || 'ensure_only_display',
     hdr: hdrOf(c),
+    // Windows build of the host (windows_build of the host configuration): the base virtual display has no HDR on Windows 10, whose newest build is 19045 (IddCx 1.5); Windows 11 starts at 22000
+    windowsBuild: Number(c.windows_build) || 0,
+    win10: Number(c.windows_build) > 0 && Number(c.windows_build) < 22000,
     virtual: String(c.platform || 'windows').toLowerCase() === 'windows',
   }
 }
@@ -325,55 +361,4 @@ export function mergeSetupConfig(current, { locale, adapter, display, prep, hdr,
   return config
 }
 
-/* ---- remote access ---- */
-
-/** How a client reaches this computer: only inside the network (nothing to set up), over the internet (UPnP or a port forward), or over a mesh network. */
-export const REMOTE_MODES = Object.freeze(['lan', 'public', 'mesh'])
-export const MESH_TOOLS = Object.freeze(['tailscale', 'zerotier', 'easytier'])
-
-/**
- * The ports a client uses, from the base port the host is configured with (47989 by default), as the host maps them (hostAddress.js, PORT_OFFSETS): TCP the HTTPS pairing port (base - 5), the
- * base port, the management page (base + 1, not needed for streaming: leave it closed) and RTSP (base + 21); UDP video, control, audio and the microphone (base + 9 .. base + 12).
- * `needed` is false for the one port a stream does not need.
- */
-export function remotePorts(base = 47989) {
-  const ports = derivedPorts(base)
-  const first = ports[0].port + 5
-  const tcp = ports.filter((p) => p.proto === 'tcp').sort((a, b) => a.port - b.port).map((p) => ({ port: p.port, needed: p.needed }))
-  const udp = ports.filter((p) => p.proto === 'udp').map((p) => p.port)
-  return { base: first, tcp, udp: [{ port: Math.min(...udp), to: Math.max(...udp), needed: true }] }
-}
-
-/** One port line for the text: `47998` or `47998-48000`. */
-export const portText = (entry) => (entry.to ? `${entry.port}-${entry.to}` : String(entry.port))
-
-/** The state of UPnP from the listener answer: what runs now, what is saved, and whether a restart is needed to apply the saved one. */
-export function upnpState(network) {
-  const active = typeof network?.upnpActive === 'boolean' ? network.upnpActive : null
-  const saved = typeof network?.upnpSaved === 'boolean' ? network.upnpSaved : active
-  if (active === null && saved === null) return { known: false, on: false, pending: false }
-  return { known: true, on: !!saved, active: !!active, pending: active !== null && saved !== active }
-}
-
-/** Download pages and the commands the other mesh tools need (official ones). */
-export const MESH_LINKS = Object.freeze({
-  tailscale: 'https://tailscale.com/download',
-  zerotier: 'https://www.zerotier.com/download/',
-  easytier: 'https://easytier.cn/',
-})
-export const MESH_COMMANDS = Object.freeze({
-  tailscale: { join: 'tailscale up', address: 'tailscale ip -4' },
-  zerotier: { join: 'zerotier-cli join <network-id>', address: 'zerotier-cli listnetworks' },
-  easytier: { join: 'easytier-core -d --network-name <name> --network-secret <secret> -p tcp://public.easytier.top:11010', address: 'easytier-cli peer' },
-})
-
-/* ---- the delay of 跳过 ---- */
-
-/** Seconds at the start of the flow in which 跳过 cannot be used. */
-export const SKIP_DELAY_S = 10
-
-/** Whole seconds left of the delay (0 once it has passed or when there is none). */
-export function skipSecondsLeft(startMs, nowMs, delay = SKIP_DELAY_S) {
-  const left = Math.ceil(delay - (nowMs - startMs) / 1000)
-  return left > 0 ? left : 0
-}
+export * from './guideRemote.js'

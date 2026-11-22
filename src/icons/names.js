@@ -1,7 +1,7 @@
 export const NAMES = [
   'home', 'download', 'link', 'qr_code_2', 'apps', 'tune', 'wand_stars', 'mouse', 'settings_ethernet', 'sports_esports', 'build', 'settings', 'mic', 'usb', 'desktop_windows',
   'extension', 'stethoscope', 'smart_toy', 'help', 'info', 'chevron_right', 'chevron_left', 'keyboard_arrow_down',
-  'keyboard_arrow_up', 'arrow_back', 'close', 'check_circle', 'error', 'remove', 'crop_square', 'filter_none', 'rule', 'folder_managed', 'tv_gen', 'warning', 'refresh', 'restart_alt', 'light_mode',
+  'keyboard_arrow_up', 'arrow_back', 'close', 'check_circle', 'error', 'remove', 'crop_square', 'rounded_corner', 'filter_none', 'rule', 'folder_managed', 'tv_gen', 'warning', 'refresh', 'restart_alt', 'light_mode',
   'dark_mode', 'account_circle', 'logout', 'folder', 'lock', 'key', 'language', 'palette', 'undo', 'clear_all', 'system_update_alt', 'cleaning_services',
   'content_paste', 'monitor', 'speaker', 'graphic_eq', 'play_arrow', 'stop', 'add', 'delete', 'edit', 'search', 'more_vert',
   'visibility', 'open_in_new', 'bolt', 'mobile_vibrate', 'touch_app', 'lightbulb', 'volume_up', 'headset_mic', 'memory',
@@ -39,4 +39,8 @@ export const NAMES = [
   'text_decrease', 'text_increase', 'photo_size_select_small', 'photo_size_select_large', 'signal_cellular_alt_1_bar', 'signal_cellular_alt_2_bar', 'signal_cellular_alt', 'volume_down', 'mic_off', 'mobile_off', 'hourglass_empty', 'hourglass_bottom', 'mobile_sensor_lo', 'mobile_sensor_hi',
   // the state marks of the developer-mode pages (src/vue/devmode), chosen by a function and so not found by the scan
   'adjust', 'call_split', 'merge', 'draft', 'cancel', 'pending', 'schedule', 'edit_note',
+  // the RTSS page of the panel beside this package asks for the stream-monitoring switch
+  'monitoring',
+  // named by data in the panel (the exported JSON and the live-session switches), so the scan cannot see them
+  'data_object', 'enable',
 ]

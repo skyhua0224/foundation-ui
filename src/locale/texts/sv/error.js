@@ -86,7 +86,7 @@ export default {
   "errorsNoticeLink": "Om › Integritet",
   "privacyMore": "Vad som skickas och inte skickas",
   "privacyTitle": "Felrapporter och användningsstatistik",
-  "privacyLead": "Varje reglage fungerar för sig. När det är av skickas inget av det slaget.",
+  "privacyLead": "Varje reglage fungerar för sig. När man stänger av ett skickas en liten post om att det stängdes av (vilket reglage, produkten och dess version samt datorns anonyma nummer); därefter skickas inget av det slaget.",
   "lblCollected": "Skickas",
   "lblNever": "Skickas aldrig",
   "lblWhere": "Dit",

@@ -1,4 +1,5 @@
 export default {
+  "pairGetQr": "Pobierz kod QR",
   "stackPin": "Przypnij tę kartę",
   "stackUnpin": "Odepnij",
   "stackPinned": "Przypięto: {name}",

@@ -5,10 +5,10 @@ export const tileIds = ['temperature', 'load', 'budget', 'session-time']
 <script setup>
 // 温度 and CPU 与 GPU (REFERENCES.md "temperature", "load").
 //   温度 (Apple Watch gauge complication, Pixel Battery's temperature): an open 270° gauge in the colour of its zone (ok, warn, error), the hottest reading in it.
+//     (a closed ring from the top: an open 270° gauge read as a ring broken on one side)
 //     方形: the gauge · 中: + the CPU and the GPU reading as two bars beside it
-//   延迟预算 (the same open gauge): the share of a frame's time the encoder takes, in the colour of its zone; 中 adds the latency curve beside it
-//   串流时长 (Apple Watch's activity ring, drawn as the wavy circular progress of 断线 (MProgress)): the line is the hour in progress, the length of the session in it, never shorter than HOUR_FLOOR so the
-//     first minutes are a wavy line and not two round caps side by side; the client under the numeral, when the session or a paired client names it
+//   延迟预算: the share of a frame's time the host latency takes, in the colour of its zone; 中 adds the host latency and the frame time as numbers and the latency curve against the frame time behind them
+//   串流时长: the time the stream has run is the whole tile: tabular condensed digits as wide as the tile allows, the client under it when the session or a paired client names it (an elapsed time has no full, so no ring and no progress)
 //   CPU 与 GPU (Stocks comparison, iStat's combined graph): both curves edge to edge over one scale, each number in its colour above them. 中 only.
 import { computed } from 'vue'
 import MTileHead from '../MTileHead.vue'
@@ -28,20 +28,20 @@ const isTime = computed(() => props.card.id === 'session-time')
 const zone = computed(() => ({ ok: 'ok', warn: 'warn', err: 'error' }[(d.value.zones || []).find((z) => d.value.value <= z.to)?.tone] || 'ok'))
 // 'CPU 62 °C · GPU 78 °C' -> [{ label: 'CPU', v: 62 }, ...]
 const readings = computed(() => String(d.value.caption || '').split(' · ').map((s) => { const m = /^(.*?)\s*([\d.]+)\s*°C$/.exec(s.trim()); return m ? { label: m[1], v: +m[2] } : null }).filter(Boolean))
+// the stages of the frame budget (when the host sends them) and what is left of the frame after them
+const stages = computed(() => (isBudget.value && Array.isArray(d.value.stages) ? d.value.stages : []))
+const stageRest = computed(() => Math.max(0, Math.max(d.value.frameMs || 0, stages.value.reduce((a, x) => a + x.ms, 0)) - stages.value.reduce((a, x) => a + x.ms, 0)))
 const series = computed(() => (d.value.series || []).map((s) => ({ ...s, values: finite(s.values) })))
-// a session has no maximum length: the ring is the hour it is in (0:18 of 1:00), at least 15 % of the ring so the wave is always drawn
-const HOUR_FLOOR = 0.15
-const hour = computed(() => Math.min(1, Math.max(HOUR_FLOOR, num(d.value.value) ?? 0)))
 const nowOf = (s) => { const v = s.values[s.values.length - 1]; return v === undefined ? '' : String(Math.round(v)) }
 </script>
 
 <template>
-  <section class="m-tile m-tgauge" :class="[`m-tgauge--${card.id}`, `is-${size}`]" :data-accent="isTemp || isBudget ? zone : isTime ? 'tertiary' : 'primary'" :data-size="size">
+  <section class="m-tile m-tgauge" :class="[`m-tgauge--${card.id}`, `is-${size}`]" :data-accent="isTemp || isBudget ? (zone === 'ok' ? 'primary' : zone) : isTime ? 'secondary' : 'primary'" :data-size="size">
     <MTileEmpty v-if="empty" :icon="empty.icon" :title="empty.title" :text="empty.value" :action="empty.action" :size="size" @act="(a) => emit('act', a)" />
     <template v-else-if="isTemp">
       <MTileHead :icon="d.icon" :title="card.title" :chevron="chevron && size !== 's'" @open="emit('act', OPEN)" />
       <div class="m-tgauge__body">
-        <MTileRing class="m-tgauge__ring" :value="num(d.value) ?? 0" :sweep="270" :wavy="false" :stroke="12">
+        <MTileRing class="m-tgauge__ring" :value="num(d.value) ?? 0">
           <MTileNumeral :value="d.centre" :unit="d.unit" size="s" />
         </MTileRing>
         <ul v-if="size !== 's' && readings.length" class="m-tgauge__bars">
@@ -52,18 +52,25 @@ const nowOf = (s) => { const v = s.values[s.values.length - 1]; return v === und
     <template v-else-if="isBudget">
       <MTileHead :icon="d.icon" :title="card.title" :chevron="chevron && size !== 's'" @open="emit('act', OPEN)" />
       <div class="m-tgauge__body">
-        <MTileRing class="m-tgauge__ring" :value="num(d.value) ?? 0" :sweep="270" :wavy="false" :stroke="12">
+        <MTileRing class="m-tgauge__ring" :value="num(d.value) ?? 0">
           <MTileNumeral :value="d.centre" :unit="d.unit" size="s" />
         </MTileRing>
-        <div v-if="size !== 's'" class="m-tgauge__side"><span class="m-tgauge__cap">{{ d.caption }}</span><MTileChart v-if="finite(d.spark).length > 1" class="m-tgauge__spark" :points="finite(d.spark)" kind="line" :dot="true" :window="40" /></div>
+        <!-- 中: what the ring is made of. With the host's stages: the frame budget as one bar (each stage a part of it, the rest of the frame is the free track) and the stages with their milliseconds, the frame
+             time last; without them: the host latency and the frame time as numbers and the latency curve against the frame time behind them -->
+        <div v-if="size !== 's' && stages.length" class="m-tgauge__side m-tgauge__side--stages">
+          <div class="m-tgauge__stagebar" role="img" :aria-label="stages.map((x) => `${x.title} ${x.value}`).join(', ')"><i v-for="x in stages" :key="x.key" :class="`is-s${x.i}`" :style="{ flex: `${x.ms} 0 0` }" /><i class="is-rest" :style="{ flex: `${stageRest} 0 0` }" /></div>
+          <ul class="m-tgauge__stagelist"><li v-for="x in stages" :key="x.key"><i :class="`is-s${x.i}`" /><span>{{ x.title }}</span><b class="m-dnum">{{ x.value }}</b></li><li v-if="d.facts?.[1]" class="is-frame"><i /><span>{{ d.facts[1].title }}</span><b class="m-dnum">{{ d.facts[1].value }}</b></li></ul>
+        </div>
+        <div v-else-if="size !== 's' && d.facts?.length" class="m-tgauge__side">
+          <dl class="m-tgauge__facts"><div v-for="f in d.facts" :key="f.title"><dt>{{ f.title }}</dt><dd class="m-dnum">{{ f.value }}</dd></div></dl>
+        </div>
       </div>
+      <MTileChart v-if="size !== 's' && !stages.length && finite(d.spark).length > 1" class="m-tile__bleed m-tgauge__history" :points="finite(d.spark)" kind="area" :dot="true" :window="40" :max="d.frameMs ? d.frameMs * 1.15 : null" :target="d.frameMs || null" />
     </template>
     <template v-else-if="isTime">
       <MTileHead :icon="d.icon" :title="card.title" />
-      <div class="m-tgauge__body">
-        <MTileRing class="m-tgauge__ring" :value="hour" :sweep="360" :stroke="7" :amp="1.9" :waves="18" spin :style="{ '--chars': String(d.centre || '').length || 4 }">
-          <MTileNumeral :value="d.centre" size="s" />
-        </MTileRing>
+      <div class="m-tgauge__body m-tgauge__clock" :style="{ '--chars': String(d.centre || '').length || 4 }">
+        <MTileNumeral :value="d.centre" size="xl" width="condensed" />
         <span v-if="d.caption" class="m-tgauge__cap">{{ d.caption }}</span>
       </div>
     </template>

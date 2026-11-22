@@ -108,19 +108,15 @@ html[data-bs-theme='dark'] { --m-rail-pill: var(--md-sys-color-secondary-contain
 .m-rail[data-tier] .m-rail__foot .m-icon-btn { transition: none; }
 .m-rail:not([data-tier='0']):not([data-tier='']) .m-rail__foot, .m-rail[data-foot='compact'] .m-rail__foot { padding: 6px 0 8px; gap: 0; }
 .m-rail:not([data-tier='0']):not([data-tier='']) .m-rail__foot .m-icon-btn, .m-rail[data-foot='compact'] .m-rail__foot .m-icon-btn { width: 40px; height: 40px; }
-.m-rail--rail[data-tier='2'] .m-rail__items, .m-rail--rail[data-tier='3'] .m-rail__items { gap: var(--m-rail-gap, 2px); padding: 6px 0; }
-.m-rail--rail[data-tier='2'] .m-rail__label:not(.m-rail__label--row), .m-rail--rail[data-tier='3'] .m-rail__label:not(.m-rail__label--row) { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.m-rail--rail[data-tier='2'] .m-rail__item, .m-rail--rail[data-tier='3'] .m-rail__item { gap: 0; }
-.m-rail--rail[data-tier='2'] .m-rail__pill, .m-rail--rail[data-tier='3'] .m-rail__pill { height: 36px; }
-.m-rail--rail[data-tier='3'] .m-rail__items { display: grid; grid-template-columns: repeat(2, 44px); justify-content: center; align-content: start; }
-.m-rail--rail[data-tier='3'] .m-rail__item { width: 44px; }
-.m-rail--rail[data-tier='3'] .m-rail__pill { width: 40px; }
-.m-rail--rail[data-tier='3'] .m-rail__badge { right: 0; }
-.m-rail--rail[data-tier='3'] .m-rail__foot { display: grid; grid-template-columns: repeat(2, 40px); justify-content: center; }
-.m-rail--rail[data-tier='3'] .m-rail__foot .m-web-utils--rail { display: contents; }
+/* tier 2 (a window under about 600 px tall: not even the tighter labelled items fit): the labels stay, small, under the icons; the items keep a 44 px touch height and the rail scrolls as a whole, the foot at the end of it. No icon-only items, no two columns. */
+.m-rail[data-tier='2'] { overflow-y: auto; scrollbar-width: none; }
+.m-rail[data-tier='2']::-webkit-scrollbar { display: none; }
+.m-rail[data-tier='2'] .m-rail__items { flex: none; overflow: visible; gap: 0; padding: 4px 0; }
+.m-rail[data-tier='2'] .m-rail__foot { flex: none; }
+.m-rail--rail[data-tier='2'] .m-rail__item { gap: 0; min-height: 44px; justify-content: center; font-size: 10.5px; line-height: 12px; }
+.m-rail--rail[data-tier='2'] .m-rail__pill { height: 26px; }
 .m-rail--expanded[data-tier='1'] .m-rail__pill { height: 48px; }
 .m-rail--expanded[data-tier='2'] .m-rail__pill { height: 40px; }
-.m-rail--expanded[data-tier='3'] .m-rail__pill { height: 34px; }
 .m-rail--expanded:not([data-tier='0']) .m-rail__foot { padding: 6px 12px 8px; }
 .m-rail--expanded:not([data-tier='0']) .m-rail__items { padding: 8px 12px; }
 /* expanded: icon and label in a row; the indicator is 56 high and as wide as its content */
@@ -146,6 +142,14 @@ html[data-motion='reduced'] .m-rail--expanded :is(.m-rail__pill, .m-rail__label-
 /* the bottom bar keeps one line: its items share the width of a phone (a second line would be cut by the bar's height), a long name ends in an ellipsis */
 .m-rail--bar .m-rail__item { width: auto; flex: 1; min-width: 0; }
 .m-rail--bar .m-rail__label { display: block; -webkit-line-clamp: 1; white-space: nowrap; text-overflow: ellipsis; }
+/* the bar of a short window (a phone on its side, a small window) stands beside the content: a narrow rail, 80 wide, below the caption bar, the same hubs as the bar at the bottom, the label under each icon (the window's height is for the content, not for a bar) */
+.m-scene--side .m-scene__bar { grid-column: 1; grid-row: 2 / span 2; }
+.m-rail--bar.m-rail--side { flex-direction: column; justify-content: flex-start; align-items: stretch; padding: 4px 0 4px env(safe-area-inset-left); background: transparent; backdrop-filter: none; overflow-y: auto; scrollbar-width: none; }
+.m-rail--side::-webkit-scrollbar { display: none; }
+.m-rail--bar.m-rail--side .m-rail__items { flex-direction: column; justify-content: flex-start; align-items: center; width: 100%; gap: 2px; flex: none; }
+.m-rail--bar.m-rail--side .m-rail__item { width: 100%; flex: none; min-height: 52px; justify-content: center; font-size: 11px; line-height: 14px; }
+.m-rail--bar.m-rail--side .m-rail__pill { width: 52px; height: 28px; }
+.m-rail--bar.m-rail--side .m-rail__label { max-width: 100%; padding: 0 2px; -webkit-line-clamp: 2; white-space: normal; text-overflow: clip; letter-spacing: -.01em; }
 
 /* ---- List pane: search pill, segmented groups of rows (Expressive list), selected = secondary container ---- */
 /* List pane: search pill on top, then segmented groups of rows (first/last corners large, inner small, one row = fully round) */
@@ -172,7 +176,7 @@ html[data-motion='reduced'] .m-rail--expanded :is(.m-rail__pill, .m-rail__label-
 .m-navlist__label { font: var(--m-title-medium); white-space: normal; overflow-wrap: break-word; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; } /* a long row name (Russian 分辨率与刷新率) wraps to a second line instead of ellipsizing */
 .m-navlist__item[aria-current='page'] .m-navlist__label { font: var(--m-title-medium-emphasized); }
 .m-navlist__text { font: var(--m-body-medium); color: var(--md-sys-color-on-surface-variant); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.m-navlist__item[aria-current='page'] .m-navlist__text { color: inherit; opacity: .92; }
+.m-navlist__item[aria-current='page'] .m-navlist__text { color: inherit; }
 .m-navlist__badge { width: 8px; height: 8px; border-radius: 50%; background: var(--md-sys-color-outline); }
 .m-navlist__badge--ok { background: var(--md-sys-color-success); } .m-navlist__badge--warn { background: var(--md-sys-color-warning); } .m-navlist__badge--error { background: var(--md-sys-color-error); }
 .m-filterbar input:focus, .m-filterbar input:focus-visible { outline: 0; box-shadow: none; }
@@ -190,6 +194,8 @@ html[data-motion='reduced'] .m-rail--expanded :is(.m-rail__pill, .m-rail__label-
 .m-page__back:active { border-radius: var(--md-sys-shape-corner-large); }
 .m-page__title { flex: 1; min-width: 0; margin: 0; font: var(--m-page-title); font-variation-settings: 'wght' 460; letter-spacing: 0; white-space: normal; overflow-wrap: break-word; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; } /* a long title (German, Russian) wraps to a second line instead of losing its words to an ellipsis */
 .m-page__bar-actions { position: absolute; right: 0; top: 24px; z-index: 1; display: flex; align-items: center; gap: 4px; }
+/* a short window: the title row is slimmer, the room is the page's */
+@media (max-height: 479.98px) { .m-page__bar { min-height: 56px; padding-block: 8px; } .m-page__bar-actions { top: 8px; } }
 .m-stamp { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 10px; border: 0; border-radius: 16px; background: transparent; color: var(--md-sys-color-on-surface-variant); font: var(--m-label-medium); white-space: nowrap; font-variant-numeric: tabular-nums; }
 button.m-stamp { cursor: pointer; }
 button.m-stamp:hover:not(:disabled) { background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent); }
@@ -245,7 +251,7 @@ html { --m-check-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2
 .m-item__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .m-item__title { font: var(--m-title-medium); letter-spacing: 0; overflow-wrap: anywhere; }
 .m-item__text { font: var(--m-body-medium); color: var(--md-sys-color-on-surface-variant); overflow-wrap: anywhere; }
-.m-item--selected .m-item__text { color: inherit; opacity: .94; }
+.m-item--selected .m-item__text { color: inherit; }
 .m-item__trail { margin-left: auto; display: flex; align-items: center; gap: 12px; flex: none; color: var(--md-sys-color-on-surface-variant); }
 .m-item__chev { font-size: 24px; }
 .m-item--stack { flex-wrap: wrap; row-gap: 8px; }
@@ -316,7 +322,7 @@ html.m-has-wallpaper .m-item:not(.m-item--selected) .m-item__text { color: color
 .m-brand { display: inline-flex; align-items: center; gap: 8px; min-width: 0; line-height: 1; }
 .m-brand__icon { width: 20px; height: 20px; display: block; flex: none; object-fit: contain; user-select: none; -webkit-user-drag: none; }
 /* the sun is pale and the icon has a transparent background: on a light frame it wears a thin darker rim drawn on the glyph itself (never a tile); on a dark frame it needs none */
-.m-brand__name { font: 600 15px/20px var(--md-ref-typeface-brand); letter-spacing: .01em; color: var(--md-sys-color-on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m-brand__name { font: var(--m-title-medium); font-weight: 600; letter-spacing: .01em; color: var(--md-sys-color-on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 html:has(.m-web-embedded) .m-root, .m-web-embedded .m-app, .m-web-embedded .m-root { background: transparent !important; }
 /* the page in the control panel's frame has no scene of its own: the panel hands it --m-bottom-reserve (its root's custom properties travel with the colours) while its bar of unsaved changes floats, and the page ends with a spacer of that height, so its last row scrolls clear of the bar without the frame being shortened (a shortened frame shows the host surface below it as a band) */
 .m-web-embedded::after { content: ''; display: block; height: var(--m-bottom-reserve, 0px); }
@@ -336,14 +342,31 @@ html { --m-modal-scrim: color-mix(in srgb, var(--md-sys-color-scrim) 40%, transp
 html[data-motion='reduced'] .m-modalscrim-enter-active, html[data-motion='reduced'] .m-modalscrim-leave-active { transition: none; }
 
 /* the caption bar (MCaption): the actions beside the search, in order: connect, announcements, account */
+/* the tiers of the bar (MCaption decides, in the frame of the change, the roomiest in which everything it shows fits): what a tier leaves out is in 更多 */
+.m-caption .m-caption__more { display: none; }
+.m-caption:is([data-tier='4'], [data-tier='5']) .m-caption__more { display: inline-flex; }
+.m-caption:not([data-tier='0']):not([data-tier='']) .m-capver { display: none; }
+.m-caption:is([data-tier='2'], [data-tier='3'], [data-tier='4'], [data-tier='5']) .m-caption-connect > span { display: none; }
+.m-caption:is([data-tier='3'], [data-tier='4'], [data-tier='5']) .m-brand__name { display: none; }
+.m-caption:is([data-tier='4'], [data-tier='5']) :is(.m-annbtn, [data-fb='titlebar']) { display: none; }
+.m-caption[data-tier='5'] .m-caption-connect { display: none; }
+/* a product whose compact navigation has a 更多 destination of its own (the control panel) needs no button in the caption while that navigation is on */
+html:has(.m-scene--bar) .m-caption--bar-more .m-caption__more { display: none !important; }
+/* ONE size and ONE gap for every button of the bar, at every window width and in both products (and the same for the product's own cells: the Web UI's account cell, the search icon): the pitch of two neighbours
+   is --m-cap-btn + --m-cap-gap, always. The connect button keeps its pill while it has words (tiers 0 and 1); as an icon it is a button of this size like the rest. */
+.m-caption { --m-cap-btn: 44px; --m-cap-gap: 4px; }
 .m-caption__end { display: flex; align-items: center; justify-self: end; margin-inline-start: auto; min-width: 0; }
-.m-caption__actions { flex: none; display: flex; align-items: center; gap: 4px; margin-inline-start: 8px; }
-/* the caption bar of a phone, the same in both products: search, connect, bell and account are icon buttons of one size, touching, all alike (the connect button is a plain icon, not a tonal pill); the status bell
-   keeps no empty slot while nothing is reported (the empty 48 px was the uneven gap and pushed the last button out of the window). The product's own grid (brand, search, end) is its own. */
-@media (max-width: 599.98px) {
-  .m-caption__actions { gap: 0; margin-inline-start: 0; padding-inline-end: 4px; }
-  .m-caption .m-icon-btn, .m-caption .m-caption-connect { width: 44px; height: 44px; min-width: 44px; padding: 0; justify-content: center; }
-  .m-caption .m-annbtn, .m-caption .m-statusbell { width: 44px; }
-  .m-caption .m-statusbell--rest { display: none; }
-  .m-caption .m-caption-connect { background: transparent; color: var(--md-sys-color-on-surface-variant); border-radius: 50%; }
-}
+.m-caption__actions { flex: none; display: flex; align-items: center; gap: var(--m-cap-gap); margin-inline-start: 8px; }
+.m-caption .m-icon-btn, .m-caption .m-annbtn, .m-caption .m-statusbell, .m-caption .m-usearch.is-compact .m-usearch__open { width: var(--m-cap-btn); height: var(--m-cap-btn); min-width: var(--m-cap-btn); padding: 0; justify-content: center; }
+.m-caption .m-annbtn, .m-caption .m-statusbell { height: auto; min-height: var(--m-cap-btn); }
+/* the status bell keeps no empty slot while nothing is reported, at any width: the slot was the uneven gap (a bar of buttons one pitch apart has no hole in it); the buttons left of it step aside by one pitch when a status arrives */
+.m-caption .m-statusbell--rest { display: none; }
+.m-caption:is([data-tier='2'], [data-tier='3'], [data-tier='4'], [data-tier='5']) .m-caption-connect { width: var(--m-cap-btn); height: var(--m-cap-btn); min-width: var(--m-cap-btn); padding: 0; justify-content: center; background: transparent; color: var(--md-sys-color-on-surface-variant); border-radius: 50%; }
+/* a search that is its icon (a phone, or a bar with no room for the field) leaves the middle of the bar: it sits with the other buttons, the free room goes to the logo and the name, and the product's own
+   padding of its search cell is not added to the pitch */
+.m-caption.m-caption:is([data-phone], [data-tier='2'], [data-tier='3'], [data-tier='4'], [data-tier='5']) { grid-template-columns: minmax(0, 1fr) auto auto; }
+.m-caption.m-caption:is([data-phone], [data-tier='2'], [data-tier='3'], [data-tier='4'], [data-tier='5']) > :has(> .m-usearch.is-compact) { padding: 0; margin-inline-end: var(--m-cap-gap); }
+.m-caption.m-caption:is([data-phone], [data-tier='2'], [data-tier='3'], [data-tier='4'], [data-tier='5']) .m-brand { min-width: 0; overflow: hidden; padding-inline-start: 12px; }
+/* the caption bar of a phone, the same in both products: the last button a little off the edge; the version and the global back button are the first lines of 更多 (they are not drawn here) */
+.m-caption[data-phone] .m-caption__actions { margin-inline-start: 0; padding-inline-end: 4px; }
+.m-caption[data-phone] :is(.m-capver, .m-capback) { display: none; }

@@ -16,8 +16,8 @@ export const TRAY_ITEM_IDS = Object.freeze([
   'show_toolbar', 'host_performance', 'rtss_control', 'web_stream', 'log_console', 'debug_page',
   'lang_zh', 'lang_en', 'lang_ja',
   'prevent_sleep', 'restart_user_mode', 'import_config', 'export_config', 'reset_config', 'clear_cache',
-  'check_update', 'about', 'star_project', 'visit_project_sunshine', 'visit_project_moonlight',
-  'visit_site', 'visit_bilibili', 'star_github', 'sponsor_qiin', 'sponsor_yundi339', 'sponsor_skyhua',
+  'check_update', 'about', 'feedback', 'star_project', 'visit_project_sunshine', 'visit_project_moonlight',
+  'visit_site', 'visit_bilibili', 'star_github', 'sponsor_qiin', 'sponsor_yundi339', 'sponsor_skyhua', 'sponsor_wechat', 'sponsor_github',
   'restart', 'shutdown',
 ])
 export const TRAY_CONTAINER_IDS = Object.freeze(['interfaces', 'display', 'tools', 'settings', 'advanced', 'help', 'language'])
@@ -56,25 +56,28 @@ export const ITEMS = Object.freeze({
   clear_cache: { icon: 'cleaning_services', label: '清理缓存', short: '清缓存' },
   check_update: { icon: 'update', label: '检查更新', short: '更新' },
   about: { icon: 'info', label: '关于 Sunshine', short: '关于' },
+  feedback: { icon: 'feedback', label: '反馈问题…', short: '反馈' },
   star_project: { icon: 'star', label: '项目主页', short: '项目主页' },
   visit_project_sunshine: { icon: 'code', label: 'Sunshine 源代码', short: 'Sunshine 源码' },
   visit_project_moonlight: { icon: 'code', label: 'Moonlight 源代码', short: 'Moonlight 源码' },
-  // the support line at the foot of 帮助 (SUPPORT_ROW): the website, the Bilibili channel, a star on GitHub, and the sponsor pages of the three developers (the 赞助 chip opens the chooser, it is not an id)
+  // the support line at the foot of 帮助 (SUPPORT_ROW): the website, the Bilibili channel, a star on GitHub, and the sponsor options (the 赞助 chip opens the chooser, it is not an id)
   visit_site: { icon: 'public', label: '官网', short: '官网' },
   visit_bilibili: { icon: 'play_circle', label: 'B 站', short: 'B 站' },
   star_github: { icon: 'star', label: '在 GitHub 点 Star', short: '点 Star' },
   sponsor_qiin: { icon: 'favorite', label: 'qiin2333' },
   sponsor_yundi339: { icon: 'favorite', label: 'Yundi339' },
   sponsor_skyhua: { icon: 'favorite', label: 'skyhua0224' },
+  sponsor_wechat: { icon: 'favorite', label: '微信赞赏 / WeChat' },
+  sponsor_github: { icon: 'favorite', label: 'GitHub Sponsors' },
   restart: { icon: 'restart_alt', label: '重启 Sunshine', short: '重启' },
   shutdown: { icon: 'power_settings_new', label: '退出 Sunshine', short: '退出', danger: true },
 })
 
 /**
  * The support line, the last row of every 帮助 page: small chips in the card's neutral tone, quiet by design (no brand colour, badge, counter or motion; nothing opens by itself). `chips` run one id each;
- * 赞助 is not an id: it opens a chooser of the three developers (`sponsors`, the same people in the same order as the sponsor lists of the products - a test compares them), each their own 爱发电 page.
+ * 赞助 is not an id: it opens a chooser of sponsor options (`sponsors`, the same people in the same order as the sponsor lists of the products - a test compares them), including the official website.
  */
-export const SUPPORT_ROW = Object.freeze({ chips: Object.freeze(['visit_site', 'visit_bilibili', 'star_github']), sponsors: Object.freeze(['sponsor_qiin', 'sponsor_yundi339', 'sponsor_skyhua']) })
+export const SUPPORT_ROW = Object.freeze({ chips: Object.freeze(['visit_site', 'visit_bilibili', 'star_github']), sponsors: Object.freeze(['sponsor_qiin', 'sponsor_yundi339', 'sponsor_skyhua', 'sponsor_wechat', 'sponsor_github']) })
 
 /** The pages the native submenus become (title, icon of the entry that opens it). */
 export const PAGES = Object.freeze({
@@ -136,6 +139,7 @@ export const CELLS = Object.freeze({
   web_stream: { kind: 'action', when: 'dev' },
   debug_page: { kind: 'action', when: 'dev' },
   about: { kind: 'action' },
+  feedback: { kind: 'action' },
   import_config: { kind: 'action' },
   export_config: { kind: 'action' },
   reset_config: { kind: 'action' },
@@ -154,7 +158,7 @@ export const CELLS = Object.freeze({
 export const GROUPS = Object.freeze({
   language: { icon: 'language', ids: Object.freeze(['lang_zh', 'lang_en', 'lang_ja']), choice: true },
   config: { icon: 'folder_managed', ids: Object.freeze(['import_config', 'export_config', 'reset_config', 'clear_cache']) },
-  project: { icon: 'star', ids: Object.freeze(['star_project', 'visit_project_sunshine', 'visit_project_moonlight']) },
+  project: { icon: 'star', ids: Object.freeze(['star_project', 'visit_project_sunshine', 'visit_project_moonlight', 'feedback']) },
 })
 
 const item = (id, extra = {}) => ({ t: 'item', id, ...extra })
@@ -173,7 +177,7 @@ const languageRows = [item('lang_zh', { check: 'radio' }), item('lang_en', { che
 const advancedRows = [item('reset_config'), item('clear_cache')]
 const helpRows = (withUpdate) => [
   ...(withUpdate ? [item('check_update'), divider] : []),
-  item('about'), divider, item('star_project'), item('visit_project_sunshine'), item('visit_project_moonlight'),
+  item('about'), item('feedback'), divider, item('star_project'), item('visit_project_sunshine'), item('visit_project_moonlight'),
   // the quiet support line is the last thing on the page (never on the first page of V3, never above the operational rows)
   divider, { t: 'support' },
 ]

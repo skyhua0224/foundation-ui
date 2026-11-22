@@ -29,6 +29,10 @@ export const SETTING_META = Object.freeze({
   locale: P(2, 'en', { quiet: true }),
   sunshine_name: F(2, null, { quiet: true }),
   min_log_level: P(3, 2),
+  max_log_size_mb: F(3, 50), // MB; 0 keeps one log without rotation
+  restore_log: S(3, false),
+  fs_host_icon: F(3, null), // the icon token of the host for the specialised fullscreen client; empty lets the client choose
+  clipboard_sync: S(3, true), // on in the host; the switch only force-disables it for every client
   sleep_mode: G(1, '0', { icons: true }),
   notify_pre_releases: S(2, false),
   system_tray: S(2, true),
@@ -46,6 +50,7 @@ export const SETTING_META = Object.freeze({
   enable_dsu_server: S(3, false),
   dsu_server_port: F(3, 26760, { port: true }),
   back_button_timeout: N(3, -1, -50, 3000, 50, ' ms', { off: -1, offText: 'disabled' }),
+  client_gamepad_override: S(3, true), // a client that declares its own gamepad type wins
   keyboard: S(2, true),
   key_repeat_delay: N(3, 500, 100, 1000, 50, ' ms'),
   key_repeat_frequency: N(3, 24.9, 1, 60, 0.1, ' Hz', { decimals: 1 }),
@@ -73,6 +78,10 @@ export const SETTING_META = Object.freeze({
   vdd_reuse: S(2, false),
   variable_refresh_rate: S(2, false),
   minimum_fps_target: N(3, 0, 0, 240, 1, ' FPS', { off: 0, offText: 'auto' }),
+  input_activity_boost: S(3, true), // raise the stream FPS for a short window after input
+  input_activity_boost_fps: F(3, 60),
+  input_activity_boost_window_ms: F(3, 150),
+  downscaling_quality: G(3, 'balanced'),
   microphone_redirect_backend: G(2, 'auto'),
   display_device_prep: { tier: 2, control: 'custom', def: 'no_operation', risk: 'high' },
   resolution_change: G(2, 'automatic'),
@@ -102,6 +111,14 @@ export const SETTING_META = Object.freeze({
   pair_max_attempts: N(3, 10, 0, 50, 1, '', { risk: 'high' }),
   ping_timeout: N(3, 10000, 1000, 60000, 500, ' ms'),
   close_verify_safe: S(3, false, { risk: 'medium' }),
+  client_fingerprint_remote_rules: S(3, true),
+  client_fingerprint_rules_url: F(3, null),
+  client_fingerprint_rules_refresh_hours: F(3, 24),
+  client_fingerprint_rules_certificate: F(3, null),
+  network_external_check: S(3, true), // the host stores enabled/disabled
+  network_external_endpoint: F(3, null),
+  network_bypass_proxy: S(3, true),
+  stun_servers: F(3, null), // one host or host:port per line; empty uses the built-in list, none turns them off
   // 配置文件
   file_apps: D(3, 'apps.json'),
   credentials_file: D(3, 'sunshine_state.json', { risk: 'high' }),
@@ -163,6 +180,7 @@ export const SETTING_META = Object.freeze({
   sw_preset: P(2, 'superfast', { steps: ['ultrafast', 'superfast', 'veryfast', 'faster', 'fast', 'medium', 'slow', 'slower', 'veryslow'] }),
   sw_tune: P(3, 'zerolatency'),
   min_threads: N(3, 2, 1, 64, 1, ''),
+  vaapi_strict_rc_buffer: S(3, false), // strict rate-control buffer handling of the Linux VAAPI encoder; enable only when the driver misbehaves
 })
 
 /** Keys of the host configuration that have a control in the original Web UI but no tier of their own are an error. */

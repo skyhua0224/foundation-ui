@@ -37,13 +37,13 @@
 .m-inst__brand { display: flex; flex-direction: column; gap: 2px; }
 .m-inst__logo { display: block; width: 56px; height: 56px; margin-bottom: 12px; object-fit: contain; -webkit-user-drag: none; }
 .m-inst__name { font: var(--m-title-medium-emphasized); letter-spacing: .005em; }
-.m-inst__setup { font: var(--m-body-medium); opacity: .78; }
+.m-inst__setup { font: var(--m-body-medium); }
 .m-inst__steps-rail { position: relative; display: flex; flex-direction: column; gap: 22px; }
 .m-inst__rs { position: relative; display: grid; grid-template-columns: 30px minmax(0, 1fr); column-gap: 14px; align-items: start; }
 .m-inst__rs-text { display: flex; flex-direction: column; min-width: 0; padding-top: 1px; }
 .m-inst__rs-text b { font: var(--m-label-large); font-weight: 600; }
-.m-inst__rs-text small { font: var(--m-body-small, 400 12px/16px var(--md-ref-typeface-brand)); opacity: .78; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.m-inst__rs.is-pending .m-inst__rs-text { opacity: .72; }
+.m-inst__rs-text small { font: var(--m-body-small, 400 12px/16px var(--md-ref-typeface-brand)); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.m-inst__rs.is-pending .m-inst__rs-text { color: var(--md-sys-color-on-surface-variant); }
 /* the line from the step above: filled with the primary colour once that one is done */
 .m-inst__rs + .m-inst__rs::before { content: ''; position: absolute; left: 14px; top: -22px; width: 2px; height: 14px; border-radius: 1px; background: color-mix(in srgb, currentColor 22%, transparent); transition: background-color var(--m-spring-default-effects-duration) linear; }
 .m-inst__rs.is-done + .m-inst__rs::before, .m-inst__rs.is-done + .m-inst__rs.is-running::before { background: var(--md-sys-color-primary); }
@@ -230,7 +230,7 @@
   .m-inst__glyph { width: 40px; height: 40px; } .m-inst__glyph .m-icon { width: 22px; height: 22px; } .m-inst__glyph-spin { width: 28px; height: 28px; }
   .m-inst__fact { gap: 12px; } .m-inst__fact-icon { width: 32px; height: 32px; } .m-inst__fact-icon .m-icon { width: 20px; height: 20px; }
   .m-inst__foot { gap: 8px; } .m-inst__foot-end { gap: 6px; }
-  .m-inst__foot .m-btn { height: 36px; min-height: 36px; padding-inline: 14px; }
+  .m-inst__foot .m-btn { --m-btn-h: 36px; height: 36px; min-height: 36px; padding-inline: 14px; }
   .m-inst__btn--start { margin-inline-start: -8px; }
 }
 /* ---- a low window ---- */
@@ -246,7 +246,7 @@
   .m-inst__comps { margin-top: 8px; } .m-inst__row { min-height: 48px; padding-block: 4px; } .m-inst__row-icon { width: 32px; height: 32px; }
   .m-inst__run { margin-top: 8px; }
   .m-inst__foot { padding-top: 8px; }
-  .m-inst__foot .m-btn { height: 36px; min-height: 36px; }
+  .m-inst__foot .m-btn { --m-btn-h: 36px; height: 36px; min-height: 36px; }
   .m-inst__seal, .m-inst__seal-art, .m-inst__seal-spin { width: 80px; height: 80px; } .m-inst__seal { margin-bottom: 6px; }
   .m-inst__title--hero { font: var(--m-headline-small-emphasized); }
   .m-inst__page--done .m-inst__foot { margin-top: 16px; }
@@ -267,24 +267,66 @@
 @keyframes m-inst-rise { from { opacity: 0; transform: translateY(10px); } }
 @keyframes m-inst-attention { 0%, 100% { transform: none; } 20% { transform: translateX(-5px) rotate(-4deg); } 45% { transform: translateX(4px) rotate(3deg); } 70% { transform: translateX(-2px); } }
 @keyframes m-inst-pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--md-sys-color-primary) 34%, transparent); } 50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--md-sys-color-primary) 0%, transparent); } }
-.m-inst__total .m-wave__active { transition: width 480ms var(--m-ease-standard); } .m-inst__total .m-wave__track { transition: left 480ms var(--m-ease-standard); }
-.m-inst__total .m-wave.is-creeping .m-wave__active { transition: width 14s cubic-bezier(0.1, 0.5, 0.3, 1); } .m-inst__total .m-wave.is-creeping .m-wave__track { transition: left 14s cubic-bezier(0.1, 0.5, 0.3, 1); }
+/* the overall bar eases its value in MProgress (glide 480 ms; 14 s while it creeps towards the next step), not in CSS */
 
 /* ---- reduced motion: a slide becomes a cut, a finite animation ends in its final state, a busy indicator keeps a calm fade (the same rule as the Panel, motion.css) ---- */
 @media (prefers-reduced-motion: reduce) {
   html:not([data-motion='full']) .m-inst *, html:not([data-motion='full']) .m-inst *::before, html:not([data-motion='full']) .m-inst *::after { animation-iteration-count: 1 !important; animation-duration: 0.01ms !important; animation-delay: 0s !important; transition: none !important; }
   html:not([data-motion='full']) .m-inst :is(.m-wave-circle--spin) { animation: m-rm-busy 2s ease-in-out infinite !important; transform: none; }
-  html:not([data-motion='full']) .m-inst .m-wave--indeterminate .m-wave__active--run { animation: m-rm-busy 2s ease-in-out infinite !important; transform: none; }
 }
 html[data-motion='reduced'] .m-inst *, html[data-motion='reduced'] .m-inst *::before, html[data-motion='reduced'] .m-inst *::after { animation-iteration-count: 1 !important; animation-duration: 0.01ms !important; animation-delay: 0s !important; transition: none !important; }
 html[data-motion='reduced'] .m-inst :is(.m-wave-circle--spin) { animation: m-rm-busy 2s ease-in-out infinite !important; transform: none; }
-/* the overall progress bar keeps telling that work goes on under reduced motion too (a progress indicator, not decoration): its wave runs slower and
-   its value still eases, briefly; nothing else moves */
-@media (prefers-reduced-motion: reduce) {
-  html:not([data-motion='full']) .m-inst .m-inst__total .m-wave__active i { animation: m-wave-run 2.4s linear infinite !important; }
-  html:not([data-motion='full']) .m-inst .m-inst__total .m-wave__active { transition: width 300ms var(--m-ease-standard) !important; }
-  html:not([data-motion='full']) .m-inst .m-inst__total .m-wave__track { transition: left 300ms var(--m-ease-standard) !important; }
-}
 /* the free-software notice and the support line of the first page: secondary body text under the lead */
 .m-inst__legal { display: grid; gap: 4px; margin-top: 12px; font: var(--m-body-small); color: var(--md-sys-color-on-surface-variant); text-wrap: pretty; }
 .m-inst__legal p { margin: 0; }
+
+/* ---- the install location (the first page and the maintenance page): a row that names the folder, the room left on its drive, the field to type the path in and the Change button; a refused folder says why under it,
+   a folder that only carries a warning shows the risk with the safe place one press away ---- */
+.m-inst__loc { flex: none; margin-top: 16px; }
+.m-inst__loc-row { display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 10px 12px 10px 12px; border-radius: 20px; background: var(--md-sys-color-surface-container-low); }
+.m-inst__loc.is-error .m-inst__loc-row { background: color-mix(in srgb, var(--md-sys-color-error-container) 38%, var(--md-sys-color-surface-container-low)); }
+.m-inst__loc-icon { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
+.m-inst__loc-icon .m-icon { width: 22px; height: 22px; }
+.m-inst__loc-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.m-inst__loc-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; min-width: 0; }
+.m-inst__loc-text b { font: var(--m-title-medium); color: var(--md-sys-color-on-surface); }
+.m-inst__loc-path { display: flex; min-width: 0; font: var(--m-body-medium); color: var(--md-sys-color-on-surface); }
+.m-inst__loc-head { flex: 0 100 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* the last folder gives way only after the head is gone, and then with an ellipsis of its own */
+.m-inst__loc-tail { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.m-inst__loc-free { flex: none; font: var(--m-body-small); color: var(--md-sys-color-on-surface-variant); }
+/* the field: the path as it stands, typed or picked; the same shape as the other fields of the product (a 10 px radius in a 20 px row) */
+.m-inst__loc-input {
+  width: 100%; min-width: 0; height: 32px; padding: 0 10px; border: 1px solid var(--md-sys-color-outline-variant); border-radius: 10px; -webkit-app-region: no-drag;
+  background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); font: var(--m-body-medium); text-overflow: ellipsis; outline: none;
+  transition: border-color 150ms var(--m-ease-standard), box-shadow 150ms var(--m-ease-standard);
+}
+.m-inst__loc-input:hover { border-color: var(--md-sys-color-outline); }
+.m-inst__loc-input:focus { border-color: var(--md-sys-color-primary); box-shadow: 0 0 0 1px var(--md-sys-color-primary); }
+.m-inst__loc.is-error .m-inst__loc-input { border-color: var(--md-sys-color-error); }
+.m-inst__loc.is-error .m-inst__loc-input:focus { box-shadow: 0 0 0 1px var(--md-sys-color-error); }
+.m-inst__loc-change { flex: none; }
+.m-inst__loc-error, .m-inst__loc-warn { display: flex; align-items: flex-start; gap: 8px; margin: 8px 4px 0; font: var(--m-body-medium); }
+.m-inst__loc-error { color: var(--md-sys-color-error); }
+.m-inst__loc-error .m-icon, .m-inst__loc-warn .m-icon { flex: none; width: 20px; height: 20px; margin-top: 1px; }
+.m-inst__loc-error span, .m-inst__loc-warn span { min-width: 0; text-wrap: pretty; }
+/* a warning is a banner in the warning roles, not the red of a refusal: the folder works */
+.m-inst__loc-warn { margin: 8px 0 0; padding: 10px 14px; border-radius: 16px; background: var(--md-sys-color-warning-container); color: var(--md-sys-color-on-warning-container); }
+.m-inst__loc-note { margin: 8px 4px 0; font: var(--m-body-medium); color: var(--md-sys-color-on-surface-variant); text-wrap: pretty; }
+.m-inst__loc-links { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 2px 0 0; }
+.m-inst__loc-links .m-btn { -webkit-app-region: no-drag; }
+.m-inst__loc-safe { margin-left: auto; }
+.m-inst__confirm-paths { display: grid; gap: 8px; margin: 12px 0 0; }
+.m-inst__confirm-paths div { display: grid; gap: 1px; }
+.m-inst__confirm-paths dt { font: var(--m-label-medium); color: var(--md-sys-color-on-surface-variant); }
+.m-inst__confirm-paths dd { margin: 0; font: var(--m-body-medium); color: var(--md-sys-color-on-surface); overflow-wrap: anywhere; }
+.m-inst__page--welcome .m-inst__loc, .m-inst__page--maintenance .m-inst__loc { animation: m-inst-rise 420ms var(--m-ease-decelerate) 40ms both; }
+@container m-inst (max-height: 540px) {
+  .m-inst__loc { margin-top: 12px; }
+  .m-inst__loc-row { min-height: 56px; padding-block: 6px; }
+  .m-inst__loc-warn { padding-block: 8px; }
+}
+@container m-inst (max-height: 440px) {
+  .m-inst__loc { margin-top: 8px; }
+  .m-inst__loc-icon { width: 32px; height: 32px; } .m-inst__loc-icon .m-icon { width: 20px; height: 20px; }
+}

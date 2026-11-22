@@ -87,7 +87,7 @@ export default
   "errorsNoticeLink": "Acerca de › Privacidad",
   "privacyMore": "Qué se envía y qué no",
   "privacyTitle": "Informes de errores y estadísticas de uso",
-  "privacyLead": "Cada interruptor funciona por separado. Si está apagado, no se envía nada de ese tipo.",
+  "privacyLead": "Cada interruptor funciona por separado. Al apagar uno se envía un pequeño registro de que se apagó (qué interruptor, el producto y su versión, y el número anónimo de este equipo); después no se envía nada de ese tipo.",
   "lblCollected": "Se envía",
   "lblNever": "Nunca se envía",
   "lblWhere": "Destino",

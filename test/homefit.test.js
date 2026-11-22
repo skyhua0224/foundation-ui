@@ -11,9 +11,8 @@ test('columns follow the width, a tile of a size has a cap, a large tile is the 
   assert.deepEqual(boxOf('cpu', {}, 'l', 0, 12), { span: 4, rows: 2, max: 4 })
 })
 
-test('sections: from 2560 css px or wider than 2.1 : 1; as many as fit side by side, each at most 1000 px', () => {
-  assert.equal(sectionedOf(1920, 1080), false); assert.equal(sectionedOf(2560, 1440), false); assert.equal(sectionedOf(3840, 2160), true); assert.equal(sectionedOf(3440, 1440), true); assert.equal(sectionedOf(5120, 1440), true)
-  assert.equal(sectionedOf(2400, 1000), true, 'wider than 2.1 : 1')
+test('there is no sectioned layout any more: a very wide or ultrawide window is the same grid with a column cap and wider margins; the helper of the section widths stays', () => {
+  for (const [w, h] of [[1920, 1080], [2560, 1440], [3840, 2160], [3440, 1440], [5120, 1440], [2400, 1000]]) assert.equal(sectionedOf(w, h), false, `${w}x${h}`)
   for (const w of [3440, 3840, 5120]) { const s = sectionLayout(w - 120); assert.ok(s.width <= SECTION_MAX && s.width >= SECTION_MIN, `${w}: ${s.width}`); assert.ok(s.across * s.width <= w) }
   assert.equal(sectionLayout(900).across, 1); assert.equal(sectionLayout(2000).across, 2)
 })

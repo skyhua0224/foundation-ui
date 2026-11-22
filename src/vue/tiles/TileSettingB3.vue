@@ -35,6 +35,7 @@ const pickOpen = ref(false)
 // the strips say when a change applies: the encoder after a restart, the frame rates are the client's to decide (the host list after a restart)
 const stripNote = computed(() => (id.value === 'ctl-encoder' ? L.value.restartNote : id.value === 'ctl-fps' || id.value === 'ctl-bitrate' ? L.value.clientNote : ''))
 const current = computed(() => d.value.options?.find((o) => o.value === d.value.value) || { value: d.value.value, label: encoderName(d.value.value) || d.value.options?.[0]?.label || '' })
+const bitrateChoices = computed(() => choicesOf(d.value.options, current.value.value, { limit: 2 }))
 // 帧率预设: the presets the host offers a client (at most five, 30 to 500)
 const fps = computed(() => [...(d.value.value || [])].map(Number).filter(Number.isFinite).sort((a, b) => a - b))
 const saveFps = (list) => save('fps', `[${[...list].sort((a, b) => a - b).join(',')}]`)
@@ -64,6 +65,15 @@ const modeLabel = (m) => d.value.options?.find((o) => o.value === m)?.label || m
       <span class="m-b2__cap m-b2padtype__note">{{ L.restartNote }}</span>
     </div></div>
     <MPickSheet v-if="encChoices.more" :model-value="current.value" v-model:open="pickOpen" :title="card.title" :options="d.options" :help="L.restartNote" :close-label="texts.close || 'Close'" @update:model-value="(v) => save(d.key, v)" />
+  </section>
+
+  <!-- The square keeps the current rate and automatic in reach; the sheet offers every preset. -->
+  <section v-else-if="id === 'ctl-bitrate' && !strip" class="m-tile m-cal m-b2 m-b2padtype is-s" data-size="s" data-accent="primary">
+    <header class="m-calm__head"><MIcon :name="d.icon" /><span class="m-calm__title">{{ card.title }}</span><button v-if="bitrateChoices.more && !preview" type="button" class="m-calm__more" :aria-label="texts.more || card.title" @click.stop="pickOpen = true"><MIcon name="chevron_right" /></button></header>
+    <div class="m-b2padtype__body"><div class="m-b2padtype__side">
+      <ul class="m-b2opts" role="radiogroup" :aria-label="card.title"><li v-for="o in bitrateChoices.shown" :key="o.value"><button type="button" role="radio" class="m-b2opt" :class="{ 'is-on': o.value === current.value }" :aria-checked="o.value === current.value" @click.stop="save(d.key, o.value)"><span>{{ o.label }}</span><MIcon v-if="o.value === current.value" name="check" /></button></li></ul>
+    </div></div>
+    <MPickSheet v-if="bitrateChoices.more" :model-value="current.value" v-model:open="pickOpen" :title="card.title" :options="d.options" :help="L.clientNote" :close-label="texts.close || 'Close'" @update:model-value="(v) => save(d.key, v)" />
   </section>
 
   <!-- 明暗 方形: the three modes as list buttons; the window's own look, so each press takes effect at once -->

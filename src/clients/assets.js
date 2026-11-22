@@ -60,6 +60,9 @@ export function releaseRows(assets, os, locale = 'en') {
     })
 }
 
+/** The version as a tile shows it: without the build part after a +, and at most `max` characters (the last one an ellipsis when it is cut; the full text is the tooltip). */
+export const shortVersion = (version, max = 11) => { const v = String(version ?? '').trim().split('+')[0]; return v.length > max ? `${v.slice(0, max - 1)}…` : v }
+
 /** What the secondary link says: the other host than the main one. */
 export const mirrorName = (locale = 'en') => (/^zh/i.test(String(locale)) ? 'GitHub' : 'CNB')
 

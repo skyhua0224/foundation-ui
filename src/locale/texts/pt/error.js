@@ -86,7 +86,7 @@ export default {
   "errorsNoticeLink": "Sobre › Privacidade",
   "privacyMore": "O que é enviado e o que não é",
   "privacyTitle": "Relatórios de erros e estatísticas de utilização",
-  "privacyLead": "Cada interruptor funciona por si. Desligado, não é enviado nada desse tipo.",
+  "privacyLead": "Cada interruptor funciona por si. Ao desligar um, é enviado um pequeno registo de que foi desligado (qual interruptor, o produto e a sua versão, e o número anónimo deste computador); depois não é enviado nada desse tipo.",
   "lblCollected": "Enviado",
   "lblNever": "Nunca enviado",
   "lblWhere": "Destino",

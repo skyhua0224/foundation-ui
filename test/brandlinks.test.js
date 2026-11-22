@@ -51,7 +51,7 @@ test('guide: the last page ends with one line, 关注我们：B 站 · 官网', 
   assert.equal(zh.followSite, '官网')
   assert.ok(en.follow && en.followBilibili && en.followSite)
   const flow = read('../src/vue/MGuideFlow.vue')
-  assert.match(flow, /<p v-if="isLast\(flow, idx\)" class="m-guide__follow"/)
+  assert.match(flow, /<p v-if="isLast\(flow, idx\) && !sub" class="m-guide__follow"/)
   assert.match(flow, /brandUrl\('site', locale\)/)
 })
 
@@ -72,7 +72,7 @@ test('tray: the support row closes the 帮助 page of V1 and V2 and the 设置�
 
 test('tray: the support chips run one id each, 赞助 is a chooser of the three developers of the sponsor list', () => {
   assert.deepEqual([...SUPPORT_ROW.chips], ['visit_site', 'visit_bilibili', 'star_github'])
-  assert.equal(SUPPORT_ROW.sponsors.length, 3)
+  assert.equal(SUPPORT_ROW.sponsors.length, 5)
   assert.deepEqual(rowIds({ t: 'support' }), [...SUPPORT_ROW.chips, ...SUPPORT_ROW.sponsors])
   // the same people in the same order as the about page's list (the Panel's config/sponsors.js is tested against it)
   assert.deepEqual(SUPPORT_ROW.sponsors.map((id) => ITEMS[id].label), SPONSORS.map((s) => s.login))

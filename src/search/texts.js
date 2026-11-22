@@ -1,10 +1,11 @@
 import { pinSpecForAction } from '../pins/registry.js'
+import { RESET_KEYWORDS } from '../reset/texts.js'
 // The words of the unified search, in the two languages of the products.
 const ZH = {
   placeholder: '搜索设置、页面、操作…', open: '搜索', close: '关闭搜索', clear: '清除', back: '返回', shortcut: 'Ctrl K',
   types: { setting: '设置', page: '页面', action: '操作', client: '客户端', app: '应用', tile: '磁贴' },
-  quickActions: '快捷操作', recentSearches: '最近搜索', recentSettings: '最近更改的设置', clearAll: '全部清除', remove: '移除',
-  noResults: '没有找到“{q}”', noResultsHint: '试试英文名、配置项的键名，或拼音首字母', more: '还有 {n} 项',
+  openSetting: '去设置', quickActions: '快捷操作', recentSearches: '最近搜索', recentSettings: '最近更改的设置', clearAll: '全部清除', remove: '移除',
+  noResults: '没有找到“{q}”', didYouMean: '你是不是要找', noResultsHint: '试试英文名、配置项的键名，或拼音首字母', more: '还有 {n} 项',
   addToHome: '加入概览', pin: '固定到概览', pinned: '已固定', unpinHint: '点击取消固定', run: '执行', confirm: '确定', cancel: '取消', confirmTitle: '要执行“{title}”吗？', results: '{n} 个结果', noneYet: '输入设置、页面或操作的名称',
   actions: {
     restart: { title: '重启 Sunshine', keywords: 'restart reboot restart sunshine 重新启动 重启服务 ', confirm: '重启会中断正在进行的串流。' },
@@ -16,11 +17,12 @@ const ZH = {
     exportDiag: { title: '导出诊断包', keywords: 'diagnostic diagnostics export bundle logs 诊断 日志 导出' },
     checkUpdate: { title: '检查更新', keywords: 'update upgrade version check 升级 新版本 版本' },
     logs: { title: '查看日志', keywords: 'log logs view 日志 记录' },
-    feedback: { title: '发送反馈', keywords: '反馈 意见 建议 报告问题 吐槽 联系开发者 bug feedback report suggestion contact developers' },
+    feedback: { title: '反馈问题或建议', keywords: '反馈 意见 建议 报告问题 吐槽 联系开发者 bug feedback report suggestion contact developers' },
     doctor: { title: '开始体检', keywords: '体检 健康检查 检查 诊断 自检 问题 故障 排查 doctor health check diagnose troubleshoot' },
     addApp: { title: '添加应用', keywords: 'add application app 新建应用 游戏' },
     scanGames: { title: '扫描游戏库', keywords: 'scan games library steam epic gog import 扫描 游戏 导入 添加游戏' },
     stopApp: { title: '关闭正在运行的应用', keywords: 'close app force close stop running application 关闭应用 结束应用 强制关闭 关掉游戏 结束 应用 游戏', confirm: '正在运行的应用会被关闭，没保存的进度会丢失。' },
+    resetSettings: { title: '恢复默认设置', keywords: RESET_KEYWORDS },
     resetDisplay: { title: '重置显示器记忆', keywords: 'reset display memory restore display device persistence 显示器 显示设备 恢复 记忆', confirm: 'Sunshine 会忘掉上一次串流前保存的显示器设置。Sunshine 一直想恢复显示器却恢复不了时再用。' },
     setupGuide: { title: '重新打开新手引导', keywords: 'guide setup wizard first run onboarding 新手引导 向导 首次设置' },
     quitHost: { title: '关闭 Sunshine', keywords: 'quit exit stop shutdown 退出 停止 关机 Sunshine', confirm: 'Sunshine 会立即停止，需要手动重新启动。正在进行的串流会中断。' },
@@ -30,8 +32,8 @@ const ZH = {
 const EN = {
   placeholder: 'Search settings, pages, actions…', open: 'Search', close: 'Close search', clear: 'Clear', back: 'Back', shortcut: 'Ctrl K',
   types: { setting: 'Settings', page: 'Pages', action: 'Actions', client: 'Clients', app: 'Applications', tile: 'Tiles' },
-  quickActions: 'Quick actions', recentSearches: 'Recent searches', recentSettings: 'Recently changed settings', clearAll: 'Clear all', remove: 'Remove',
-  noResults: 'Nothing found for “{q}”', noResultsHint: 'Try the English name, the configuration key or the pinyin initials', more: '{n} more',
+  openSetting: 'Open setting', quickActions: 'Quick actions', recentSearches: 'Recent searches', recentSettings: 'Recently changed settings', clearAll: 'Clear all', remove: 'Remove',
+  noResults: 'Nothing found for “{q}”', didYouMean: 'Did you mean', noResultsHint: 'Try the English name, the configuration key or the pinyin initials', more: '{n} more',
   addToHome: 'Add to Overview', pin: 'Pin to Overview', pinned: 'Pinned', unpinHint: 'Click to unpin', run: 'Run', confirm: 'OK', cancel: 'Cancel', confirmTitle: 'Run “{title}”?', results: '{n} results', noneYet: 'Type the name of a setting, page or action',
   actions: {
     restart: { title: 'Restart Sunshine', keywords: 'restart reboot', confirm: 'Restarting ends the stream that is running.' },
@@ -48,6 +50,7 @@ const EN = {
     addApp: { title: 'Add an application', keywords: 'add application app new game' },
     scanGames: { title: 'Scan the game library', keywords: 'scan games library steam epic gog import add games' },
     stopApp: { title: 'Close the running application', keywords: 'close app force close stop running application game', confirm: 'The running application is closed; progress that is not saved is lost.' },
+    resetSettings: { title: 'Restore default settings', keywords: RESET_KEYWORDS },
     resetDisplay: { title: 'Reset the display memory', keywords: 'reset display memory restore display device persistence', confirm: 'Sunshine forgets the display settings it saved before the last stream. Use it when Sunshine keeps trying to restore a display and cannot.' },
     setupGuide: { title: 'Reopen the first-run guide', keywords: 'guide setup wizard first run onboarding' },
     quitHost: { title: 'Quit Sunshine', keywords: 'quit exit stop shutdown', confirm: 'Sunshine stops at once and has to be started again by hand. The stream that is running ends.' },
@@ -76,6 +79,8 @@ export const ACTION_DEFS = Object.freeze([
   { id: 'addApp', icon: 'add', tier: 1 },
   { id: 'scanGames', icon: 'sports_esports', tier: 1 },
   { id: 'stopApp', icon: 'stop_circle', tier: 3 },
+  // opens 恢复默认设置 (the page asks before it resets anything)
+  { id: 'resetSettings', icon: 'restart_alt', tier: 1 },
   { id: 'resetDisplay', icon: 'desktop_windows', tier: 3 },
   { id: 'setupGuide', icon: 'rocket_launch', tier: 1 },
   { id: 'quitHost', icon: 'power_settings_new', tier: 3 },

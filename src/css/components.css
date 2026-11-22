@@ -2,7 +2,7 @@
 
 /* ---- Buttons: round at rest, softer corners while pressed (shape morph), spring settle. ---- */
 .m-btn {
-  --m-btn-bg: var(--md-sys-color-primary); --m-btn-fg: var(--md-sys-color-on-primary); --m-btn-rest: 9999px; --m-btn-radius: var(--m-btn-rest);
+  --m-btn-bg: var(--md-sys-color-primary); --m-btn-fg: var(--md-sys-color-on-primary); --m-btn-rest: calc(var(--m-btn-h) / 2); --m-btn-radius: var(--m-btn-rest);
   --m-btn-h: 40px; --m-btn-pad: 16px; --m-btn-gap: 8px; --m-btn-icon: 20px; --m-btn-outline: 1px; --m-btn-square: var(--md-sys-shape-corner-medium); --m-btn-pressed: var(--md-sys-shape-corner-small);
   position: relative; isolation: isolate; overflow: clip; display: inline-flex; align-items: center; justify-content: center; gap: var(--m-btn-gap);
   height: var(--m-btn-h); padding: 0 var(--m-btn-pad); border: 0; border-radius: var(--m-btn-radius); cursor: pointer; white-space: nowrap;
@@ -28,7 +28,7 @@
 /* Toggle (aria-pressed): the shape swaps when selected, round to square and square to round (ToggleButtonDefaults.shapesFor: checkedShape = SelectedContainerShapeSquare);
    the colours of FilledButtonTokens / TonalButtonTokens / OutlinedButtonTokens Selected* and Unselected*. */
 .m-btn[aria-pressed='true'] { --m-btn-rest: var(--m-btn-square); }
-.m-btn--square[aria-pressed='true'] { --m-btn-rest: 9999px; }
+.m-btn--square[aria-pressed='true'] { --m-btn-rest: calc(var(--m-btn-h) / 2); }
 .m-btn[aria-pressed='false']:not(.m-btn--tonal, .m-btn--outlined, .m-btn--text, .m-btn--danger, .m-btn--warning) { --m-btn-bg: var(--md-sys-color-surface-container); --m-btn-fg: var(--md-sys-color-on-surface-variant); }
 .m-btn--tonal[aria-pressed='true'] { --m-btn-bg: var(--md-sys-color-secondary); --m-btn-fg: var(--md-sys-color-on-secondary); }
 .m-btn--outlined[aria-pressed='false'] { --m-btn-fg: var(--md-sys-color-on-surface-variant); }
@@ -41,7 +41,7 @@
 .m-icon-btn:active { border-radius: var(--md-sys-shape-corner-medium); }
 /* M3 Expressive icon buttons (XSmall/Small/Medium/Large/XLargeIconButtonTokens, Compose Material3): five sizes, each narrow, uniform or wide (icon + leading and trailing space),
    round or square, the pressed shape per size, toggle (aria-pressed) swapping round and square. Without a size the button keeps the kit's 48 px round one. */
-.m-icon-btn.is-sized { --ib-rest: 9999px; width: var(--ib-w); height: var(--ib-h); font-size: var(--ib-icon); border-radius: var(--ib-rest); }
+.m-icon-btn.is-sized { --ib-rest: calc(var(--ib-h) / 2); width: var(--ib-w); height: var(--ib-h); font-size: var(--ib-icon); border-radius: var(--ib-rest); }
 .m-icon-btn--xs { --ib-h: 32px; --ib-icon: 20px; --ib-w: 32px; --ib-w-narrow: 28px; --ib-w-wide: 40px; --ib-square: var(--md-sys-shape-corner-medium); --ib-pressed: var(--md-sys-shape-corner-small); --ib-outline: 1px; }
 .m-icon-btn--s { --ib-h: 40px; --ib-icon: 24px; --ib-w: 40px; --ib-w-narrow: 32px; --ib-w-wide: 52px; --ib-square: var(--md-sys-shape-corner-medium); --ib-pressed: var(--md-sys-shape-corner-small); --ib-outline: 1px; }
 .m-icon-btn--m { --ib-h: 56px; --ib-icon: 24px; --ib-w: 56px; --ib-w-narrow: 48px; --ib-w-wide: 72px; --ib-square: var(--md-sys-shape-corner-large); --ib-pressed: var(--md-sys-shape-corner-medium); --ib-outline: 1px; }
@@ -50,7 +50,7 @@
 .m-icon-btn--narrow { --ib-w: var(--ib-w-narrow); } .m-icon-btn--wide { --ib-w: var(--ib-w-wide); }
 .m-icon-btn--square { --ib-rest: var(--ib-square); }
 .m-icon-btn.is-sized:active { border-radius: var(--ib-pressed); }
-.m-icon-btn[aria-pressed='true'] { --ib-rest: var(--ib-square); } .m-icon-btn--square[aria-pressed='true'] { --ib-rest: 9999px; }
+.m-icon-btn[aria-pressed='true'] { --ib-rest: var(--ib-square); } .m-icon-btn--square[aria-pressed='true'] { --ib-rest: calc(var(--ib-h) / 2); }
 .m-icon-btn--filled { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
 .m-icon-btn--filled[aria-pressed='false'] { background: var(--md-sys-color-surface-container); color: var(--md-sys-color-on-surface-variant); }
 .m-icon-btn--tonal[aria-pressed='true'] { background: var(--md-sys-color-secondary); color: var(--md-sys-color-on-secondary); }
@@ -175,7 +175,7 @@ md-circular-progress, md-linear-progress { --md-circular-progress-size: 40px; }
 .m-hero__body { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }
 .m-hero__title, .m-hero__text { margin: 0; }
 .m-hero__title { font: var(--m-headline-small-emphasized); letter-spacing: -0.005em; }
-.m-hero__text { font: var(--m-body-large); opacity: .86; }
+.m-hero__text { font: var(--m-body-large); }
 .m-hero__chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .m-hero__action { flex: none; }
 @keyframes m-turn { to { transform: rotate(360deg); } }
@@ -240,9 +240,6 @@ md-circular-progress, md-linear-progress { --md-circular-progress-size: 40px; }
 .m-stat__spark, .m-stat__gauge { flex: none; }
 .m-spark__line { fill: none; stroke: var(--md-sys-color-primary); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .m-spark__area { fill: color-mix(in srgb, var(--md-sys-color-primary) 14%, transparent); stroke: none; }
-.m-gauge__track { fill: none; stroke: var(--md-sys-color-surface-container-highest); stroke-width: 5; }
-.m-gauge__bar { fill: none; stroke: var(--md-sys-color-primary); stroke-width: 5; stroke-linecap: round; transition: stroke-dasharray var(--m-spring-default-effects-duration) var(--m-spring-default-effects); }
-.m-gauge__text { font: var(--m-label-medium); fill: var(--md-sys-color-on-surface); }
 
 /* ---- Info tooltip ---- */
 .m-info { position: relative; display: inline-flex; }

@@ -24,7 +24,7 @@ export function useDashContext(D) {
     const c = D.allCards.value.find((x) => x.id === id)
     if (!c) return []
     const t = D.T.value
-    const keys = D.sizeKeysOf(c).filter((k) => k !== 'strip')
+    const keys = D.sizeKeysOf(c)
     const now = el?.querySelector?.('[data-size]')?.dataset?.size || ''
     const me = D.stacksOn ? D.shown.value.find((x) => x.id === id && !x.ghost) : null
     const targets = me ? D.joinTargetsOf(me) : []

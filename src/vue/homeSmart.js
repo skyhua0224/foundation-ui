@@ -29,7 +29,7 @@ const NEW = { journey: [100, 'rNewClient', 'l'], guide: [0, 'rNewGuide', 'm'], p
 const IDLE = { hero: [94, 'rIdleHost', 'm'], pair: [86, 'rIdlePair', 's'], 'public-address': [80, 'rAddress', 's'], 'last-session': [76, 'rIdleRecent', 's'], quick: [70, 'rQuick', 'm'], 'recent-actions': [67, 'rIdleActions', 'm'], announcements: [64, 'rIdleNews', 'm'], cpu: [36, 'rIdlePerf', 's'], gpu: [35, 'rIdlePerf', 's'], memory: [34, 'rIdlePerf', 's'] }
 // Live, in this order: the host, who is on it, the application, how long, the bitrate and the frame rate (大 on a large window), the loss and the latency, the load, the stop.
 // A tile whose data the host does not give is not available, so it is not in the plan: nothing is invented.
-const LIVE = { hero: [100, 'rLiveHost', 'm'], 'clients-online': [96, 'rLiveClients', 's'], 'current-app': [94, 'rLiveApp', 's'], 'session-time': [92, 'rLiveTime', 's'], bitrate: [90, 'rLiveCurve', 'm'], fps: [88, 'rLiveCurve', 'm'], loss: [86, 'rLiveCurve', 's'], latency: [84, 'rLiveCurve', 's'], cpu: [76, 'rLivePerf', 's'], gpu: [75, 'rLivePerf', 's'], 'act-stop': [70, 'rLiveStop', 's'], announcements: [69, 'rLiveNews', 'm'], 'live-bitrate': [78, 'rLiveBitrate', 'm'], 'live-ds5': [74, 'rLiveDs5', 'm'] }
+const LIVE = { hero: [100, 'rLiveHost', 'm'], 'clients-online': [96, 'rLiveClients', 's'], 'current-app': [94, 'rLiveApp', 's'], 'session-time': [92, 'rLiveTime', 's'], bitrate: [90, 'rLiveCurve', 'm'], fps: [88, 'rLiveCurve', 'm'], loss: [86, 'rLiveCurve', 's'], latency: [84, 'rLiveCurve', 's'], cpu: [76, 'rLivePerf', 's'], gpu: [75, 'rLivePerf', 's'], 'act-stop': [70, 'rLiveStop', 's'], announcements: [69, 'rLiveNews', 'm'], 'live-bitrate': [78, 'rLiveBitrate', 'm'], 'live-audio': [77, 'rLiveAudio', 's'], 'live-ds5': [74, 'rLiveDs5', 'm'] }
 // The 30 minutes after a stream, when nothing is going on: the last session large, the session heat, then the idle list; an available update stays, next to the host.
 const AFTER = { ...IDLE, 'last-session': [95, 'rAfterLast', 'l'], 'session-heat': [90, 'rAfterHeat', 'm'] }
 // The lists are closed: in idle, live, after and update only the tiles they name are on the page, with what the person's own use, a pin or an accepted tile brings in and what the
@@ -190,7 +190,7 @@ export function suggestions(plan, limit = 8) {
 export const PURPOSES = Object.freeze(['live', 'controls', 'clients', 'system'])
 const LIVE_IDS = new Set(['live-bitrate', 'hero', 'bitrate', 'fps', 'cpu', 'gpu', 'memory', 'net', 'load', 'budget', 'current-app', 'last-session', 'temperature', 'memory-trend', 'act-stop', 'session-time', 'session-heat', 'stream-resolution', 'stream-client', 'stream-fps', 'stream-bitrate', 'stream-mic', 'stream-vdd'])
 const CLIENT_IDS = new Set(['journey', 'pair', 'star', 'download', 'guide', 'table', 'apps', 'recent-games', 'covers', 'clients-paired', 'clients-online', 'act-pair', 'act-pair-qr', 'act-add-app', 'act-downloads', 'act-clients', 'act-apps'])
-const CONTROL_IDS = new Set(['recent-actions', 'live-ds5', 'gamepad-type', 'sw:mic', 'vdd', 'encoder', 'display', 'devices', 'gamepad-status', 'usb-devices', 'audio-out', 'codecs', 'hdr'])
+const CONTROL_IDS = new Set(['recent-actions', 'live-audio', 'live-ds5', 'gamepad-type', 'sw:mic', 'vdd', 'encoder', 'display', 'devices', 'gamepad-status', 'usb-devices', 'audio-out', 'codecs', 'hdr'])
 /** The purpose (an index of PURPOSES) of a tile: by its id, else by its group in the catalogue; a pinned setting is a control. */
 export function purposeOf(id, group = '') {
   if (id.startsWith('pin:') || id.startsWith('ctl-')) return 1
@@ -202,3 +202,14 @@ export function purposeOf(id, group = '') {
 }
 /** The sections of `count` places for the purposes: with fewer places than purposes, neighbours share one (two places: live and controls | clients and system). */
 export const sectionIndexOf = (purpose, count) => (count >= 4 ? Math.min(purpose, count - 1) : count === 3 ? Math.min(purpose, 2) : count === 2 ? (purpose < 2 ? 0 : 1) : 0)
+
+// The tiles that fill the empty slots of a window (dashDock: fillCards): the catalogue's tiles that have data and are not on the page yet, the ones that say most about the state first.
+// Streaming: the stream's own numbers, the host's load, the network and the encoder. Idle: the host and the system, the applications, the devices. Every one is drawn at a standard size.
+const FILL_LIVE = ['frame-supply', 'link-margin', 'mic-health', 'capture-method', 'encode-budget', 'ports-check', 'file-maps', 'web-access', 'loss', 'dropped', 'latency', 'budget', 'cpu', 'gpu', 'memory', 'net', 'encoder', 'load', 'temperature', 'memory-trend', 'stream-resolution', 'stream-client', 'stream-fps', 'stream-bitrate', 'stream-vdd', 'stream-mic', 'vdd', 'sw:mic', 'devices', 'sys', 'clients-online', 'clients-paired', 'codecs', 'hdr', 'audio-out']
+const FILL_IDLE = ['mic-health', 'capture-method', 'ports-check', 'file-maps', 'web-access', 'encode-budget', 'cpu', 'gpu', 'memory', 'net', 'sys', 'encoder', 'vdd', 'sw:mic', 'apps', 'recent-games', 'devices', 'clients-paired', 'download', 'last-session', 'session-heat', 'load', 'temperature', 'memory-trend', 'host-ports', 'host-name', 'host-adapter', 'host-encryption', 'codecs', 'hdr', 'audio-out', 'gamepad-status', 'usb-devices', 'covers', 'public-address', 'reach']
+/** The ids in the order they fill slots in `scenario`; ids the lists do not name come after them, in the catalogue's order. */
+export function fillOrder(scenario, ids = []) {
+  const named = scenario === 'live' ? FILL_LIVE : FILL_IDLE
+  const rank = new Map(named.map((id, i) => [id, i]))
+  return [...ids].sort((a, c) => (rank.has(a) ? rank.get(a) : 1000 + ids.indexOf(a)) - (rank.has(c) ? rank.get(c) : 1000 + ids.indexOf(c)))
+}

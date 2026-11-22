@@ -140,7 +140,7 @@ html[data-motion='reduced'] .m-clock *, html[data-motion='reduced'] .m-clock, ht
    the header) cannot reach the tiles, the banner or the window's edge. The inset from the content edge grows with the window (16 px compact, ≥ 24 px from 840 px expanded,
    48 px at most), steplessly; the clock's ink, not its box, sits on it (see [data-ink]). The date and the status line keep the same inset. */
 .m-dock { display: grid; grid-template-rows: minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr); } /* a grid, not a flex column: the header's height is a track the dock resolves before its content, so the container units below are right in the first layout */
-.m-dock__head { container: m-clock-head / size; min-height: calc(164px + 4vh); --m-clock-inset: clamp(16px, calc(2vw + 8px), 48px); padding-inline: var(--m-clock-inset); overflow-x: clip; } /* clip: a wide tabular 1's empty advance may reach past the edge; the ink never does */
+.m-dock__head { container: m-clock-head / size; min-height: min(calc(164px + 4vh), max(112px, 38vh)); --m-clock-inset: clamp(16px, calc(2vw + 8px), 48px); padding-inline: var(--m-clock-inset); overflow-x: clip; } /* clip: a wide tabular 1's empty advance may reach past the edge; the ink never does */
 .m-dock__head[data-align='left'] { align-items: flex-start; text-align: left; }
 .m-dock__head[data-align='center'] { align-items: center; text-align: center; }
 .m-dock__head[data-align='right'] { align-items: flex-end; text-align: right; }
@@ -152,7 +152,6 @@ html[data-motion='reduced'] .m-clock *, html[data-motion='reduced'] .m-clock, ht
 .m-dock__head > .m-clock.is-l { --clock-size: max(28px, min(clamp(96px, 22vh, 280px), var(--clock-fit))); }
 .m-dock__head > .m-clock.is-xl { --clock-size: max(28px, min(calc((48vh - 24px) / var(--hf-now)), var(--clock-fit))); }
 /* 特大 at the left or the right: the date and the status line stand beside the clock, centred on it, so the clock has the header's full height */
-.m-dock:has(> .m-dock__head > .m-clock.is-xl) { min-height: calc(100dvh - 260px); }
 .m-dock__head:not([data-align='center']):has(> .m-clock.is-xl) { display: grid; grid-template-rows: 1fr auto auto 1fr; column-gap: 32px; row-gap: 4px; align-items: center; padding-block: 1vh; }
 .m-dock__head:not([data-align='center']) > .m-clock.is-xl { --clock-text-h: 0px; --clock-text-w: 300px; grid-row: 1 / -1; }
 .m-dock__head[data-align='right']:has(> .m-clock.is-xl) { grid-template-columns: minmax(0, 1fr) auto; }
@@ -162,6 +161,23 @@ html[data-motion='reduced'] .m-clock *, html[data-motion='reduced'] .m-clock, ht
 .m-dock__head[data-align='left'] > .m-clock.is-xl { grid-column: 1; }
 .m-dock__head[data-align='left']:has(> .m-clock.is-xl) > :not(.m-clock) { grid-column: 2; justify-self: start; white-space: nowrap; }
 .m-dock__head:not([data-align='center']):has(> .m-clock.is-xl) > :nth-child(2) { grid-row: 2; } .m-dock__head:not([data-align='center']):has(> .m-clock.is-xl) > :nth-child(3) { grid-row: 3; }
+/* a short window (a phone on its side, a small window): the date and the status line shrink to one tight pair, so the clock keeps the height and the first tile row stays on the first screen */
+@media (max-height: 479.98px) {
+  .m-dock { gap: 8px; }
+  .m-dock__head { padding-block: 0; gap: 0; min-height: 48px; }
+  .m-dock__head > .m-clock { --clock-text-h: 44px; }
+  .m-dock__date { font: var(--m-title-medium); }
+  .m-dock__status { font: var(--m-body-medium); }
+  /* under 100 px the status line gives its place to the clock and the date */
+  @container m-clock-head (max-height: 99px) { .m-dock__status { display: none; } .m-dock__head > .m-clock { --clock-text-h: 26px; } }
+  @container m-clock-head (max-height: 69px) { .m-dock__date { display: none; } .m-dock__head > .m-clock { --clock-text-h: 0px; } }
+  .m-dock__grid { padding-bottom: 8px; }
+}
+/* the card that asks for a star or recommends a client goes under the tiles while the window is not tall enough for it and a whole row of tiles: the first screen is the title, the clock and the row */
+@media (max-height: 699.98px) {
+  .m-dash:has(> .m-dock) { display: flex; flex-direction: column; }
+  .m-dash:has(> .m-dock) > .m-sprompt { order: 2; }
+}
 
 /* the picker in 个性化: fifteen faces, each drawn live */
 .m-ap__faces { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 10px; }

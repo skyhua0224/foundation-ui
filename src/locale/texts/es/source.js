@@ -3,7 +3,10 @@ export default
   "source": "Origen de actualizaciones",
   "channel": "Canal de actualización",
   "sources": {
-    "auto": "Automático"
+    "auto": "Automático",
+    "cnb": "CNB",
+    "github": "GitHub",
+    "mirror": "MirrorChyan"
   },
   "mirrorAbout": "MirrorChyan es un servicio que acelera las descargas de proyectos de código abierto y una forma de apoyar a sus desarrolladores. Con una suscripción, un CDK acelera las descargas y los ingresos se reparten con los desarrolladores que usan MirrorChyan, este proyecto incluido. El CDK es opcional; sin él, las actualizaciones se descargan desde CNB o GitHub.",
   "tagDomestic": "Rápido en China",

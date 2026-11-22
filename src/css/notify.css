@@ -100,6 +100,13 @@ html[data-motion='reduced'] .m-plistpop:popover-open { animation: none; }
 .m-pbar { transition: bottom var(--m-spring-default-spatial-duration) var(--m-spring-default-spatial); }
 .m-snackbar { box-sizing: border-box; display: flex; align-items: center; gap: 8px; min-width: 0; min-height: 56px; max-width: calc(100vw - 24px); padding: 8px 8px 8px 24px; border-radius: 9999px; font: var(--m-label-large); transition: bottom var(--m-spring-default-spatial-duration) var(--m-spring-default-spatial); }
 .m-snackbar[popover] { position: fixed; inset: auto auto 20px 50%; margin: 0; border: 0; overflow: visible; width: max-content; }
+/* The base rule of .m-snackbar (components.css) plays m-dialog-in; the enter class of the host (.m-snack-enter-active) only covers it while the class is on the element. When Vue
+   takes the class off at the end of the entrance the base animation starts for the first time: the bar went transparent and entered a second time from the side. The host's bar
+   (a popover) has no animation of its own, only the enter class has one. */
+.m-snackbar[popover] { animation: none; }
+.m-snackbar[popover].m-snack-enter-active { animation: m-snack-in var(--m-spring-default-spatial-duration) var(--m-spring-default-spatial) both; }
+:root { --m-dedit-clear: 80px; } /* the room under the add button or the bar of the selected tile; MHomeDash.vue clearOfBottom sets the measured one on the body */
+body:has(.m-dedit__fab, .m-dedit__selbar) .m-snackbar[popover] { bottom: calc(var(--m-dedit-clear) + 12px) !important; } /* 12 px above the add button or the bar of the selected tile (MHomeDash.vue clearOfBottom) */
 .m-snackbar__text { flex: 1; min-width: 0; padding-right: 8px; font: var(--m-label-large); }
 .m-snackbar .m-btn--text { flex: none; }
 .m-pin-toast { transition: bottom var(--m-spring-default-spatial-duration) var(--m-spring-default-spatial); }

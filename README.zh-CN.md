@@ -17,6 +17,13 @@ Material 3 Expressive 令牌、样式与 Vue 3 组件，供 Foundation 控制面
   <img alt="Foundation UI 画廊：导航栏与设置页，含可选行、滑块和开关" src="docs/images/gallery-light.png">
 </picture>
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/guide-dark.png">
+  <img alt="首次运行引导：完成页，含游戏库、可选设置和高级入口" src="docs/images/guide-light.png">
+</picture>
+
+首次运行引导的完成页会找出游戏库，并列出之后可以再设置的内容。
+
 ## 特性
 
 - **主题与令牌**：以 HCT（`@material/material-color-utilities`）从每个主题的一个种子色生成配色，支持亮色与暗色、五种配色方案、三种配色风格、对比度档位、纯黑表面选项，以及从图片取色。另有形状、字体（Roboto Flex）与弹簧动效令牌，弹簧动效转换为 CSS `linear()` 缓动。

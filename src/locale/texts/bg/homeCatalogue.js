@@ -1,4 +1,5 @@
 export default {
+  "pairGetQr": "Получаване на QR код",
   "stackPin": "Закачи тази карта",
   "stackUnpin": "Откачи",
   "stackPinned": "Закачена: {name}",

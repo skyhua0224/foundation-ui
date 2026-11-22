@@ -1,4 +1,5 @@
 export default {
+  "pairGetQr": "Hämta QR-kod",
   "stackPin": "Fäst det här kortet",
   "stackUnpin": "Lossa",
   "stackPinned": "Fäst: {name}",

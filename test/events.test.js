@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { catalogueId, createEventSender, installEventListeners, updateSourceOf } from '../src/telemetry/events.js'
+import { catalogueId, createEventSender, installEventListeners, updateSourceMissOf, updateSourceOf } from '../src/telemetry/events.js'
 
 const store = (initial = {}) => { const m = new Map(Object.entries(initial)); return { getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)) } }
 const make = ({ usage = true, errors = true, status = 200, product = 'panel' } = {}) => {
@@ -40,8 +40,17 @@ test('events leave in the contract shape with the product and version, and nothi
   assert.equal(posts[0].body.events.length, 3, 'a second app_start in one load is not counted')
 })
 
-test('update source: mirror, github, anything else is other', () => {
-  assert.deepEqual(['mirror', 'github', 'auto', 'cnb', undefined].map(updateSourceOf), ['mirror', 'github', 'other', 'other', 'other'])
+test('update source: mirror, cnb, github, anything else is other', () => {
+  assert.deepEqual(['mirror', 'github', 'auto', 'cnb', undefined].map(updateSourceOf), ['mirror', 'github', 'other', 'cnb', 'other'])
+})
+
+test('the reason the chosen source was not used travels with the start record, only as one of the contract words', async () => {
+  const posts = []
+  const sender = createEventSender({ product: 'panel', usageOn: () => true, errorsOn: () => true, post: async (b) => { posts.push(b); return { ok: true, status: 200 } }, schedule: () => 1, cancel: () => {} })
+  sender.track.appStart({ startMs: 5, updateSource: 'cnb', updateSourceMiss: 'version_lag' })
+  await sender.flush()
+  assert.deepEqual(posts[0].events[0].props, { cold: true, start_ms: 5, update_source: 'cnb', update_source_miss: 'version_lag' })
+  assert.deepEqual(['version_lag', 'cdk_invalid', 'quota', 'network', 'no_cdk', '', 'bogus', undefined].map(updateSourceMissOf), ['version_lag', 'cdk_invalid', 'quota', 'network', 'no_cdk', '', '', ''])
 })
 
 test('page time to content is a whole number of ms after the first painted frames', async () => {

@@ -41,7 +41,7 @@ const sc = computed(() => d.value.rows?.[0] || {})
   <section class="m-tile m-cal m-b2" :class="[`m-b2--${id}`, `is-${size}`, { 'm-b2recent': id === 'recent-games', 'm-b2last': id === 'last-session', 'has-art': id === 'last-session' && hasArt, 'm-b2sc': id === 'stream-client' }]" :data-size="size" :data-accent="id === 'stream-client' ? 'primary' : 'tertiary'">
     <template v-if="empty">
       <header class="m-calm__head"><MIcon :name="empty.icon || d.icon" /><span class="m-calm__title">{{ empty.title || card.title }}</span></header>
-      <div class="m-b2empty"><span class="m-b2glyph"><MIcon :name="d.icon || 'sports_esports'" /></span><b>{{ empty.value }}</b><button v-if="empty.action" type="button" class="m-b2__btn is-tonal" @click.stop="emit('act', empty.action)">{{ empty.action.label }}</button></div>
+      <div class="m-empty-basic"><b>{{ empty.value }}</b><button v-if="empty.action" type="button" class="m-b2__btn is-tonal" @click.stop="emit('act', empty.action)">{{ empty.action.label }}</button></div>
     </template>
 
     <!-- 最近游戏 -->
@@ -78,7 +78,7 @@ const sc = computed(() => d.value.rows?.[0] || {})
     <!-- 串流客户端 -->
     <template v-else>
       <header class="m-calm__head"><MIcon :name="d.icon" /><span class="m-calm__title">{{ card.title }}</span></header>
-      <div class="m-b2plate is-on"><span class="m-b2glyph"><MIcon v-if="deviceGlyph(d.clientIcon)" :name="d.clientIcon" /><b v-else>{{ initialOf(sc.title) }}</b></span><span style="min-width: 0; display: flex; flex-direction: column"><b>{{ sc.title }}</b><small v-if="sc.value">{{ sc.value }}</small></span></div>
+      <div class="m-b2plate is-on"><span class="m-b2glyph"><MIcon v-if="deviceGlyph(d.clientIcon)" :name="d.clientIcon" /><MIcon v-else name="devices" /></span><span style="min-width: 0; display: flex; flex-direction: column"><b>{{ sc.title }}</b><small v-if="sc.value">{{ sc.value }}</small></span></div>
     </template>
   </section>
 </template>

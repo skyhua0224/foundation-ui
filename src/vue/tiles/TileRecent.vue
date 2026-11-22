@@ -10,7 +10,6 @@ import { computed, reactive, watch } from 'vue'
 import MIcon from '../MIcon.vue'
 import MSwitch from '../MSwitch.vue'
 import MSlider from '../MSlider.vue'
-import MTileEmpty from '../MTileEmpty.vue'
 import MTileShape from '../MTileShape.vue'
 import { FULL_CONTROL_SIZES, RECENT_ROWS } from '../homeRecent.js'
 import { designProps } from './tileData.js'
@@ -42,16 +41,19 @@ const valueText = (r) => (r.control === 'switch' ? (on(r) ? props.texts.on : pro
 </script>
 
 <template>
-  <!-- nothing used yet: the shape of the tile as the hero, one line and the way to the settings -->
+  <!-- nothing used yet: the same compact header and bottom action as the other empty tiles -->
   <section v-if="empty" class="m-tile m-cal m-rc is-empty" :class="`is-${size}`" :data-size="size" data-accent="primary">
-    <MTileEmpty icon="history" shape="cookie" :title="card.title" :text="empty.value" :action="empty.action" :size="size" @act="(a) => emit('act', a)" />
+    <header class="m-calm__head"><MIcon name="history" /><span class="m-calm__title">{{ card.title }}</span></header>
+    <div class="m-empty-basic"><b>{{ empty.value }}</b><button v-if="empty.action" type="button" class="m-b2__btn" @click.stop="emit('act', empty.action)">{{ empty.action.label }}</button></div>
   </section>
   <!-- 方形: the last setting is the hero: its glyph in a shape, its name, when it applies, and its control -->
   <section v-else-if="size === 's' && rows.length" class="m-tile m-cal m-rc is-s is-hero" data-size="s" data-accent="primary">
     <header class="m-calm__head"><MIcon :name="d.icon" /><span class="m-calm__title">{{ card.title }}</span></header>
     <div class="m-rc__heroview">
-      <MTileShape :icon="rows[0].icon" shape="clover" size="64px" />
-      <span class="m-rc__text"><b :title="rows[0].path">{{ rows[0].title }}</b><small>{{ rows[0].appliesText }}</small></span>
+      <div class="m-rc__identity">
+        <MTileShape :icon="rows[0].icon" shape="clover" size="36px" />
+        <span class="m-rc__text"><b :title="rows[0].path">{{ rows[0].title }}</b><small :title="rows[0].appliesText">{{ rows[0].appliesText }}</small></span>
+      </div>
       <MSwitch v-if="rows[0].control === 'switch'" :model-value="on(rows[0])" :label="rows[0].title" @update:model-value="(v) => flip(rows[0], v)" />
       <button v-else type="button" class="m-rc__jump" :aria-label="`${rows[0].title}: ${texts.rcOpen}`" @click.stop="open(rows[0])"><span v-if="valueText(rows[0])">{{ valueText(rows[0]) }}</span><MIcon name="chevron_right" /></button>
     </div>

@@ -34,10 +34,10 @@ export function searchEntries(entries, query, max = 12) {
 
 /**
  * Search entries of the settings: pages (the categories) and every setting of the index.
- * index: the search index the product supplies (getSearchIndex()); label(key, locale?) -> text; locales: the extra locales whose labels also find a row (English
- * finds a row of the Chinese interface and the other way round).
+ * index: the search index the product supplies (getSearchIndex()); label(key, locale?) -> text; altLabel: the label in the other language (English
+ * finds a row of the Chinese interface and the other way round); aliases: { id: string | string[] } what people call a row instead (getAliases()).
  */
-export function buildSettingsEntries({ index, label, altLabel = null, categories = [], extra = [] }) {
+export function buildSettingsEntries({ index, label, altLabel = null, aliases = null, categories = [], extra = [] }) {
   const lbl = (k) => label(k)
   const path = (e) => e.path.map(lbl).join(' › ')
   const rows = index.map((e) => ({
@@ -46,7 +46,10 @@ export function buildSettingsEntries({ index, label, altLabel = null, categories
     title: lbl(e.title),
     path: path(e),
     icon: e.icon,
-    keywords: [e.keywords, altLabel ? altLabel(e.title) : '', ...e.path.map((p) => (altLabel ? altLabel(p) : ''))].filter(Boolean).join(' '),
+    keywords: [e.keywords, altLabel ? altLabel(e.title) : ''].filter(Boolean).join(' '),
+    // the places above it in the other language: searched like the path, after the words of the row itself
+    ...(altLabel ? { pathAlt: e.path.map((p) => altLabel(p)).filter(Boolean).join(' ') } : {}),
+    ...(aliases?.[e.id] ? { aliases: aliases[e.id] } : {}),
     route: e.route,
     params: e.params,
   }))

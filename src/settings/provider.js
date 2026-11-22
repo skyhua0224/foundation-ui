@@ -24,10 +24,11 @@
  * @typedef {Object} SettingsData
  * @property {ReadonlyArray<SearchEntry>} searchIndex
  * @property {LabelTables} labels
+ * @property {Record<string, string | string[]>} [aliases]   what people call a setting instead, by its id, in any language (`audio_sink: ['喇叭', 'headphones']`): the search finds the row by them
  */
 
 /** @type {{ searchIndex: ReadonlyArray<SearchEntry>, labels: LabelTables }} */
-let current = Object.freeze({ searchIndex: Object.freeze([]), labels: Object.freeze({}) })
+let current = Object.freeze({ searchIndex: Object.freeze([]), labels: Object.freeze({}), aliases: Object.freeze({}) })
 let version = 0
 const listeners = new Set()
 
@@ -52,6 +53,10 @@ export function settingsDataProblems(data) {
       if (!isObject(e.params) || typeof e.params.tab !== 'string' || typeof e.params.focus !== 'string') problems.push(`${at}.params needs a tab and a focus`)
     })
   }
+  if (data.aliases !== undefined) {
+    if (!isObject(data.aliases)) problems.push('aliases is not an object')
+    else for (const [id, v] of Object.entries(data.aliases)) if (!(typeof v === 'string' || (Array.isArray(v) && v.every((x) => typeof x === 'string')))) problems.push(`aliases.${id} is not a string or a list of strings`)
+  }
   if (!isObject(data.labels)) problems.push('labels is not an object')
   else {
     for (const [locale, table] of Object.entries(data.labels)) {
@@ -70,7 +75,7 @@ export function settingsDataProblems(data) {
 export function provideSettingsData(data) {
   const problems = settingsDataProblems(data)
   if (problems.length) throw new TypeError(`provideSettingsData: ${problems.slice(0, 5).join('; ')}${problems.length > 5 ? `; and ${problems.length - 5} more` : ''}`)
-  current = Object.freeze({ searchIndex: Object.freeze([...data.searchIndex]), labels: data.labels })
+  current = Object.freeze({ searchIndex: Object.freeze([...data.searchIndex]), labels: data.labels, aliases: data.aliases || Object.freeze({}) })
   version += 1
   for (const fn of [...listeners]) fn(version)
 }
@@ -86,6 +91,8 @@ export function onSettingsData(fn) { listeners.add(fn); return () => listeners.d
 export const getSearchIndex = () => current.searchIndex
 /** The label tables: locale -> key -> text. */
 export const getLabels = () => current.labels
+/** What people call each setting instead, by id: `{ audio_sink: ['喇叭', 'headphones'] }`; empty when the product supplies none. */
+export const getAliases = () => current.aliases
 
 const fallbackOf = (locale) => {
   const labels = current.labels

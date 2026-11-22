@@ -7,12 +7,22 @@ function spring(el) {
   const cs = getComputedStyle(el)
   return { duration: seconds(cs.getPropertyValue('--m-spring-default-spatial-duration').trim(), 412), easing: cs.getPropertyValue('--m-spring-default-spatial').trim() || 'ease' }
 }
+// the height (with the margin under it) a card that opens or closes is going to have: what the page under it will be laid out by, not where the animation has it in this frame
+const going = new WeakMap()
+const px = (v) => parseFloat(v) || 0
 const play = (el, from, to, done) => {
   if (typeof el.animate !== 'function') return done()
   const { duration, easing } = spring(el)
   const calm = reducedMotion()
+  going.set(el, px(to.height) + px(to.marginBottom))
   const a = el.animate(calm ? [{ opacity: from.opacity }, { opacity: to.opacity }] : [from, to], { duration: calm ? 140 : duration, easing: calm ? 'linear' : easing })
-  a.finished.then(done, done)
+  const end = () => { going.delete(el); done() }
+  a.finished.then(end, end)
+}
+/** How far the page under a card that is opening or closing still has to move (px, down is positive): its final height with the margin minus what it has in this frame; 0 when it is at rest. */
+export function slotAhead(el) {
+  if (!el || !going.has(el)) return 0
+  return going.get(el) - (el.offsetHeight + px(getComputedStyle(el).marginBottom))
 }
 export function slotEnter(el, done) {
   const cs = getComputedStyle(el), h = el.offsetHeight

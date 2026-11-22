@@ -10,7 +10,7 @@ import { createHistory } from '../src/vue/homeHistory.js'
 import { sizesOf, largestOf } from '../src/vue/homeSizes.js'
 import { rangeOf } from '../src/vue/homeRanges.js'
 
-const XL_VIEWS = ['hero', 'clients-paired', 'covers', 'errors', 'recent-actions', 'announcements']
+const XL_VIEWS = ['hero', 'clients-paired', 'covers', 'errors', 'recent-actions', 'announcements', 'net']
 
 const T = homeTexts('en')
 const memory = () => { const m = new Map(); return { getItem: (k) => m.get(k) ?? null, setItem: (k, v) => m.set(k, v) } }
@@ -49,8 +49,9 @@ test('with a running session and the host data every card with a source has its 
   const x = {
     now: Date.parse('2026-11-02T12:00:00'), history, logText: log,
     recent: ['controller', 'max_bitrate'], canRuntime: true, canOpenDesktop: true, ds5Keys: [{ id: 3, key: 'ds5.haptics.hd.gain', label: 'Haptics HD gain', control: 'slider', tier: 'common', implemented: true, min: 0, max: 2, step: 0.01, value: 1, default: 1 }],
-    session: { client_name: 'Pixel 9', client_address: '192.168.1.5', app_name: 'Elden Ring', width: 2560, height: 1440, fps: 120, fpsMeasured: 118, bitrate: 56000, enable_mic: true, use_vdd: false, latencyMs: 5, latencyP95Ms: 7, packet_loss: 0.4, dropped_frames: 3, uptimeMs: 2520000, enable_hdr: true },
-    sys: { memTotal: 32e9, memAvail: 12e9 }, config: { audio_sink: 'Speakers', encoder: 'nvenc', max_bitrate: 50000, fps: '[60,90,120]', platform: 'windows', sunshine_name: 'Tower-PC', port: 47989, upnp: 'enabled', controller: 'disabled', stream_audio: 'false' },
+    session: { client_name: 'Pixel 9', host_audio: false, client_address: '203.0.113.5', app_name: 'Elden Ring', width: 2560, height: 1440, fps: 120, fpsMeasured: 118, bitrate: 56000, enable_mic: true, use_vdd: false, latencyMs: 5, latencyP95Ms: 7, packet_loss: 0.4, dropped_frames: 3, uptimeMs: 2520000, enable_hdr: true, frameRates: { enabled: true, ready: true, source_kind: 'vdd_published', source: { fps: 119 }, capture: { fps: 118 }, submitted: { fps: 118 }, encoded: { fps: 117 }, repeated: { fps: 0.2 } }, perfCapture: 'wgc' },
+    sys: { memTotal: 32e9, memAvail: 12e9 }, config: { capture: '', fec_percentage: '10', audio_sink: 'Speakers', encoder: 'nvenc', max_bitrate: 50000, fps: '[60,90,120]', platform: 'windows', sunshine_name: 'Tower-PC', port: 47989, upnp: 'enabled', controller: 'disabled', stream_audio: 'false', file_mappings: 'base64:' + Buffer.from(JSON.stringify([{ id: 'a', name: 'Saves', path: 'C:/Users/x/Saves', mode: 'read', clients: [] }])).toString('base64'), file_mapping_port: '48020', active_nvenc_frame_budget: { budget_ms: 8.3, estimated_ms: 4.7, configured_preset: 4, effective_preset: 4, num_engines: 2, width: 3840, height: 2160, fps: 120 }, origin_web_ui_allowed: 'lan' },
+    mic: { configured_backend: 'auto', active_backend: '', component_available: true, state: 'idle', underruns: 0, dropped_frames: 0, submit_errors: 0 },
     clients: [{ name: 'Pixel 9', streaming: true }, { name: 'iPad', enabled: false }], apps: [{ name: 'Elden Ring', cover: 'c.png' }],
     reach: normalizeReport(JSON.parse(fs.readFileSync(new URL('./fixtures/reachability-public-verified.json', import.meta.url), 'utf8'))),
     sysinfo: JSON.parse(fs.readFileSync(new URL('./fixtures/system-info.json', import.meta.url), 'utf8')),

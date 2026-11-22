@@ -46,13 +46,20 @@ test('a mark is not drawn under an inset icon, like a stop', () => {
   assert.match(src, /v-show="!markHidden\(f\)"/)
 })
 
-test('the sliders of the home tiles and the mode card are size m (the same 44 px row as s), and the live bitrate tile runs on the segmented bitrate scale', () => {
+test('the sliders of the home tiles and the mode card are the M3 Expressive slider: the same full track at every height of the tile, the live bitrate tile runs on the segmented bitrate scale', () => {
   const read = (p) => fs.readFileSync(new URL(`../src/vue/${p}`, import.meta.url), 'utf8')
   for (const p of ['tiles/TileLive.vue', 'tiles/TilePin.vue', 'tiles/TileRecent.vue', 'MDashWidget.vue', 'MModeCard.vue']) {
     const text = read(p)
-    assert.match(text, /<MSlider\b/, p); assert.doesNotMatch(text, /<MSlider[^>]*size="(xs|s)"/, p)
+    assert.match(text, /<MSlider\b/, p); assert.doesNotMatch(text, /<MSlider[^>]*size="xs"/, p)
   }
+  for (const p of ['tiles/TileLive.vue', 'tiles/TilePin.vue']) assert.match(read(p), /const sliderSize = 'm'/, p)
+  assert.match(read('MDashWidget.vue'), /<MSlider[^>]*size="m"/)
+  for (const p of ['tiles/TileLive.vue', 'tiles/TilePin.vue', 'tiles/TileRecent.vue', 'MDashWidget.vue']) assert.doesNotMatch(read(p), /<MSlider[^>]*size="s"|\? 'm' : 's'/, `${p}: no thin track at any height`)
   const live = read('tiles/TileLive.vue')
   assert.match(live, /bitrateSliderSpan\(/); assert.match(live, /bitrateChipMarks\(\[5, 10, 20, 50, 100, 200\]/); assert.match(live, /bitrateFromProgress\(position\)/)
   assert.doesNotMatch(live, /<MSlider v-model="rate"/, 'not a linear Mbps track')
+  const css = fs.readFileSync(new URL('../src/css/tiles-prerelease.css', import.meta.url), 'utf8')
+  assert.match(css, /\.m-tile \.m-slider \{ --md-sys-color-track: var\(--md-sys-color-primary-container\)/, 'the fill is the container colour, not the flat on-primary white')
+  assert.match(css, /\.m-tile \.m-slider__mark \{ width: 4px; height: 4px; border-radius: 50%/, 'the ticks are dots, not bars')
+  assert.match(css, /\.m-slider__seg:not\(\.m-slider__seg--active\)::after/, 'the stop dot at the end of the track')
 })

@@ -8,8 +8,10 @@ import MProgress from '../MProgress.vue'
 import InstallerRail from './InstallerRail.vue'
 import InstallerComponents from './InstallerComponents.vue'
 import InstallerSteps from './InstallerSteps.vue'
+import InstallerLocation from './InstallerLocation.vue'
+import InstallerDirConfirm from './InstallerDirConfirm.vue'
 import { createBridge, emptyView } from './bridge.js'
-import { pageDirection, pageModel } from './installerModel.js'
+import { confirmModel, locationModel, pageDirection, pageModel } from './installerModel.js'
 import { t } from './installerTexts.js'
 
 // The installer always runs with full motion and does not follow the system reduce-motion setting
@@ -34,6 +36,11 @@ const bridge = props.bridge || createBridge()
 const view = shallowRef(emptyView())
 const L = computed(() => props.locale || view.value.locale || 'zh')
 const model = computed(() => pageModel(view.value, L.value))
+const location = computed(() => (view.value.page === 'welcome' || view.value.page === 'maintenance' ? locationModel(view.value, L.value) : null))
+// the question about a folder that only has a warning: open while the host says so, on whichever page the install was pressed
+const dirConfirm = computed(() => (view.value.page === 'welcome' || view.value.page === 'components' ? confirmModel(view.value, L.value) : null))
+// the folder picker is the system's and stays open as long as the person wants: the Change button shows busy until the host answers (it always does, a cancelled picker included)
+const choosing = ref(false)
 const copied = ref(false)
 let copiedTimer = null
 
@@ -48,7 +55,7 @@ const WAITS = ['install', 'retry', 'customize', 'back', 'open-panel', 'uninstall
 const pendingKey = ref('')
 const stalled = ref('')
 let stallTimer = null
-function settle() { pendingKey.value = ''; stalled.value = ''; clearTimeout(stallTimer) }
+function settle() { pendingKey.value = ''; stalled.value = ''; choosing.value = false; clearTimeout(stallTimer) }
 // the first snapshot is taken in setup (a mock answers at once), so the first frame already is the page the host is on; until a host has answered, only the window is drawn
 const got = ref(false)
 const off = bridge.subscribe((v) => { view.value = v; got.value = true; emit('view', v); settle() })
@@ -58,6 +65,8 @@ let cancelReady = () => {}
 function onKey(e) {
   if (e.key !== 'Escape' || e.defaultPrevented || !got.value) return
   e.preventDefault()
+  // Esc answers the question about a folder warning first (as Cancel): it never closes the window under it
+  if (dirConfirm.value) { act({ type: 'cancel-dir-risk' }); return }
   act(view.value.page === 'components' ? { type: 'back' } : { type: 'exit' })
 }
 onMounted(() => {
@@ -70,12 +79,13 @@ onBeforeUnmount(() => { off(); cancelReady(); clearTimeout(copiedTimer); clearTi
 function act(a, key = '') {
   if (!a) return
   emit('action', a)
+  if (a.type === 'choose-dir') choosing.value = true
   if (WAITS.includes(a.type)) {
     pendingKey.value = key || a.type
     clearTimeout(stallTimer)
     stallTimer = setTimeout(() => { pendingKey.value = ''; stalled.value = t(L.value, 'err.noAnswer') }, STALL_MS)
   }
-  Promise.resolve(bridge.send(a)).catch((e) => { clearTimeout(stallTimer); pendingKey.value = ''; stalled.value = t(L.value, 'err.notSent') + ' ' + String(e?.message || e).slice(0, 120) })
+  Promise.resolve(bridge.send(a)).catch((e) => { clearTimeout(stallTimer); pendingKey.value = ''; choosing.value = false; stalled.value = t(L.value, 'err.notSent') + ' ' + String(e?.message || e).slice(0, 120) })
   if (a.type === 'copy-details') { copied.value = true; clearTimeout(copiedTimer); copiedTimer = setTimeout(() => { copied.value = false }, 2400) }
 }
 // a window narrower than 600 px takes the short label of a button that has one (the footer stays one row)
@@ -129,6 +139,7 @@ const done = computed(() => view.value.page === 'done')
             <div v-if="model.note && view.page !== 'installing'" class="m-inst__note" :class="[`m-inst__note--${model.note.tone}`, { 'm-selectable': view.page === 'failed' }]" role="note">
               <MIcon :name="model.note.icon" fill /><span>{{ model.note.text }}</span>
             </div>
+            <InstallerLocation v-if="location" :model="location" :busy="choosing" @action="act" />
             <!-- the free-software notice and the support line, on the first page, as quiet body text -->
             <div v-if="view.page === 'welcome'" class="m-inst__legal" data-inst-notes><p>{{ t(L, 'welcome.free') }}</p><p>{{ t(L, 'welcome.support') }}</p></div>
             <InstallerComponents v-if="view.page === 'components'" :view="view" :locale="L" @action="act" />
@@ -140,6 +151,7 @@ const done = computed(() => view.value.page === 'done')
               </li>
             </ul>
           </template>
+          <InstallerDirConfirm v-if="dirConfirm" :model="dirConfirm" :locale="L" @action="act" />
           <p v-if="stalled" class="m-inst__stall" role="alert"><MIcon name="error" fill /><span>{{ stalled }}</span></p>
           <footer class="m-inst__foot">
             <div class="m-inst__foot-start">

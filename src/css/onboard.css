@@ -1,5 +1,5 @@
 /* The first-run window (MOnboardWindow): a floating dialog over a translucent scrim (the one scrim of every modal, the Material 3 scrim at 44 %: the page behind stays faintly visible). 'sheet' rises from the bottom edge instead; a compact window gets the whole screen.
-   The window is as tall as its step needs (never under 560 px, never over 90 % of the window) and the body scrolls. */
+   The window is always 90 % of the window high (a step that needs less leaves room, one that needs more scrolls), so it does not change height from step to step. */
 /* a <dialog> shown modally (the top layer, the page behind it inert): the user agent's own box (a border, a margin, a size cap, a canvas background) is taken off, the window and its scrim are ours */
 /* the window is teleported to <body>, outside .m-app, which is where the border-box reset lives: without it every row of a group was its padding wider than the group and ran off the right edge of a phone */
 .m-onboard, .m-onboard *, .m-onboard *::before, .m-onboard *::after { box-sizing: border-box; }
@@ -11,7 +11,7 @@
 .m-onboard--dialog { align-items: center; }
 .m-onboard--sheet { --m-onboard-w: min(90vw, 1480px); }
 .m-onboard__scrim { position: absolute; inset: 0; background: var(--m-modal-scrim, color-mix(in srgb, var(--md-sys-color-scrim, #000) 44%, transparent)); backdrop-filter: var(--m-modal-blur, none); animation: m-onb-fade var(--m-spring-default-effects-duration, 300ms) var(--m-spring-default-effects, ease) both; }
-.m-onboard__window { position: relative; width: var(--m-onboard-w); height: auto; min-height: min(var(--m-onboard-h), 560px); max-height: var(--m-onboard-h); display: flex; flex-direction: column; overflow: hidden; outline: 0; container-type: inline-size; background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface); --m-page: transparent; --m-page-solid: var(--md-sys-color-surface-container-high); box-shadow: 0 -8px 40px color-mix(in srgb, var(--md-sys-color-shadow, #000) 28%, transparent); transition: width var(--m-spring-default-spatial-duration, 450ms) var(--m-spring-default-spatial, ease); }
+.m-onboard__window { position: relative; width: var(--m-onboard-w); height: auto; min-height: var(--m-onboard-h); max-height: var(--m-onboard-h); display: flex; flex-direction: column; overflow: hidden; outline: 0; container-type: inline-size; background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface); --m-page: transparent; --m-page-solid: var(--md-sys-color-surface-container-high); box-shadow: 0 -8px 40px color-mix(in srgb, var(--md-sys-color-shadow, #000) 28%, transparent); transition: width var(--m-spring-default-spatial-duration, 450ms) var(--m-spring-default-spatial, ease); }
 .m-onboard--sheet .m-onboard__window { height: var(--m-onboard-h); border-radius: 28px 28px 0 0; animation: m-onb-up var(--m-spring-default-spatial-duration, 450ms) var(--m-spring-default-spatial, ease) both; }
 .m-onboard--dialog .m-onboard__window { border-radius: 28px; box-shadow: 0 24px 64px color-mix(in srgb, var(--md-sys-color-shadow, #000) 36%, transparent); animation: m-onb-pop var(--m-spring-default-spatial-duration, 450ms) var(--m-spring-default-spatial, ease) both; }
 /* every step has the same window: a step-specific width made the pairing and the remote access steps wider on a desktop and, on a phone (where this rule beat the full-screen one below), narrower than the screen */
@@ -45,7 +45,7 @@ html[data-motion='reduced'] .m-onboard__window, html[data-motion='reduced'] .m-o
 .m-onboard .m-guide__actions, .m-onboard .m-welcome__actions { position: static; flex: none; flex-direction: row; justify-content: space-between; align-items: center; backdrop-filter: none; background: transparent; border-top: 1px solid var(--md-sys-color-outline-variant); padding-block: 16px; }
 .m-onboard .m-welcome__actions { flex-direction: row-reverse; }
 /* the buttons of the foot: the Material 3 Expressive medium size, 56 high with the 16 px label (the settings pages use the 40 high ones inside rows) */
-.m-onboard .m-guide__actions .m-btn, .m-onboard .m-welcome__actions .m-btn { width: auto; min-width: 144px; height: 56px; min-height: 56px; padding: 0 32px; font: var(--m-title-medium); }
+.m-onboard .m-guide__actions .m-btn, .m-onboard .m-welcome__actions .m-btn { width: auto; min-width: 144px; --m-btn-h: 56px; height: 56px; min-height: 56px; padding: 0 32px; font: var(--m-title-medium); }
 .m-onboard .m-guide__actions .m-btn--text { min-width: 0; padding: 0 20px; }
 /* the primary action is at the end of the foot on every step, also when there is no skip button before it */
 .m-onboard .m-guide__actions .m-btn:last-child { margin-inline-start: auto; }
@@ -103,7 +103,7 @@ html.m-has-wallpaper .m-onboard .m-btn--text { color: var(--md-sys-color-primary
 .m-remote__steps b { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); font: var(--m-label-large); }
 .m-remote__chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
 .m-remote__chip { font-style: normal; padding: 4px 12px; border-radius: 9999px; background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); font: var(--m-label-large); font-variant-numeric: tabular-nums; }
-.m-remote__chip.is-opt { background: var(--md-sys-color-surface-container-highest); color: var(--md-sys-color-on-surface-variant); } .m-remote__chip small { font-size: 11px; opacity: .8; }
+.m-remote__chip.is-opt { background: var(--md-sys-color-surface-container-highest); color: var(--md-sys-color-on-surface-variant); } .m-remote__chip small { font-size: 11px; }
 .m-remote__note { margin: 0; display: flex; gap: 10px; align-items: flex-start; font: var(--m-body-medium); color: var(--md-sys-color-on-surface-variant); } .m-remote__note .m-icon { flex: none; font-size: 20px; }
 .m-remote__field { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 16px; background: var(--md-sys-color-surface-container-highest); min-width: 0; }
 .m-remote__field > span { flex: none; font: var(--m-label-medium); color: var(--md-sys-color-on-surface-variant); } .m-remote__field code { flex: 1; min-width: 0; overflow-wrap: anywhere; font: var(--m-body-small); }

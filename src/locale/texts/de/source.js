@@ -3,7 +3,10 @@ export default
   "source": "Update-Quelle",
   "channel": "Update-Kanal",
   "sources": {
-    "auto": "Automatisch"
+    "auto": "Automatisch",
+    "cnb": "CNB",
+    "github": "GitHub",
+    "mirror": "MirrorChyan"
   },
   "mirrorAbout": "MirrorChyan ist ein Download-Beschleuniger für Open-Source-Projekte und zugleich eine Möglichkeit, deren Entwickler zu unterstützen. Mit einem Abonnement beschleunigt ein CDK die Downloads, und die Einnahmen werden mit den Entwicklern geteilt, die MirrorChyan nutzen, auch mit diesem Projekt. Der CDK ist optional; ohne ihn lädt das Update von CNB oder GitHub.",
   "tagDomestic": "Schnell in China",

@@ -137,7 +137,7 @@ test('open fonts only: every font file of the clock has its licence text and a r
 
 test('the dock header takes the position; 个性化 offers face, size, position and seconds, with live previews', () => {
   const dash = readDash()
-  assert.match(dash, /<header class="m-dock__head" :data-align="appearance\.state\.clockAlign">/)
+  assert.match(dash, /<header class="m-dock__head" :data-align="appearance\.state\.clockAlign" :style="dockHeadMin \? \{ minHeight: `\$\{dockHeadMin\}px` \} : undefined">/)
   assert.match(dash, /<MDockClock class="m-dock__time" :face="appearance\.state\.clockFace"/)
   assert.match(dash, /appearance\.set\(\{ clockAlign: a \}\)/)
   const ap = read('src/vue/MAppearance.vue')

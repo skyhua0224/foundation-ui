@@ -30,12 +30,26 @@ const fit = () => {
   let room = el.clientWidth
   if (tile) { const t = tile.getBoundingClientRect(), cs = getComputedStyle(tile); const lim = t.right - (parseFloat(cs.paddingRight) || 0) - left; room = room > 0 ? Math.min(room, lim) : lim }
   const need = row.scrollWidth
-  if (room > 8 && need > room + 0.5) el.style.setProperty('--tn-k', Math.max(0.5, room / need - 0.01).toFixed(3))
+  if (room > 8 && need > room + 0.5) {
+    let k = Math.max(0.5, room / need - 0.01)
+    el.style.setProperty('--tn-k', k.toFixed(3))
+    // the unit keeps a floor of 13 px and does not follow --tn-k: a numeral with a long unit (「31 台已配对」 at 方形) is still wider than the room after the first step. Step down again until the row fits.
+    for (let i = 0; i < 4 && k > 0.5 && row.scrollWidth > room + 0.5; i++) {
+      k = Math.max(0.5, k * (room / row.scrollWidth) - 0.005)
+      el.style.setProperty('--tn-k', k.toFixed(3))
+    }
+  }
 }
 const queue = () => { if (!queued) queued = requestAnimationFrame(fit) }
-onMounted(() => { fit(); if (typeof ResizeObserver !== 'undefined') { ro = new ResizeObserver(queue); ro.observe(root.value); const t = root.value.closest('.m-tile, .m-dcard, .m-dsmall'); if (t) ro.observe(t) } })
+// the display font arrives after the first measure and widens every digit and unit without changing the box of the tile: measure again when a font has loaded (fitText.js does the same for the values)
+const onFonts = () => queue()
+onMounted(() => {
+  fit()
+  if (typeof ResizeObserver !== 'undefined') { ro = new ResizeObserver(queue); ro.observe(root.value); const t = root.value.closest('.m-tile, .m-dcard, .m-dsmall'); if (t) ro.observe(t) }
+  if (typeof document !== 'undefined' && document.fonts) { document.fonts.ready?.then(queue); document.fonts.addEventListener?.('loadingdone', onFonts) }
+})
 watch(() => [props.value, props.unit, props.size], () => nextTick(fit))
-onBeforeUnmount(() => { ro?.disconnect(); if (queued) cancelAnimationFrame(queued) })
+onBeforeUnmount(() => { ro?.disconnect(); if (typeof document !== 'undefined') document.fonts?.removeEventListener?.('loadingdone', onFonts); if (queued) cancelAnimationFrame(queued) })
 </script>
 
 <template>

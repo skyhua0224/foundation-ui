@@ -3,18 +3,18 @@ export default {
   "close": "Zavřít",
   "back": "Zpět",
   "next": "Další",
-  "skip": "Přeskočit průvodce",
-  "skipStep": "Přeskočit na další stránku",
-  "skipIn": "Přeskočit průvodce ({n})",
+  "skipThis": "Přeskočit tento krok",
   "finishTools": "Dokončit a otevřít testovací nástroje",
   "finish": "Dokončit",
+  "follow": "Sledujte nás: ",
+  "followBilibili": "Bilibili",
+  "followSite": "Web",
   "stepOf": "Krok {n} z {total}",
   "steps": "Kroky",
   "openSource": {
-    "text": "Foundation Sunshine je open source a svobodný software (GPL-3.0). Tento projekt nedal žádné osobě, firmě ani mediálnímu účtu oprávnění jej prodávat. Pokud jste za něj zaplatili, vyžádejte si okamžitě vrácení peněz.",
-    "link": "Zobrazit na GitHubu",
-    "more": "Zobrazit více",
-    "less": "Zobrazit méně"
+    "title": "Zdarma a open source",
+    "text": "Foundation Sunshine je open source a svobodný software (GPL-3.0). Tento projekt nikoho neopravnil k jeho prodeji.",
+    "link": "Zobrazit na GitHubu"
   },
   "intro": {
     "followSystem": "Podle systému",
@@ -33,6 +33,9 @@ export default {
   "copied": "Zkopírováno",
   "helpRow": "Projděte znovu nastavení, instalaci klienta, spárování a první připojení.",
   "titles": {
+    "channel": "Kanál aktualizací",
+    "done": "Připraveno",
+    "hostdone": "Tento počítač je nastavený",
     "whatsnew": "Co je nového",
     "intro": "Vítejte",
     "account": "Nastavte účet panelu WebUI",
@@ -41,10 +44,10 @@ export default {
     "setup": "Grafická karta a displej",
     "install": "Instalace klienta",
     "address": "Spárujte z nainstalovaného klienta",
-    "pair": "Spárovat zařízení",
+    "pair": "Připojit a spárovat",
     "webaccess": "Telefon a další zařízení",
     "remote": "Vzdálený přístup",
-    "connect": "Kontrola prvního streamu",
+    "connect": "Vyzkoušet",
     "apps": "Přidání her",
     "update": "Způsob aktualizace"
   },
@@ -54,34 +57,131 @@ export default {
     "address": "V jedné síti klient najde tento počítač sám; jinak zadejte adresu.",
     "pair": "Naskenujte kód nebo zadejte PIN, který klient zobrazí.",
     "webaccess": "Volitelné. Vyberte, kdo smí otevřít panel WebUI; nic se nezmění, dokud nevyberete.",
-    "remote": "Volitelné. Potřebné jen pro připojení mimo tuto síť.",
+    "remote": "Potřebné jen pro streamování na tento počítač zvenku domova; většina lidí to nepotřebuje.",
     "connect": "V klientovi otevřete tento počítač a zvolte Plochu.",
-    "apps": "Volitelné. Přidat je můžete později na stránce aplikací."
+    "apps": "Volitelné. Přidat je můžete později na stránce aplikací.",
+    "hostdone": "Teď zařízení, na kterém budete hrát: nainstalujte klienta, spárujte ho a připojte se."
+  },
+  "hostdone": {
+    "done": "Tento počítač je připraven streamovat.",
+    "download": "Získejte klienta pro zařízení, na kterém budete hrát",
+    "note": "Další kroky ho nainstalují, spárují a provedou první připojení."
   },
   "whatsnew": {
-    "items": {
-      "0": {
+    "items": [
+      {
         "icon": "sports_esports",
         "title": "První stream, který můžete zkontrolovat",
         "text": "Testy zvuku, myši, klávesnice a obrazu a hodiny latence najdete v průvodci a v Nástrojích testování."
       },
-      "1": {
+      {
         "icon": "download",
         "title": "Jeden instalační pohled",
         "text": "Stejný seznam klientů, soubory a QR kód v průvodci, v Připojit zařízení a na stránce stahování."
       },
-      "2": {
+      {
         "icon": "public",
         "title": "Vzdálený přístup zkontrolován",
         "text": "Průvodce otestuje, zda je tento počítač dostupný zvenčí a co změnit."
       },
-      "3": {
+      {
         "icon": "system_update_alt",
         "title": "Způsob aktualizace",
         "text": "Zvolte, odkud budou aktualizace přicházet; CDK pro MirrorChyan je nepovinné."
       }
-    },
+    ],
     "note": "Toto okno se otevírá jednou pro každou novou verzi. Můžete jej přeskočit."
+  },
+  "welcome": {
+    "modes": {
+      "system": "Podle systému",
+      "light": "Světlý",
+      "dark": "Tmavý"
+    }
+  },
+  "channel": {
+    "channel": "Kanál aktualizací",
+    "stable": "Stabilní (doporučeno)",
+    "stableText": "Otestováno, vhodné pro většinu.",
+    "beta": "Beta",
+    "betaText": "Nové funkce a opravy dříve; mohou se objevit drobné problémy.",
+    "source": "Odkud se aktualizace stahují",
+    "failed": "Neuloženo. Zkuste to znovu."
+  },
+  "trynow": {
+    "more": "Další možnosti stahování"
+  },
+  "pairing": {
+    "found": "Když klient najde tento počítač, zadejte zobrazený PIN.",
+    "pinCard": "Spárovat pomocí PIN"
+  },
+  "done": {
+    "library": "Knihovna her",
+    "scanning": "Vyhledávání herních knihoven na pozadí…",
+    "found": "Nalezeno {n} her. Zaškrtněte ty, které chcete přidat.",
+    "addPicked": "Přidat {n} vybraných",
+    "added": "Přidáno: {n}.",
+    "none": "Nebyly nalezeny žádné hry. Můžete je přidat později na stránce aplikací.",
+    "failed": "Herní knihovny se nepodařilo prohledat.",
+    "rescan": "Prohledat znovu",
+    "unsupported": "Tento host zatím neumí prohledávat herní knihovny.",
+    "unavailable": "Nyní nedostupné",
+    "reasons": {
+      "setup": "Z tohoto hostu nebyl načten žádný displej.",
+      "webaccess": "Tato stránka je už webové rozhraní hostu.",
+      "remote": "Tento host zatím neumí zkontrolovat síť. Aktualizujte host."
+    },
+    "start": "Začít používat",
+    "save": "Uložit",
+    "optional": "Volitelné: nastavte, až to budete potřebovat",
+    "optionalNote": "Nic z toho není povinné. Můžete začít bez toho.",
+    "advanced": "Pokročilé",
+    "back": "Hotovo",
+    "open": "Nastavit",
+    "items": {
+      "appearance": {
+        "title": "Barva motivu a pozadí",
+        "text": "Tapeta, barva motivu a rozostření"
+      },
+      "motion": {
+        "title": "Animace",
+        "text": "Síla animací rozhraní"
+      },
+      "setup": {
+        "title": "Displej a HDR",
+        "text": "Grafická karta, displej pro stream, HDR"
+      },
+      "webaccess": {
+        "title": "Webová správa",
+        "text": "Správa tohoto počítače z prohlížeče na jiném zařízení"
+      },
+      "remote": {
+        "title": "Vzdálené streamování a síť",
+        "text": "Potřebné jen pro streamování na tento počítač zvenku domova; většina lidí to nepotřebuje."
+      }
+    }
+  },
+  "remoteGuide": {
+    "checkTitle": "Kontrola sítě",
+    "checking": "Kontrola sítě tohoto počítače…",
+    "again": "Zkontrolovat znovu",
+    "recommend": "Doporučeno",
+    "other": "Další způsoby",
+    "facts": {
+      "publicYes": "Veřejná adresa: dostupná zvenku",
+      "publicNo": "Veřejná adresa: žádná (poskytovatel jednu sdílí)",
+      "publicPossible": "Veřejná adresa: router ji má; je třeba otevřít porty",
+      "publicUnknown": "Veřejná adresa: zatím nezjištěna",
+      "upnpOn": "Router otevírá porty sám (UPnP): zapnuto",
+      "upnpOff": "Router otevírá porty sám (UPnP): vypnuto",
+      "meshYes": "Mesh nástroj: {name} nainstalován",
+      "meshNo": "Mesh nástroj: zatím nenainstalován"
+    },
+    "recMesh": "Připojit se zpět přes mesh síť",
+    "recMeshText": "Tento počítač nemá veřejnou adresu; mesh síť ji nepotřebuje.",
+    "recDirect": "Přímé připojení funguje",
+    "recDirectText": "Tento počítač je dostupný zvenku. Funguje i mesh síť.",
+    "homeOnly": "Pokud hrajete jen doma, není co nastavovat."
   },
   "account": {
     "username": "Uživatelské jméno",
@@ -97,6 +197,12 @@ export default {
     "exists": "Účet už existuje."
   },
   "setup": {
+    "hdrState": {
+      "UNKNOWN": "HDR: neznámé",
+      "ENABLED": "HDR: zapnuto",
+      "DISABLED": "HDR: vypnuto"
+    },
+    "hdrWin10": "V systému Windows 10 Foundation Virtual Display nemá HDR (Windows 11 22H2 a novější). HDR se nabízí klientovi, který o něj požádá, když to displej a kodér umožňují.",
     "preps": {
       "no_operation": "Žádná operace",
       "ensure_active": "Aktivovat zvolený displej",
@@ -145,11 +251,15 @@ export default {
     }
   },
   "address": {
-    "discovery": "Automatické vyhledávání",
-    "discoveryText": "Objeví se v seznamu klienta. Klikněte na něj.",
+    "listed": "Klient sám vypíše „{name}“. Klikněte na něj.",
+    "listedNoName": "Klient sám vypíše tento počítač. Klikněte na něj.",
     "notShowing": "Nezobrazuje se?",
-    "manual": "Do položky klienta „přidat počítač“ zadejte adresu, kterou má tento počítač na cestě, kterou se připojujete: vyberte svou níže.",
-    "pick": "Jak se klient připojuje",
+    "typeThis": "V klientovi přidejte počítač a zadejte:",
+    "scan": "Nebo to naskenujte v klientovi",
+    "usual": "Časté příčiny: telefon je v hostovské Wi-Fi nebo je zapnutá proxy či VPN. Připojte se k Wi-Fi tohoto počítače a vypněte proxy nebo VPN.",
+    "portKept": "Ponechte :{port}. Port tohoto počítače není výchozí.",
+    "others": "Další způsoby připojení",
+    "othersHelp": "V těchto sítích zadejte adresu, která patří do sítě, ve které je klient.",
     "kinds": {
       "lan": "Místní síť",
       "zerotier": "ZeroTier",
@@ -158,28 +268,53 @@ export default {
       "public": "Veřejná adresa",
       "other": "Jiná síť"
     },
-    "fill": "Přes {way} zadejte v klientovi {address}.",
-    "thisPc": "Tento počítač",
-    "find": "Jak jej najít",
-    "windows": "Windows",
-    "linux": "Linux",
-    "macos": "macOS",
-    "windowsHow": "Stiskněte Win + R, napište cmd a spusťte ipconfig. Použijte adresu IPv4 aktivního adaptéru Ethernet nebo WLAN.",
-    "linuxHow": "Spusťte ip addr a použijte adresu inet aktivního rozhraní.",
-    "macosHow": "Nastavení systému > Síť, vyberte aktivní připojení: adresa IP se zobrazí tam.",
-    "example": "Například 192.168.1.100.",
-    "noSource": "Tento hostitel nenahlásil své síťové adresy.",
+    "none": "Tento počítač nenahlásil žádnou síťovou adresu.",
+    "recheck": "Zkontrolovat znovu",
+    "checking": "Kontrola…",
+    "diagnostics": "Otevřít diagnostiku",
     "port": {
+      "title": "Pokročilé: port",
+      "show": "Zobrazit",
+      "hide": "Skrýt",
+      "lead": "Všechny porty se počítají od základního. Otevřete je v routeru nebo bráně firewall.",
+      "base": "Základní port",
+      "roles": {
+        "https": "Párování",
+        "http": "Adresa klienta",
+        "web": "Panel WebUI",
+        "rtsp": "Vyjednávání streamu",
+        "video": "Video",
+        "control": "Ovládání",
+        "audio": "Zvuk",
+        "microphone": "Mikrofon"
+      },
+      "tcp": "TCP",
+      "udp": "UDP",
+      "optional": "pro stream není potřeba",
+      "field": "Nový základní port",
+      "save": "Uložit port",
+      "saved": "Uloženo",
+      "same": "To je používaný port.",
+      "format": "Jen číslice.",
+      "range": "Použijte {min} až {max}.",
+      "pendingTitle": "Restartujte, aby se použil {port}.",
+      "pendingText": "Do té doby host naslouchá na {active}. Poté klienti zadají {address} a panel WebUI se přesune na port {web}.",
+      "restart": "Restartovat nyní",
+      "restarting": "Restartování…",
+      "taken": "Pokud některý z těchto portů drží jiný program, kontrola ho po restartu pojmenuje.",
       "check": "Zkontrolovat porty",
       "checking": "Kontrola…",
       "checkAgain": "Zkontrolovat znovu",
       "checkUnsupported": "Tento hostitel porty ještě nekontroluje. Po aktualizaci je to v diagnostice.",
       "checkFailed": "Kontrola se nespustila.",
       "checkNone": "Kontrola nenašla u portů nic k hlášení.",
-      "checkOpen": "Otevřít diagnostiku"
+      "checkOpen": "Otevřít diagnostiku",
+      "failed": "Port se nepodařilo uložit."
     }
   },
   "pair": {
+    "showQr": "Ukázat kód, který naskenuje jiné zařízení",
+    "scanHow": "V klientovi zvolte „Skenovat“ a namiřte na tento kód.",
     "qr": "Naskenujte klientem",
     "qrNote": "Kód funguje jen po otevření tohoto kroku, několik minut.",
     "qrRefresh": "Nový kód",
@@ -200,8 +335,7 @@ export default {
     "hint": "Klient po kliknutí na tento počítač zobrazí čtyřmístný PIN.",
     "already": "Spárovaná zařízení",
     "another": "Spárovat další",
-    "unavailable": "Seznam spárovaných klientů se nepodařilo přečíst.",
-    "showQr": "Ukázat kód, který naskenuje jiné zařízení"
+    "unavailable": "Seznam spárovaných klientů se nepodařilo přečíst."
   },
   "connect": {
     "waiting": "Čeká se, až klient začne streamovat…",
@@ -235,6 +369,7 @@ export default {
   },
   "apps": {
     "sources": "Knihovny ke skenování",
+    "skip": "Teď ne",
     "start": "Skenovat",
     "again": "Skenovat znovu",
     "found": "Nalezeno her: {n}",
@@ -251,14 +386,54 @@ export default {
     "backToGuide": "Zpět do průvodce",
     "scan": "Skenovat herní knihovny",
     "scanText": "Steam, Epic a GOG. Zkontrolujte výsledek a přidejte.",
+    "launchTouch": "Dotyk",
+    "launchPc": "Klávesnice, myš a gamepad",
     "scanOnly": "Tento hostitel zatím neumí skenovat herní knihovny: aktualizujte hostitele.",
     "manual": "Přidat ručně",
     "manualText": "Název a hlavní program.",
-    "skip": "Teď ne",
     "done": "Vše je připraveno",
-    "open": "Otevřít"
-  },
-  "follow": "Sledujte nás: ",
-  "followBilibili": "Bilibili",
-  "followSite": "Web"
+    "open": "Otevřít",
+    "warnings": {
+      "steam.not_found": "Steam nebyl na tomto počítači nalezen.",
+      "steam.empty": "Steam nemá hry k přidání.",
+      "epic.unsupported": "Knihovna Epic se prohledává jen ve Windows.",
+      "epic.not_found": "Spouštěč Epic Games nebyl na tomto počítači nalezen.",
+      "epic.empty": "Epic nemá hry k přidání.",
+      "gog.unsupported": "Knihovna GOG se prohledává jen ve Windows.",
+      "gog.unavailable": "Registr se nepodařilo přečíst, proto GOG nebyl prohledán.",
+      "gog.not_found": "GOG nebyl na tomto počítači nalezen.",
+      "gog.empty": "GOG nemá hry k přidání.",
+      "directory.symlinks": "Symbolické odkazy byly přeskočeny.",
+      "directory.depth": "Prohledávání skončilo na limitu hloubky.",
+      "directory.time": "Prohledávání skončilo na časovém limitu.",
+      "directory.unreadable": "Některé složky se nepodařilo přečíst.",
+      "xbox.unsupported": "Knihovna Xbox se prohledává jen ve Windows.",
+      "xbox.not_found": "Na tomto počítači nebyly nalezeny hry Xbox.",
+      "xbox.empty": "Složka her Xbox nemá hry k přidání.",
+      "ea.unsupported": "Knihovna EA se prohledává jen ve Windows.",
+      "ea.not_found": "Aplikace EA nebyla na tomto počítači nalezena.",
+      "ea.empty": "Aplikace EA nemá hry k přidání.",
+      "ubisoft.unsupported": "Knihovna Ubisoft se prohledává jen ve Windows.",
+      "ubisoft.not_found": "Ubisoft Connect nebyl na tomto počítači nalezen.",
+      "ubisoft.empty": "Ubisoft Connect nemá hry k přidání.",
+      "battlenet.unsupported": "Knihovna Battle.net se prohledává jen ve Windows.",
+      "battlenet.not_found": "Battle.net nebyl na tomto počítači nalezen.",
+      "battlenet.empty": "Battle.net nemá hry k přidání.",
+      "riot.unsupported": "Knihovna Riot se prohledává jen ve Windows.",
+      "riot.not_found": "Riot Client nebyl na tomto počítači nalezen.",
+      "riot.empty": "Riot Client nemá hry k přidání.",
+      "hoyoplay.unsupported": "Knihovna HoYoPlay se prohledává jen ve Windows.",
+      "hoyoplay.not_found": "Na tomto počítači nebyly nalezeny hry HoYoPlay.",
+      "hoyoplay.empty": "HoYoPlay nemá hry k přidání.",
+      "wegame.unsupported": "Knihovna WeGame se prohledává jen ve Windows.",
+      "wegame.not_found": "WeGame nebyl na tomto počítači nalezen.",
+      "wegame.empty": "WeGame nemá hry k přidání.",
+      "sparxie.unsupported": "Dotyková komponenta se prohledává jen ve Windows.",
+      "sparxie.absent": "Dotyková komponenta není nainstalovaná, proto byla přeskočena.",
+      "sparxie.empty": "Dotyková komponenta zatím nemá herní profily.",
+      "sparxie.unreadable": "Konfiguraci dotykové komponenty se nepodařilo přečíst.",
+      "user.absent": "Nikdo není přihlášen, proto byly prohledány jen systémové knihovny.",
+      "unknown": "Jednu knihovnu se nepodařilo prohledat."
+    }
+  }
 }

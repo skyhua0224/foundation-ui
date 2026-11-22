@@ -106,13 +106,19 @@ test('team order: the team\'s order, everyone equal, the founder the one tag', (
   for (const key of ['founder', 'follow', 'sponsorAfdian', 'credits', 'creditsTeam', 'creditsSponsors', 'creditsUpstream', 'creditsContributors', 'creditsEnd', 'viviFound', 'friendsLabel']) { assert.ok(en[key], key); assert.ok(zh[key], key) }
 })
 
-test('sponsors: 爱发电 pages in team order, skyhua0224 included', () => {
+test('sponsors include the team and website options', () => {
   assert.deepEqual(SPONSORS.map((s) => [s.login, s.url]), [
     ['qiin2333', 'https://www.ifdian.net/a/qiin2333'],
     ['Yundi339', 'https://www.ifdian.net/a/Yundi339'],
     ['skyhua0224', 'https://ifdian.net/a/skyhua'],
+    ['微信赞赏 / WeChat', 'https://www.alkaidlab.com/en/#sponsors'],
+    ['GitHub Sponsors', 'https://github.com/sponsors/qiin2333'],
   ])
   for (const login of Object.keys(TEAM_SPONSORS)) assert.ok(TEAM_ORDER.includes(login), login)
+  const wechat = SPONSORS.find((s) => s.login === '微信赞赏 / WeChat')
+  assert.equal(resolveLink(wechat, 'zh-CN'), 'https://www.alkaidlab.cn/#sponsors')
+  assert.equal(resolveLink(wechat, 'zh-TW'), 'https://www.alkaidlab.cn/#sponsors')
+  assert.equal(resolveLink(wechat, 'en'), 'https://www.alkaidlab.com/en/#sponsors')
 })
 
 test('easter eggs: seven quick taps on the version (with developer mode), six on 薇薇', () => {

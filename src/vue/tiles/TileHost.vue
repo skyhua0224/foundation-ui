@@ -8,9 +8,11 @@ export const tileIds = ['host-name', 'audio-out', 'host-ports', 'host-encryption
 //   主机名称: the initial in a circle and the name in display type; 中 adds the platform.
 //   端口: the base port as the numeral inside one tonal plate; 中 adds the family of ports Sunshine derives from it and UPnP.
 //   加密: LAN and WAN as two state plates, the mode as the fill (强制 the primary container, 按需 the secondary, 关闭 quiet with the word in the error colour).
-//   公网地址: one plate: the globe, the address, whether the check reached it. Not set: the globe in a quiet circle, 未设置 and one action (detail).
+//   公网地址: one plate: the address and whether the check reached it (the globe too, from 中 up: the head has it at 方形). Every state names itself (checking, invalid, no public IPv4, check failed): a wildcard
+//   address is never drawn as one, and the text wraps instead of being cut. Not set: the globe in a quiet circle, 未设置 and one action (detail).
 import { computed } from 'vue'
 import MIcon from '../MIcon.vue'
+import MBreakText from '../MBreakText.vue'
 import { OPEN, designProps } from './tileData.js'
 import { sizeB2 } from './b2.js'
 
@@ -30,7 +32,16 @@ const enc = computed(() => (d.value.rows || []).map((r) => ({ ...r, rank: rank(r
 // 中 says what each mode means for the path it guards
 const note = (r) => [T.value.encOffNote, T.value.encOptionalNote, T.value.encRequiredNote][r] || ''
 // 公网地址
-const reachable = computed(() => !!d.value.saved && d.value.path?.tone !== 'warn' && d.value.path?.tone !== 'err')
+const av = computed(() => d.value.view || { state: d.value.saved ? 'saved' : 'unset', value: d.value.saved, word: d.value.path?.word || '', tone: d.value.path?.tone === 'error' ? 'bad' : 'ok', address: !!d.value.saved })
+// the plate has the size of its tile, so the figure is set for the text it holds: the width of the text in em (a CJK character 1, any other 0.58) against the em that fit the plate's line at that size
+const weigh = (t) => [...String(t || '')].reduce((n, c) => n + (c.charCodeAt(0) > 255 ? 1 : 0.58), 0)
+const pv = computed(() => {
+  const w = weigh(av.value.value)
+  if (size.value === 's') return w <= 5 ? 17 : w <= 6.2 ? 14 : w <= 7.2 ? 12 : 10
+  if (size.value === 'm') return w <= 5.7 ? 24 : w <= 6.8 ? 20 : w <= 8.5 ? 16 : w <= 10.4 ? 13 : 11
+  return w <= 10 ? 24 : w <= 16 ? 20 : 15
+})
+const plate = computed(() => ({ ok: 'is-on', bad: 'is-warn', quiet: 'is-quiet' }[av.value.tone] || 'is-quiet'))
 // 音频输出 is 主机名称's square: the speaker's glyph in the circle and the device's name in display type
 const name = computed(() => (id.value === 'audio-out' ? d.value.rows?.[0]?.value : d.value.big))
 const kind = computed(() => ({ 'host-name': 'm-b2name', 'audio-out': 'm-b2name', 'host-ports': 'm-b2ports', 'host-encryption': 'm-b2enc', 'public-address': 'm-b2addr' }[id.value]))
@@ -40,7 +51,7 @@ const kind = computed(() => ({ 'host-name': 'm-b2name', 'audio-out': 'm-b2name',
   <section class="m-tile m-cal m-b2" :class="[`m-b2--${id}`, `is-${size}`, kind]" :data-size="size" data-accent="primary">
     <template v-if="empty">
       <header class="m-calm__head"><MIcon :name="empty.icon || d.icon" /><span class="m-calm__title">{{ empty.title || card.title }}</span></header>
-      <div class="m-b2empty"><span class="m-b2glyph"><MIcon :name="d.icon || 'public'" /></span><b>{{ empty.value }}</b><button v-if="empty.action" type="button" class="m-b2__btn is-tonal" @click.stop="emit('act', empty.action)">{{ empty.action.label }}</button></div>
+      <div class="m-empty-basic"><b>{{ empty.value }}</b><button v-if="empty.action" type="button" class="m-b2__btn is-tonal" @click.stop="emit('act', empty.action)">{{ empty.action.label }}</button></div>
     </template>
 
     <template v-else-if="(id === 'host-name' || id === 'audio-out') && size === 's'">
@@ -68,7 +79,7 @@ const kind = computed(() => ({ 'host-name': 'm-b2name', 'audio-out': 'm-b2name',
 
     <template v-else>
       <header class="m-calm__head"><MIcon :name="d.icon" /><span class="m-calm__title">{{ card.title }}</span><button v-if="chevron && size !== 's'" type="button" class="m-calm__more" :aria-label="T.more || card.title" @click.stop="emit('act', OPEN)"><MIcon name="chevron_right" /></button></header>
-      <div class="m-b2plate" :class="reachable ? 'is-on' : 'is-warn'"><span class="m-b2glyph"><MIcon name="public" /></span><span class="m-b2addr__text" data-redact="address"><b>{{ d.saved }}</b><small v-if="d.path?.word" class="is-reach">{{ d.path.word }}</small></span></div>
+      <div class="m-b2plate" :class="plate" :data-state="av.state"><span v-if="size !== 's'" class="m-b2glyph"><MIcon name="public" /></span><span class="m-b2addr__text"><b :data-redact="av.address ? 'address' : null" :style="{ '--pv': `${pv}px` }"><MBreakText :text="av.value" /></b><small v-if="av.word" class="is-reach">{{ av.word }}</small></span></div>
     </template>
   </section>
 </template>

@@ -1,4 +1,5 @@
 export default {
+  "pairGetQr": "Získat QR kód",
   "stackPin": "Připnout tuto kartu",
   "stackUnpin": "Odepnout",
   "stackPinned": "Připnuto: {name}",

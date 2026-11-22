@@ -30,3 +30,13 @@ export const padChoices = (options, value, limit = 3) => choicesOf(options, valu
 /** The note under the controller type: a live note the product set on the strip (a client pad runs as a DS4) comes
  *  first, then the note of when a change of the type applies. */
 export const padNoteOf = (data, texts) => String(data?.note || '') || (data?.applies === 'next' ? texts.padNote : texts.restartNote)
+
+/** The name a resolution goes by (the hero of the tiles of a resolution): 3840x2160 -> '4K', 2560x1440 -> '2K', 7680x4320 -> '8K'; the others keep their height ('1080p', '720p', '3440x1440 -> 1440p'). A height alone (no width yet) is read as the 16 : 9 size of that height. */
+const STANDARD = { '3840x2160': '4K', '4096x2160': '4K', '2560x1440': '2K', '7680x4320': '8K' }
+const BY_HEIGHT = { 2160: '4K', 1440: '2K', 4320: '8K' }
+export const resNameOf = (w, h) => {
+  const hh = Math.round(Number(h) || 0); if (!hh) return ''
+  const ww = Math.round(Number(w) || 0)
+  return (ww ? STANDARD[`${ww}x${hh}`] : BY_HEIGHT[hh]) || `${hh}p`
+}
+

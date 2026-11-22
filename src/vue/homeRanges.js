@@ -35,7 +35,8 @@ export const TILE_RANGES = Object.freeze({
   // 中 of 加密 says what each mode means for the path; 中 of the session bitrate draws its curve under the gauge (a size is not dropped to pass a gate)
   // 大: the covers of the latest games as a grid of six with their names (from five games on, see `largestOf`)
   'recent-games': R('s', 'l'),
-  net: R('s', 'l'),
+  // 网卡: the adapter, its link and its address need more than a square: 中 is the adapter with the chooser; 大 adds the adapters as a list that chooses; 特大 the stream's rate against the link, the details and the other adapters
+  net: R('m', 'xl'),
   // 正在玩: the cover at 方形, beside the name at 中; 大 the shape-masked cover large with the name and the client
   'current-app': R('s', 'l'),
   // three states (gamepad, microphone, USB) or three codecs cannot be read in a square without cutting them
@@ -69,7 +70,11 @@ export const TILE_RANGES = Object.freeze({
   'ctl-encoder': R('s', 's', { strip: 4, size: 'strip' }), 'ctl-bitrate': R('s', 's', { strip: 4, size: 'strip' }), 'pers-theme': R('s', 's', { strip: 4, size: 'strip' }),
   'pers-colour': R(null, null, { strip: 4 }),
   // one switch or one action: a square
-  ...each(['ctl-controller', 'ctl-keyboard', 'ctl-mouse', 'ctl-cursor', 'ctl-audio', 'act-stop'], R('s', 's')),
+  // the catalogue growth round (homeGrowth.js): a closed ring or a shape at every size; the access choice has no 大
+  ...each(['ports-check', 'file-maps', 'encode-budget'], R('s', 'l')), 'web-access': R('s', 'm'),
+  // the second round (homeGrowth2.js): a hero at every size; the two with a choice on the tile (麦克风, 捕获方式) keep it at 中 and 大
+  ...each(['link-margin', 'frame-supply', 'mic-health', 'capture-method'], R('s', 'l')),
+  ...each(['ctl-controller', 'ctl-keyboard', 'ctl-mouse', 'ctl-cursor', 'ctl-audio', 'live-audio', 'act-stop'], R('s', 's')),
 })
 const COMPONENT = R('s', 'm')
 const ACTION = R('s', 's')

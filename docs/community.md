@@ -27,7 +27,7 @@ before the file exists (a 404 is the normal state):
 
 | id | Built-in address | Source |
 | --- | --- | --- |
-| `qq` | `https://qm.qq.com/cgi-bin/qm/qr?k=5qnkzSaLIrIaU4FvumftZH_6Hg7fUuLD&jump_from=webapi` | README, top line, "QQ 交流群" |
+| `qq` | `https://qm.qq.com/q/vIVhpjDMic` | README, top line, "QQ 交流群" |
 | `docs` | `https://www.alkaidlab.com/docs/` (`.cn` mirror for a Chinese interface) | the project site |
 
 The QQ row is always the group's official join link, never a typed group number.

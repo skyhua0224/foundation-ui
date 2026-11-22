@@ -56,7 +56,7 @@ onBeforeUnmount(() => props.status.stop())
         <header class="m-comp__head">
           <span class="m-comp__icon"><MIcon :name="COMPONENT_ICONS[row.id]" /></span>
           <div class="m-comp__id"><h3 class="m-comp__name">{{ T.names[row.id] }}<small v-if="EXT[row.id] || row.id === 'sparxie'" class="m-comp__ext">{{ T.ext.badge }}</small></h3><p class="m-comp__line">{{ line(row) }}</p></div>
-          <MRing v-if="ring(row)" class="m-comp__ring" :size="44" :thickness="6" :value="ring(row).passed / ring(row).total" :tone="ringTone(row)" :label="`${ring(row).passed}/${ring(row).total}`"><span class="m-comp__ringtext">{{ ring(row).passed }}/{{ ring(row).total }}</span></MRing>
+          <MRing v-if="ring(row)" class="m-comp__ring" :size="44" :value="ring(row).passed / ring(row).total" :tone="ringTone(row)" :label="`${ring(row).passed}/${ring(row).total}`"><span class="m-comp__ringtext">{{ ring(row).passed }}/{{ ring(row).total }}</span></MRing>
         </header>
         <p v-if="row.id === 'sparxie' && row.state === 'missing'" class="m-comp__hint">{{ T.sparxie.bring }}</p>
         <p v-if="row.progress" class="m-comp__progress" data-progress="1">{{ row.progress.stage }}<b>{{ row.progress.percent }}%</b></p>

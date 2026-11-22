@@ -96,6 +96,7 @@ export { default as MTrayPopup } from './MTrayPopup.vue'
 export { default as MTraySettings } from './MTraySettings.vue'
 export { default as MTrayLayoutEditor } from './MTrayLayoutEditor.vue'
 export { default as MTrayThumb } from './MTrayThumb.vue'
+export { default as MProgressRing } from './MProgressRing.vue'
 export { default as MRing } from './MRing.vue'
 export { default as MBar } from './MBar.vue'
 export { default as MCheckItem } from './MCheckItem.vue'
@@ -127,7 +128,7 @@ export { useCaptionRoom, SEARCH_MIN, roomFor, isTight } from './useCaptionRoom.j
 export { default as MCaptionVersion } from './MCaptionVersion.vue'
 export { default as MCaptionBack } from './MCaptionBack.vue'
 export { default as MBackChip } from './MBackChip.vue'
-export { BREAKPOINTS, RAIL_WIDTH, navigationOf, railWidthOf, calculateScene, listDetailStrategy, supportingPaneStrategy, singlePaneStrategy, listWidth, layoutOf } from '../nav/scenes.js'
+export { BREAKPOINTS, RAIL_WIDTH, SHORT_HEIGHT, barSideOf, isCompactNav, navigationOf, railWidthOf, calculateScene, listDetailStrategy, supportingPaneStrategy, singlePaneStrategy, listWidth, layoutOf } from '../nav/scenes.js'
 
 /** Consumers must compile `md-*` tags as custom elements: compilerOptions.isCustomElement = (tag) => tag.startsWith('md-'). */
 export const isMaterialWebElement = (tag) => tag.startsWith('md-')
@@ -140,7 +141,7 @@ export { useCommunityLinks } from "./useCommunityLinks.js"
 export { default as MHomeGuide } from "./MHomeGuide.vue"
 export { useGuideCard } from "./useGuideCard.js"
 export { default as MGuideFlow } from './MGuideFlow.vue'
-export { GUIDE_STEP_IDS, GUIDE_CLIENTS, GUIDE_DEVICES, CONNECT_CHECKS, PIN_LENGTH as GUIDE_PIN_LENGTH, SKIP_DELAY_S as GUIDE_SKIP_DELAY_S, skipSecondsLeft, buildGuideSteps, readProgress, writeProgress, clearProgress, startIndex, shouldAutoOpen, isSetupCompleted, validateAccount, clientFor, deviceOf, pickLanAddresses, lanRank, isLoopbackHost, canPair, normalizeClients, findNewClient, normalizeSessions, pickSession, sessionLine, qrPath, scallopPoints } from './guideModel.js'
+export { GUIDE_STEP_IDS, GUIDE_CLIENTS, GUIDE_DEVICES, CONNECT_CHECKS, PIN_LENGTH as GUIDE_PIN_LENGTH, buildGuideSteps, readProgress, writeProgress, clearProgress, startIndex, shouldAutoOpen, isSetupCompleted, validateAccount, clientFor, deviceOf, pickLanAddresses, lanRank, isLoopbackHost, canPair, normalizeClients, findNewClient, normalizeSessions, pickSession, sessionLine, qrPath, scallopPoints } from './guideModel.js'
 export { guideEntry, upgradeSkips, addressKind } from './guideEntry.js'
 export { hostProgressOf, hostPatchOf, saveGuideHost, createHostSaver, deviceId as guideDeviceId, resumeIndex, unionDone as unionGuideDone, isPhoneLike } from './guideHost.js'
 export { checkPortsViaDoctor, PORT_CHECK_IDS } from './guidePortCheck.js'
@@ -185,9 +186,20 @@ export { default as MLogViewer } from "./MLogViewer.vue"
 export { default as MErrorCentre } from "./MErrorCentre.vue"
 export { default as MDiagExport } from "./MDiagExport.vue"
 export { default as MDiagnostics } from "./MDiagnostics.vue"
+export { default as MResetSettings } from "./MResetSettings.vue"
+export { default as MResetConfirm } from "./MResetConfirm.vue"
+export { default as MResetEntry } from "./MResetEntry.vue"
+export { useCountdown } from "./useCountdown.js"
+export { RESET_KEYWORDS, RESET_SECONDS, backupTime, countdownLabel, createCountdown, createResetClient, failureText, latestBackup, resetTexts } from "../reset/index.js"
 export { default as MFeedbackRow } from "./MFeedbackRow.vue"
-export { default as MFeedbackAccount } from "./MFeedbackAccount.vue"
+export { default as MFeedbackCard } from "./feedback/MFeedbackCard.vue"
+export { default as MFeedbackButton } from "./feedback/MFeedbackButton.vue"
+export { default as MFeedbackDecision } from "./feedback/MFeedbackDecision.vue"
+export { default as MFeedbackPanel } from "./feedback/MFeedbackPanel.vue"
+export { default as MFeedbackReplySheet } from "./feedback/MFeedbackReplySheet.vue"
+export { useFeedbackReplies, replySheet } from "./feedback/useFeedbackReplies.js"
 export { default as MDoctor } from "./MDoctor.vue"
+export { default as MDriverGuardNotice } from './MDriverGuardNotice.vue'
 export { DOCTOR_GROUPS, LOCAL_GROUPS as DOCTOR_LOCAL_GROUPS, FIX_LEVEL as DOCTOR_FIX_LEVEL, hostSource as doctorHostSource, STATUS_LOOK as DOCTOR_STATUS_LOOK, createDoctor, doctorSnapshot, doctorText, doctorTexts, normalizeReport as normalizeDoctorReport, sortItems as sortDoctorItems, MOCK_DOCTOR, MOCK_DOCTOR_LOCAL, MOCK_DOCTOR_LOCAL_DOWN, mockDoctorRequest, mockLocalSource } from "../doctor/index.js"
 export { diagnosticsTexts, startupProblems, parseLog, findSessions, buildErrorCentre, problemSummary, issueUrl, redactAll, redactSecrets, redactConfig, maskNetwork, prepareBundle, finalizeBundle, zipStore, zipList, decodeLogBytes, decodeLogLine, createLogByteDecoder, parseRecords, parseHostText, parsePanelLogs, recordsToRows, recordsToText, formatRecord, createRecord, severityOf, levelOf, recordOf, isRecord, isErrorRecord, attributeOf, setAttribute, SEVERITY_NUMBER, SEVERITY_TEXT, DOMAINS, FIELD_CLASS, classifyKey, redactRecord, redactRecords, registerAdapter, adapterById, listAdapters, HOST_TEXT_ADAPTER_ID, PANEL_ADAPTER_ID } from "../diagnostics/index.js"
 export { default as MRoute } from './MRoute.vue'
@@ -199,6 +211,7 @@ export { vddTexts, VDD_TEXTS } from '../settings/vddTexts.js'
 export { VDD_MODES, VDD_PROTECTED, VDD_KEYS, vddModeOf, vddPatchForMode, vddSummary, vddStatusOf } from '../settings/virtualDisplay.js'
 export { default as MDashWidget } from "./MDashWidget.vue"
 export { buildCatalogue, buildCatalogueDetails, CATALOGUE_IDS, LINKS } from "./homeCatalogue.js"
+export { PIPELINE_FIELDS, pipelineAverages, perfExtras } from "./homePerfInputs.js"
 export { saveSettingKey } from "../settings/save.js"
 export { createHistory, pushSample, heatDays, errorsByHour, logDays, recentApps } from "./homeHistory.js"
 export { sessionSummary, rowText, selectionText } from "../diagnostics/logs.js"
@@ -277,6 +290,7 @@ export { default as MAnnouncementPopup } from "./MAnnouncementPopup.vue"
 export { default as MAnnouncementButton } from "./MAnnouncementButton.vue"
 export { default as MAnnouncementPage } from "./MAnnouncementPage.vue"
 export { announcementTexts } from "./announcementTexts.js"
+export { feedbackTexts } from "../feedback/texts.js"
 export { useDeveloperMode, tapOnVersion, usableSource, TAPS_NEEDED } from "./useDeveloperMode.js"
 export { ackedAt } from "../announcements/store.js"
 export { firstImage } from "../announcements/markdown.js"
@@ -373,7 +387,7 @@ export { default as DevSimChip } from './devmode/DevSimChip.vue'
 export { default as DevSimConfirm } from './devmode/DevSimConfirm.vue'
 export { useHostSimulation, createHostSimulation, SIMULATION_MS, SIMULATIONS } from './useHostSimulation.js'
 export { default as DevHub } from './devmode/DevHub.vue'
-export { devReport, registerDevReport, openDevReport, closeDevReport, openDevSignIn, closeDevSignIn, addManualMask, undoManualMask, clearManualMasks } from './devmode/devReport.js'
+export { devReport, devReportReady, registerDevReport, openDevReport, openFeedbackHere, currentPageName, askDevReport, clearDevReportAsk, closeDevReport, openDevSignIn, closeDevSignIn, addManualMask, undoManualMask, clearManualMasks } from './devmode/devReport.js'
 export { useDevAccount } from './devmode/useDevAccount.js'
 export { answerRedactRequests } from '../devmode/frameRects.js'
 export { devmodeTexts, fillText as devmodeFill } from '../devmode/texts.js'

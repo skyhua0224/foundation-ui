@@ -24,14 +24,14 @@ export const VERDICT_LOOK = Object.freeze({
  */
 export const REASON_FIX = Object.freeze({
   cgnat: 'mesh', private_wan: 'mesh', no_wan_ip: 'forward', no_igd: 'forward', mapping_missing: 'upnp', firewall_blocked: 'firewall', not_listening: 'restart', not_listening_on_mesh: 'restart',
-  hairpin_unsupported: 'outside', origin_blocks_mesh: 'origin', mesh_adapter_down: 'mesh', no_mesh_adapter: 'mesh',
+  hairpin_unsupported: 'outside', loopback_unverifiable: 'outside', not_reached_from_outside: 'forward', origin_blocks_mesh: 'origin', mesh_adapter_down: 'mesh', no_mesh_adapter: 'mesh',
   address_mismatch: 'use-wan', address_private: 'address', dns_failed: 'address', unset: 'address',
 })
 
 /** What a reason is: a problem (a warning with its fix), good news the host reports (a tick), or a note (neutral: what was not possible to know). */
 export const REASON_KIND = Object.freeze({
   session_evidence: 'good', hairpin_verified: 'good', host_public_ip: 'good', mappings_complete: 'good', mesh_adapter_up: 'good',
-  hairpin_not_tried: 'note', firewall_unknown: 'note', unset: 'note',
+  hairpin_not_tried: 'note', firewall_unknown: 'note', unset: 'note', loopback_unverifiable: 'note', udp_unverified: 'note', udp_unverified_forwarded: 'note', outside_unavailable: 'note', outside_router_proxy: 'note', outside_budget: 'note', outside_verified: 'good',
 })
 
 /** `mapping_missing:udp/47998` -> { code: 'mapping_missing', arg: 'udp/47998', proto: 'udp', port: 47998 }. */
@@ -55,6 +55,7 @@ function configuredOf(raw) {
   return { value: str(raw.value), kind, resolved: list(raw.resolved).map(str).filter(Boolean), matchesWan: raw.matches_wan === true ? true : raw.matches_wan === false ? false : null, reasons: list(raw.reasons).map(str).filter(Boolean) }
 }
 
+export const OUTSIDE_STATES = Object.freeze(['reachable', 'another_host', 'closed', 'timeout', 'unknown', 'unavailable'])
 export const ENDPOINT_SCOPES = Object.freeze(['public', 'lan', 'mesh', 'loopback', 'unknown'])
 export const ENDPOINT_ERRORS = Object.freeze(['dns_failed', 'refused', 'timeout', 'unreachable', 'tls_failed', 'identity_mismatch', 'not_tried', 'failed'])
 
@@ -66,10 +67,29 @@ function endpointOf(raw) {
   return {
     input: str(raw.input), host: str(raw.host), kind: pick(str(raw.kind), ['ip', 'hostname'], 'hostname'), port: num(raw.port), portExplicit: raw.port_explicit === true, httpsPort: num(raw.https_port),
     resolved: list(raw.resolved).map(str).filter(Boolean), scope: pick(str(raw.scope), ENDPOINT_SCOPES, 'unknown'), matchesWan: raw.matches_wan === true,
-    reached: str(raw.state) === 'reached', error: ENDPOINT_ERRORS.includes(error) ? error : error ? 'failed' : '', tested,
+    reached: str(raw.state) === 'reached', inconclusive: raw.inconclusive === true, outside: raw.outside && typeof raw.outside === 'object' ? { state: pick(str(raw.outside.state), OUTSIDE_STATES, 'unavailable'), reason: str(raw.outside.reason), caller: str(raw.outside.caller) } : null, error: ENDPOINT_ERRORS.includes(error) ? error : error ? 'failed' : '', tested,
     attempts: list(raw.attempts).filter((a) => a && typeof a === 'object').map((a) => ({ address: str(a.address), port: num(a.port), connected: a.connected === true, identityMatch: a.identity_match === true, error: str(a.error), latencyMs: num(a.latency_ms) })),
     reasons: list(raw.reasons).map(str).filter(Boolean),
   }
+}
+
+/**
+ * What the report cannot say, as notes: a public address this computer cannot reach itself (the host marks it `inconclusive`), and UDP, which nothing proves from this computer: only a session from the
+ * internet or an outside test does. Neither is a failure, so neither is red.
+ */
+function publicNotes(pub) {
+  const notes = []
+  const outsideOk = pub.endpoints.some((e) => e.outside?.state === 'reachable')
+  if (pub.endpoints.some((e) => e.inconclusive && !e.reached && e.outside?.state !== 'reachable')) notes.push('loopback_unverifiable')
+  // the outside check was on and its service did not answer: the screen says what the result rests on
+  // A proxy on the router (the service saw its exit) and a service that is out of budget for the day have a sentence of their own, because the person can do something about the first and only wait for the second.
+  const unavailable = pub.endpoints.filter((e) => e.outside?.state === 'unavailable')
+  // each kind of reason has its sentence, and a mix of endpoints with different reasons gets each of them; the general one is for a reason that has none of its own
+  if (unavailable.some((e) => e.outside.reason === 'router_proxy') && !pub.reasons.includes('outside_router_proxy')) notes.push('outside_router_proxy')
+  if (unavailable.some((e) => e.outside.reason === 'budget')) notes.push('outside_budget')
+  if (unavailable.some((e) => e.outside.reason !== 'router_proxy' && e.outside.reason !== 'budget')) notes.push('outside_unavailable')
+  if (pub.verdict !== 'unreachable' && !pub.evidence.length && !pub.reasons.includes('session_evidence')) notes.push(outsideOk && pub.reasons.includes('mappings_complete') ? 'udp_unverified_forwarded' : 'udp_unverified')
+  return notes
 }
 
 /** The report from the host's answer, or null when it is not a v1 report (an older host answers 404, a bad answer has no verdicts). */
@@ -166,10 +186,15 @@ function reasonRow(value, T, ports) {
 /** One endpoint as a row: the state word (the failure when it failed), the port that was tested and the time it took, the scope and the addresses it resolved to. Numbers and states only. */
 export function endpointRow(e, T) {
   const reachedAt = e.tested
-  const tone = e.reached ? 'ok' : e.error === 'dns_failed' || e.error === 'not_tried' ? 'neutral' : 'error'
+  // A public address this computer cannot reach itself says nothing about the internet (a router without NAT loopback): neutral, never red.
+  // A connection from the internet (the outside check) outranks what this computer could see of its own address: it reached this host, or it did not.
+  const out = e.outside?.state || ''
+  const outsideOk = out === 'reachable'
+  const outsideBad = out === 'closed' || out === 'timeout' || out === 'another_host'
+  const tone = outsideOk ? 'ok' : outsideBad ? 'error' : e.reached ? 'ok' : e.inconclusive || e.error === 'dns_failed' || e.error === 'not_tried' ? 'neutral' : 'error'
   return {
-    input: e.input, tone, icon: e.reached ? 'check_circle' : tone === 'neutral' ? 'help' : 'error', reached: e.reached,
-    word: e.reached ? T.endpoint.reached : T.endpoint.errors[e.error] || T.endpoint.errors.failed,
+    input: e.input, tone, icon: tone === 'ok' ? 'check_circle' : tone === 'neutral' ? 'help' : 'error', reached: outsideOk || (e.reached && !outsideBad), inconclusive: e.inconclusive,
+    word: outsideOk ? T.endpoint.outsideReached : outsideBad ? T.endpoint.outsideErrors[out] : e.reached ? T.endpoint.reached : e.inconclusive ? T.endpoint.loopback : T.endpoint.errors[e.error] || T.endpoint.errors.failed,
     port: reachedAt ? reachedAt.port : e.httpsPort, portText: e.httpsPort && e.attempts.length ? T.endpoint.https.replace('{port}', String(reachedAt ? reachedAt.port : e.httpsPort)) : '',
     latencyText: reachedAt && reachedAt.latencyMs >= 0 && e.attempts.length ? `${reachedAt.latencyMs} ms` : '',
     scope: e.scope, scopeWord: T.endpoint.scopes[e.scope] || '', resolved: e.resolved, address: reachedAt ? reachedAt.address : '',
@@ -203,7 +228,7 @@ export function reachView(report, locale = 'en') {
   const paths = [
     {
       id: 'public', title: T.paths.public, verdict: pub.verdict, word: T.verdicts[pub.verdict], ...VERDICT_LOOK[pub.verdict], headline: T.headline.public[pub.verdict],
-      evidence: pubEvidence, reasons: [...new Set([...pub.reasons, ...(pub.endpoints.length ? [] : pub.configured?.reasons || [])])].map((r) => reasonRow(r, T, report.ports)), address: publicAddress(report), addressLabel: T.addressPublic,
+      evidence: pubEvidence, reasons: [...new Set([...pub.reasons, ...(pub.endpoints.length ? [] : pub.configured?.reasons || []), ...publicNotes(pub)])].map((r) => reasonRow(r, T, report.ports)), address: publicAddress(report), addressLabel: T.addressPublic,
       endpoints: pub.endpoints.map((e) => endpointRow(e, T)),
       configured: pub.configured ? { value: pub.configured.value, kind: pub.configured.kind, resolved: pub.configured.resolved, matchesWan: pub.configured.matchesWan, kindWord: T.addressKinds[pub.configured.kind] || '' } : null,
     },
@@ -277,9 +302,12 @@ export function validateEndpoint(input) {
     if (o.some((n) => n > 255) || /\.$/.test(hostPart)) return fail('host')
     kind = 'ip'
     const [a, b] = o
+    // 0.0.0.0 (and the rest of 0.0.0.0/8) is what a socket binds to and what a router answers when it has no address: nothing a client can connect to
+    if (a === 0) return fail('unspecified')
     // LAN, loopback and link-local addresses are fine to keep (the host reports them) but cannot serve the internet; the mesh range (100.64/10) is a legitimate endpoint
     if (a === 10 || a === 127 || a === 0 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 169 && b === 254)) warn = 'private'
   } else if (v6) {
+    if (/^[0:]+$/.test(bare)) return fail('unspecified')
     kind = 'ip'
     if (/^(fe80|fc|fd|::1$)/i.test(bare) && !/^fd7a:115c:a1e0/i.test(bare)) warn = 'private'
   } else {
@@ -306,8 +334,7 @@ function isIpv6(text) {
 }
 
 /** The endpoints in a configuration value (`a.example.net:60000, [2001:db8::1]:57989`): the valid ones in canonical form, de-duplicated, at most MAX_ENDPOINTS. Separators: comma, semicolon, space, new line. */
-export function parseEndpoints(text) {
-  const raw = String(text ?? '').trim()
+function endpointTokens(raw) {
   const split = (value) => {
     const out = []
     let depth = 0
@@ -321,11 +348,17 @@ export function parseEndpoints(text) {
     if (current) out.push(current)
     return out
   }
-  let tokens = split(raw)
+  const tokens = split(raw)
   if (tokens.some((t) => !validateEndpoint(t).ok) && raw.startsWith('[') && raw.endsWith(']')) {
     const inner = split(raw.slice(1, -1))
-    if (inner.every((t) => validateEndpoint(t).ok)) tokens = inner
+    if (inner.every((t) => validateEndpoint(t).ok)) return inner
   }
+  return tokens
+}
+
+export function parseEndpoints(text) {
+  const raw = String(text ?? '').trim()
+  const tokens = endpointTokens(raw)
   const seen = new Set()
   const out = []
   for (const token of tokens) {
@@ -340,6 +373,15 @@ export function parseEndpoints(text) {
 export function endpointsOfConfig(config) {
   const list = parseEndpoints(config?.external_endpoints)
   return list.length ? list : parseEndpoints(config?.external_ip)
+}
+
+/**
+ * What a configuration holds that is not an address: the entries of `external_endpoints` (or the legacy `external_ip`) that no client could use, each with the reason
+ * (`unspecified`: 0.0.0.0 or ::, `host`, `port`, `format`, `scheme`). [] when every entry is valid or none is set. A tile must not draw such an entry as the address.
+ */
+export function rejectedEndpointsOfConfig(config) {
+  const text = String(config?.external_endpoints ?? '').trim() ? config.external_endpoints : config?.external_ip
+  return endpointTokens(String(text ?? '').trim()).map((t) => ({ text: t, error: validateEndpoint(t).error })).filter((r) => r.error)
 }
 
 /** The value to store for a list of rows: canonical, de-duplicated, empty rows dropped. '' for none. */

@@ -14,14 +14,16 @@ export const MOCK_SCENARIOS = Object.freeze(['fresh', 'upgrade', 'upgrade-guide-
 /**
  * A scripted host. Same transitions as the native shell; the worker is a timer that emits the engine phases.
  * @param {{scenario?: MockScenario, locale?: 'zh'|'en', speed?: number, page?: InstallerPage,
- *          onAction?: (a: InstallerAction) => void, timers?: {set: Function, clear: Function}}} [opts]
- *   speed: multiplies the scripted delays (0 = synchronous steps for tests); page: jump straight to a page (gallery)
+ *          onAction?: (a: InstallerAction) => void, timers?: {set: Function, clear: Function}, now?: () => number}} [opts]
+ *   speed: multiplies the scripted delays (0 = synchronous steps for tests); page: jump straight to a page (gallery);
+ *   now: the clock the question about a folder warning counts its seconds with (milliseconds; tests move it)
  * @returns {InstallerBridge & {state: () => InstallerView, step: () => boolean}}
  */
 export function createMockBridge(opts = {}) {
   const scenario = opts.scenario || 'fresh'
   const speed = opts.speed ?? 1
   const timers = opts.timers || { set: (f, ms) => setTimeout(f, ms), clear: (t) => clearTimeout(t) }
+  const now = opts.now || (() => Date.now())
   const listeners = new Set()
   const v = emptyView()
   v.locale = opts.locale || 'zh'
@@ -40,6 +42,56 @@ export function createMockBridge(opts = {}) {
     v.components.usbip = false
     v.guidePending = scenario !== 'upgrade-guide-done' && scenario !== 'maintenance-same'
   }
+  const GB = 2 ** 30
+  const DEFAULT_DIR = 'C:\\Program Files\\Sunshine'
+  const PRODUCT = 'Foundation Sunshine'
+  v.installDir = maint
+    ? { ...v.installDir, path: 'D:\\Programs\\Foundation Sunshine', editable: false, freeBytes: 311 * GB, neededBytes: 1.2 * GB, maxLength: 85 }
+    : { ...v.installDir, path: DEFAULT_DIR, editable: true, freeBytes: 238 * GB, neededBytes: 1.2 * GB, maxLength: 85 }
+
+  // The rules of the host in miniature (tools/installer_dir.h), enough for the dev page, the gallery and the tests: a few made-up places stand for the cases (D:\Games has files and
+  // has a parent that others can replace, F: is FAT32, E: is nearly full, C:\Users is a user folder).
+  const norm = (text) => String(text).replace(/\//g, '\\').replace(/(?<=.{3})\\+$/, '')
+  const verdictOf = (raw) => {
+    const p = norm(raw)
+    const out = { error: null, warning: null, freeBytes: null }
+    if (p.toLowerCase() === DEFAULT_DIR.toLowerCase()) return { ...out, freeBytes: 238 * GB }
+    if (!/^[A-Za-z]:\\/.test(p)) return { ...out, error: 'invalid' }
+    if (/^[A-Za-z]:\\?$/.test(p)) return { ...out, error: 'root', freeBytes: 412 * GB }
+    if (/[!%^&;,='`{}$]/.test(p)) return { ...out, error: 'chars' }
+    const drive = p[0].toUpperCase()
+    out.freeBytes = drive === 'F' ? 58 * GB : drive === 'E' ? 0.4 * GB : drive === 'C' ? 238 * GB : 412 * GB
+    if (drive === 'F') out.error = 'fs'
+    else if (/^[A-Za-z]:\\Windows(\\|$)/i.test(p)) out.error = 'system'
+    else if (/OneDrive|Dropbox/i.test(p)) out.error = 'synced'
+    else if (p.length > 85) out.error = 'too-long'
+    else if (/^[A-Za-z]:\\Games$/i.test(p) || /\\Docs$/i.test(p)) out.error = 'not-empty'
+    else if (drive === 'E') out.error = 'no-space'
+    else if (/^C:\\Users(\\|$)/i.test(p)) out.warning = 'user'
+    else if (/^[A-Za-z]:\\Games\\/i.test(p)) out.warning = 'parent'
+    return out
+  }
+  // a pick gets the product's folder name added, as the host does (installer_dir.h from_pick); the default folder and a folder with that name are taken as they are
+  const resolvePick = (picked) => {
+    const p = norm(picked)
+    if (p.toLowerCase() === DEFAULT_DIR.toLowerCase() || p.split('\\').pop().toLowerCase() === PRODUCT.toLowerCase()) return { path: p, pickedPath: null, note: null }
+    return { path: p.endsWith('\\') ? p + PRODUCT : `${p}\\${PRODUCT}`, pickedPath: p, note: /^[A-Za-z]:\\Games$/i.test(p) ? 'redirected' : null }
+  }
+  const safeOf = (path) => (path[0].toUpperCase() === 'C' ? DEFAULT_DIR : `${path[0].toUpperCase()}:\\${PRODUCT}`)
+  // another folder: what was confirmed and an open question are void
+  let confirmed = ''
+  let askedAt = 0  // when the question about a warning opened (the host takes "install anyway" only after confirmSeconds)
+  const setDir = (path, pickedPath = null, note = null) => {
+    const r = verdictOf(path)
+    confirmed = ''
+    askedAt = 0
+    v.installDir = { ...v.installDir, path, pickedPath, note: r.error ? null : note, error: r.error, warning: r.error ? null : r.warning, freeBytes: r.freeBytes,
+      safePath: !r.error && r.warning ? safeOf(path) : null, confirm: false }
+    emit()
+  }
+  // what the folder picker answers, one after another (a real host opens the system picker and checks the folder it returns)
+  const picks = ['D:\\Games', 'D:\\', 'F:\\Tools', 'C:\\Users\\Alice\\Documents', 'D:\\Backup\\Foundation Sunshine', DEFAULT_DIR]
+  let pick = 0
   let script = []
   let timer = null
 
@@ -130,7 +182,34 @@ export function createMockBridge(opts = {}) {
     opts.onAction?.(a)
     switch (a.type) {
       case 'ready': emit(); break
-      case 'install': if (['welcome', 'maintenance', 'components'].includes(v.page)) startWorker(); break
+      case 'choose-dir': if (v.page === 'welcome' && v.installDir.editable) {
+        const r = resolvePick(picks[pick % picks.length])
+        pick += 1
+        setDir(r.path, r.pickedPath, r.note)
+      } break
+      case 'set-dir': if (v.installDir.editable && ['welcome', 'components'].includes(v.page) && norm(a.path) !== v.installDir.path) setDir(norm(a.path)); break
+      case 'use-picked-dir': if (v.installDir.editable && v.installDir.pickedPath) setDir(v.installDir.pickedPath); break
+      case 'use-safe-dir': if (v.installDir.editable && v.installDir.safePath) { setDir(v.installDir.safePath); if (v.page === 'components') go('welcome') } break
+      case 'cancel-dir-risk': if (v.installDir.confirm) { askedAt = 0; v.installDir = { ...v.installDir, confirm: false }; emit() } break
+      case 'install':
+      case 'confirm-dir-risk': {
+        if (!['welcome', 'maintenance', 'components'].includes(v.page) || v.installDir.error) break
+        if (a.type === 'confirm-dir-risk') {
+          // the host takes the answer only while the question is open and after its seconds: an answer that comes early is not taken, and the question stays open
+          if (!v.installDir.confirm || now() - askedAt < v.installDir.confirmSeconds * 1000) break
+          confirmed = v.installDir.path
+          askedAt = 0
+          v.installDir = { ...v.installDir, confirm: false }
+        }
+        else if (v.installDir.editable && v.installDir.warning && confirmed !== v.installDir.path) {
+          if (!v.installDir.confirm) askedAt = now()
+          v.installDir = { ...v.installDir, confirm: true }  // a warning is asked about once
+          emit()
+          break
+        }
+        startWorker()
+        break
+      }
       case 'retry': if (v.page === 'failed') startWorker(); break
       case 'customize': if (v.page === 'welcome' || v.page === 'maintenance') go('components'); break
       case 'back': if (v.page === 'components') go(v.maintenance ? 'maintenance' : 'welcome'); break

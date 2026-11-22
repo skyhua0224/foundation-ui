@@ -3,6 +3,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { devReport, registerDevReport, openDevReport, closeDevReport, addManualMask, undoManualMask, clearManualMasks } from '../src/vue/devmode/devReport.js'
+import { feedbackTexts } from '../src/feedback/texts.js'
 import { devmodeTexts } from '../src/devmode/texts.js'
 import { contextTexts } from '../src/contextmenu/texts.js'
 import { makePng } from './pngFixture.js'
@@ -11,25 +12,23 @@ const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8')
 const flag = (src) => /useDeveloperMode|developerMode|\.enabled\.value/.test(src)
 
 test('none of the feedback files asks whether developer mode is on', () => {
-  for (const f of ['src/vue/devmode/DevReport.vue', 'src/vue/devmode/DevSignIn.vue', 'src/vue/devmode/DevReportHost.vue', 'src/vue/devmode/DevShotMask.vue', 'src/vue/devmode/devReport.js', 'src/vue/MFeedbackAccount.vue', 'src/vue/MFeedbackRow.vue', 'src/vue/MErrorHost.vue', 'src/devmode/feedback.js', 'src/devmode/signin.js']) assert.equal(flag(read(f)), false, f)
+  for (const f of ['src/vue/feedback/MFeedbackPanel.vue', 'src/vue/feedback/MFeedbackDecision.vue', 'src/vue/feedback/MFeedbackButton.vue', 'src/vue/feedback/MFeedbackCard.vue', 'src/vue/devmode/DevSignIn.vue', 'src/vue/devmode/DevReportHost.vue', 'src/vue/devmode/DevShotMask.vue', 'src/vue/devmode/devReport.js', 'src/vue/MFeedbackRow.vue', 'src/vue/MErrorHost.vue', 'src/devmode/feedback.js', 'src/devmode/signin.js']) assert.equal(flag(read(f)), false, f)
 })
 
-test('the words: the send button says 登录 GitHub 后发送 when signed out, and the account section has its name', () => {
-  assert.equal(devmodeTexts('zh').sendSignIn, '登录 GitHub 后发送')
-  assert.equal(devmodeTexts('zh').acctTitle, '账号与反馈')
-  assert.equal(devmodeTexts('zh').disconnectGithub, '退出 GitHub 登录')
-  assert.equal(contextTexts('zh').feedbackHere, '反馈此处问题')
+test('the words of the feedback flow are one set: 反馈 everywhere, and the context menu entry is 反馈此处的问题', () => {
+  assert.equal(contextTexts('zh').feedbackHere, '反馈此处的问题')
+  assert.equal(feedbackTexts('zh').errorButton, '反馈这个问题')
+  assert.equal(feedbackTexts('zh').card, '反馈问题或建议')
   assert.ok(devmodeTexts('en').sendSignIn && devmodeTexts('en').feedbackHere)
 })
 
-test('the report sheet: two ways, privately to the developers or a zip on this computer; nothing public, no account', () => {
-  const src = read('src/vue/devmode/DevReport.vue')
-  assert.match(src, /const dest = ref\('ours'\)/)
-  assert.match(src, /\{ id: 'ours'/); assert.match(src, /\{ id: 'local'/)
-  assert.match(src, /submitReport\(doc, \{ id: reportIdOf\(doc\) \}\)/)
-  assert.match(src, /readErrors\(\) === 'off'/, 'a report follows the error-report choice')
-  for (const gone of ['sendThroughBackend', 'reportIssueUrl', 'newIssueUrl', 'openDevSignIn', 'useDevAccount', 'visibleRepos', 'sentGithub', "id: 'github'", "id: 'anon'", 'p.openUrl']) assert.ok(!src.includes(gone), gone)
-  assert.match(src, /data-dev="report-type"/)
+test('the feedback panel: one way to send, directly and privately; the zip and the public issue are small links, never a choice', () => {
+  const src = read('src/vue/feedback/MFeedbackPanel.vue')
+  assert.match(src, /submitReport\(d, \{ id, explicit: true \}\)/)
+  assert.ok(!/const dest = ref|id: 'ours'|id: 'local'|aria-checked/.test(src), 'no choice of ways to send')
+  for (const gone of ['sendThroughBackend', 'reportIssueUrl', 'newIssueUrl', 'openDevSignIn', 'useDevAccount', 'visibleRepos', 'sentGithub', "id: 'github'", "id: 'anon'"]) assert.ok(!src.includes(gone), gone)
+  assert.match(src, /data-fb="type"/); assert.match(src, /data-fb="github"/); assert.match(src, /data-fb="zip"/)
+  assert.ok(!/MSwitch v-model="include\.logs"/.test(src), 'the log has no switch: a report always carries it')
 })
 
 const png = makePng(40, 20)

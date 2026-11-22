@@ -203,8 +203,14 @@ export function textColour(fillHex, surfaceHexes, { dark = false, min = 4.55 } =
   }
   return hexFromArgb(Hct.from(hct.hue, hct.chroma, dark ? 100 : 0).toInt())
 }
+// The secondary text colour of the surfaces (on-surface-variant: captions, units, labels, the small words of a tile) sits on every surface of the scheme, the dim and the bright ones included. Material's
+// tone (NV30 / NV80) is 4.5 : 1 on the surface and falls under it on the darker ones, so it is moved along its own hue and chroma until it is SECONDARY_MIN : 1 on every one of them (the margin is for
+// the word drawn at 12 px, which is thinner than the type the rule is measured with). The accent containers carry their own on-container text and are not in the list.
+const SECONDARY_SURFACES = [...TEXT_SURFACES, 'surfaceDim', 'surfaceBright']
+export const SECONDARY_MIN = 4.9
 const withTextRoles = (o, dark) => {
   const surfaces = TEXT_SURFACES.map((k) => o[k])
+  if (o.onSurfaceVariant) o.onSurfaceVariant = textColour(o.onSurfaceVariant, SECONDARY_SURFACES.map((k) => o[k]), { dark, min: SECONDARY_MIN })
   for (const [fill, text] of [['primary', 'primaryText'], ['secondary', 'secondaryText'], ['tertiary', 'tertiaryText']]) if (o[fill]) o[text] = textColour(o[fill], surfaces, { dark })
   return o
 }

@@ -72,7 +72,7 @@ export function createAutoReporter({ storage = globalThis.localStorage, getConse
     const st = load()
     // the component and code of the first occurrence: a count without them has nothing to count (an older state): dropped
     if (!st.meta[id]) { delete st.pending[id]; save(); return false }
-    const answer = await send.bump(st.meta[id], Math.min(n, AUTO.bumpMax))
+    const answer = await send.bump({ ...st.meta[id], fingerprint: id }, Math.min(n, AUTO.bumpMax))
     if (answer.state === 'sent') { delete st.pending[id]; st.bumpAt[id] = now(); save(); return true }
     if (answer.state === 'rejected') { delete st.pending[id]; save() }
     return false

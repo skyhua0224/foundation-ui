@@ -1,5 +1,5 @@
 import { computed, getCurrentScope, onScopeDispose, ref, unref } from 'vue'
-import { getSearchIndex, labelOf, onSettingsData } from '../settings/provider.js'
+import { getAliases, getSearchIndex, labelOf, onSettingsData } from '../settings/provider.js'
 import { buildSettingsEntries } from '../settings/search.js'
 import { dualsenseEntries } from '../settings/dualsense.js'
 import { SETTINGS_CATEGORIES, STANDALONE_CATEGORIES, settingsGroups } from '../settings/model.js'
@@ -12,7 +12,7 @@ export { scopeRecent, hostRecentKey } from '../settings/recentStore.js'
 // of the search (categories, every setting of the index by label in the interface language and the other one, and by key
 // name, plus the DualSense tuning keys of the host's snapshot) and the "recently used" list kept in local storage.
 //   locale: ref or string ('zh', 'en', ...); config: ref of the host's /api/config answer; dualsenseKeys: ref of snapshot.keys; sources: refs of what the second lines read
-//   besides the configuration ({ clients, apps, components, ds, mic, usb }, see rowLines.js)
+//   besides the configuration ({ clients, apps, components, ds, mic, usb, audio }, see rowLines.js)
 export { recentKeys, rememberRecent }
 const recentList = recentKeys
 
@@ -27,7 +27,7 @@ export function useSettingsList({ locale, config = ref(null), dualsenseKeys = re
   const other = computed(() => (isZh.value ? 'en' : 'zh'))
   const altLabel = (key) => { void supplied.value; return labelOf(other.value, key) }
   // the second line of every row of the products: the live state where there is one, else what is inside
-  const lines = computed(() => rowLines({ locale: lang.value, config: unref(config), clients: unref(sources.clients), apps: unref(sources.apps), components: unref(sources.components), ds: unref(sources.ds), mic: unref(sources.mic), usb: unref(sources.usb), rtss: unref(sources.rtss) }))
+  const lines = computed(() => rowLines({ locale: lang.value, config: unref(config), clients: unref(sources.clients), apps: unref(sources.apps), components: unref(sources.components), ds: unref(sources.ds), mic: unref(sources.mic), usb: unref(sources.usb), rtss: unref(sources.rtss), audio: unref(sources.audio) }))
   const groups = computed(() => settingsGroups({ label, lines: lines.value }))
   const categoryEntries = computed(() => [
     ...groups.value.flatMap((g) => g.items).map((item) => ({
@@ -42,7 +42,7 @@ export function useSettingsList({ locale, config = ref(null), dualsenseKeys = re
     }),
   ])
   const entries = computed(() => [
-    ...buildSettingsEntries({ index: (void supplied.value, getSearchIndex()), label, altLabel }),
+    ...buildSettingsEntries({ index: (void supplied.value, getSearchIndex()), label, altLabel, aliases: getAliases() }),
     ...dualsenseEntries({ keys: unref(dualsenseKeys) || [], label, locale: lang.value, altLocale: other.value }),
   ])
   const searchItems = computed(() => [...categoryEntries.value, ...entries.value])

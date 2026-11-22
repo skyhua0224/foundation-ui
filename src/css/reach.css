@@ -11,11 +11,11 @@
 .m-reach__row { display: flex; gap: 14px; align-items: flex-start; } .m-reach__ico { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; background: color-mix(in srgb, var(--reach-ico) 18%, transparent); color: var(--reach-ico); }
 .m-reach__main { min-width: 0; display: flex; flex-direction: column; gap: 4px; } .m-reach__title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; } .m-reach__title b { font: var(--m-title-medium-emphasized); }
 .m-reach__word { padding: 2px 12px; border-radius: 9999px; font: var(--m-label-large); background: color-mix(in srgb, var(--reach-ico) 22%, transparent); }
-.m-reach__headline { margin: 0; font: var(--m-body-medium); opacity: .92; }
+.m-reach__headline { margin: 0; font: var(--m-body-medium); }
 .m-reach__evidence, .m-reach__adapters, .m-reach__reasons { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; font: var(--m-body-medium); }
-.m-reach__evidence li, .m-reach__adapters li { display: flex; align-items: center; gap: 10px; } .m-reach__evidence .m-icon, .m-reach__adapters .m-icon { flex: none; font-size: 20px; opacity: .8; } .m-reach__adapters small { opacity: .8; }
+.m-reach__evidence li, .m-reach__adapters li { display: flex; align-items: center; gap: 10px; } .m-reach__evidence .m-icon, .m-reach__adapters .m-icon { flex: none; font-size: 20px; opacity: .8; } .m-reach__adapters small { }
 .m-reach__address { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 14px; border-radius: 16px; background: color-mix(in srgb, var(--reach-fg) 8%, transparent); }
-.m-reach__address > span { font: var(--m-label-medium); opacity: .85; } .m-reach__address code { font: var(--m-title-small-emphasized); font-variant-numeric: tabular-nums; } .m-reach__address em { font: var(--m-body-small); opacity: .75; }
+.m-reach__address > span { font: var(--m-label-medium); } .m-reach__address code { font: var(--m-title-small-emphasized); font-variant-numeric: tabular-nums; } .m-reach__address em { font: var(--m-body-small); }
 .m-reach__reasons li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; } .m-reach__reasons .m-icon { flex: none; font-size: 20px; } .m-reach__reason { flex: 1 1 220px; min-width: 0; }
 .m-reach__fix { flex: 1 1 100%; padding: 10px 14px; border-radius: 16px; background: color-mix(in srgb, var(--reach-fg) 8%, transparent); } .m-reach__fix p { margin: 0 0 8px; font: var(--m-body-medium); }
 .m-reach__cmd { display: flex; align-items: flex-start; gap: 10px; } .m-reach__cmd code { flex: 1; min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: var(--m-body-small); }
@@ -28,9 +28,9 @@
 
 .m-reachv { display: flex; flex-direction: column; gap: 12px; min-width: 0; --reach-ico: var(--md-sys-color-outline); color: inherit; }
 .m-reachv.is-ok { --reach-ico: var(--md-sys-color-success); } .m-reachv.is-info { --reach-ico: var(--md-sys-color-primary); } .m-reachv.is-error { --reach-ico: var(--md-sys-color-error); }
-.m-reach__reasons li.is-good .m-icon { color: var(--md-sys-color-success); } .m-reach__reasons li.is-note { opacity: .9; }
+.m-reach__reasons li.is-good .m-icon { color: var(--md-sys-color-success); } .m-reach__reasons li.is-note { }
 .m-pubaddr { display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; border-radius: 20px; background: color-mix(in srgb, var(--reach-fg) 8%, transparent); }
-.m-pubaddr__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; } .m-pubaddr__head b { font: var(--m-title-small-emphasized); } .m-pubaddr__head small { font: var(--m-body-small); font-variant-numeric: tabular-nums; opacity: .8; }
+.m-pubaddr__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; } .m-pubaddr__head b { font: var(--m-title-small-emphasized); } .m-pubaddr__head small { font: var(--m-body-small); font-variant-numeric: tabular-nums; }
 .m-pubaddr__rows { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 16px; }
 .m-pubaddr__line { display: flex; align-items: flex-start; gap: 8px; } .m-pubaddr__line .m-field { flex: 1; min-width: 0; } .m-pubaddr__line .m-icon-btn { flex: none; margin-top: 4px; }
 .m-pubaddr__result { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin: 6px 4px 0 16px; font: var(--m-body-small); font-variant-numeric: tabular-nums; }
@@ -39,10 +39,10 @@
 .m-pubaddr__scope { font-style: normal; font: var(--m-label-small); padding: 2px 8px; border-radius: 8px; background: color-mix(in srgb, var(--reach-fg) 12%, transparent); } .m-pubaddr__scope.is-bad { color: var(--md-sys-color-error); }
 .m-pubaddr code { font: var(--m-body-small); color: inherit; background: none; overflow-wrap: anywhere; }
 .m-pubaddr__actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.m-reach__ports td.is-on-session { opacity: .75; } .m-reach__ports td.note { color: var(--md-sys-color-on-surface-variant); }
+.m-reach__ports td.is-on-session { } .m-reach__ports td.note { color: var(--md-sys-color-on-surface-variant); }
 .m-daddr__eps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; font: var(--m-body-small); font-variant-numeric: tabular-nums; }
 .m-daddr__eps li { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; } .m-daddr__eps .m-icon { font-size: 18px; } .m-daddr__eps b { font: var(--m-label-large); overflow-wrap: anywhere; }
-.m-daddr__eps .is-ok .m-icon { color: var(--md-sys-color-success); } .m-daddr__eps .is-error .m-icon { color: var(--md-sys-color-error); } .m-daddr__eps small { opacity: .8; }
+.m-daddr__eps .is-ok .m-icon { color: var(--md-sys-color-success); } .m-daddr__eps .is-error .m-icon { color: var(--md-sys-color-error); } .m-daddr__eps small { }
 
 /* 主机设置 › 网络 (MReachOverview, MEndpointList): one neutral list of the paths, colour only on the status icon and the verdict chip, the rows plain neutral surfaces; the endpoints as a compact list */
 .m-reacho { display: flex; flex-direction: column; gap: 12px; min-width: 0; container-type: inline-size; }
@@ -128,7 +128,14 @@
 .m-rf__manual details { display: flex; flex-direction: column; gap: 14px; } .m-rf__manual details > :not(summary) { margin-block: 0; }
 .m-rf__chev { flex: none; transition: transform var(--m-spring-default-effects-duration, 200ms) var(--m-spring-default-effects, ease); } .m-rf__manual details[open] .m-rf__chev { transform: rotate(180deg); }
 .m-rf__done { display: flex; align-items: flex-start; gap: 16px; padding: 20px 22px; border-radius: 28px; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
-.m-rf__done h3 { margin: 0; font: var(--m-title-large-emphasized); } .m-rf__done p { margin: 4px 0 0; font: var(--m-body-medium); } .m-rf__done small { display: block; margin-top: 8px; font: var(--m-body-small); opacity: .85; }
+.m-rf__done h3 { margin: 0; font: var(--m-title-large-emphasized); } .m-rf__done p { margin: 4px 0 0; font: var(--m-body-medium); } .m-rf__done small { display: block; margin-top: 8px; font: var(--m-body-small); }
 .m-rf__donebody { flex: 1; min-width: 0; } .m-rf__doneico { --ico-size: 48px; }
 .m-rf__addr { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 10px; padding: 10px 14px; border-radius: 16px; background: color-mix(in srgb, var(--md-sys-color-on-primary-container) 10%, transparent); } .m-rf__addr code { font: var(--m-title-medium-emphasized); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .m-rf__sub .m-wave { width: 100%; max-width: 100%; overflow: hidden; }
+
+/* the steps of a check that is going (MReachOverview): one line each, done / going / waiting */
+.m-reacho__run { margin: 0; padding: 12px 16px; list-style: none; display: flex; flex-direction: column; gap: 6px; border-radius: var(--md-sys-shape-corner-extra-large); background: var(--m-card); font: var(--m-body-medium); }
+.m-reacho__run li { display: flex; align-items: center; gap: 10px; color: var(--md-sys-color-on-surface-variant); min-width: 0; } .m-reacho__run li > span { min-width: 0; overflow-wrap: anywhere; }
+.m-reacho__run li .m-icon { flex: none; font-size: 20px; } .m-reacho__run li.is-done { color: var(--md-sys-color-on-surface); } .m-reacho__run li.is-done .m-icon { color: var(--md-sys-color-success); } .m-reacho__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.m-reacho__run li.is-fail .m-icon { color: var(--md-sys-color-error); } .m-reacho__run li.is-warn .m-icon, .m-reacho__run li.is-skipped .m-icon { color: var(--md-sys-color-on-surface-variant); }
+.m-reacho__run li.is-running { color: var(--md-sys-color-on-surface); } .m-reacho__run li.is-running .m-icon { color: var(--md-sys-color-primary-text); }

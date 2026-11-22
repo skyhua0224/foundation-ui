@@ -26,6 +26,7 @@ export function createJumpHistory({ locate, restore, ephemeral = [], same = null
   const stack = shallowRef([])
   let depth = 0 // a jump in progress
   let restoring = false
+  let returned = false
   let seen = null // the place the stack knows the person is at
 
   const clean = (place) => {
@@ -75,10 +76,14 @@ export function createJumpHistory({ locate, restore, ephemeral = [], same = null
       if (!place) return false
       stack.value = stack.value.slice(0, -1)
       restoring = true
+      returned = true
+      queueMicrotask(() => queueMicrotask(() => { returned = false })) // after the render that shows the place has been scheduled and run
       try { restore(place) } finally { restoring = false }
       seen = locate()
       return true
     },
+    /** true while the page that the last back opened is being drawn: it is a return to a place, not a new page (the page then opens where it was scrolled to) */
+    returning: () => returned,
     clear,
     /** watch the navigation: a move that is not a jump and not a back is the person's own */
     attach(source) {

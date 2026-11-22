@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import { buildGuideSteps, readProgress, startIndex } from '../src/vue/guideModel.js'
 import { guideTexts } from '../src/vue/guideTexts.js'
+import { updateSourceTexts } from '../src/update/sourceTexts.js'
 import { LOCALE_SYSTEM, choiceOf, normalizeTag, readLocalePref, resolveLocale, resolveSystemLocale, watchSystemLanguage, writeLocalePref } from '../src/locale/localePref.js'
 
 const memory = () => { const m = new Map(); return { getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: (k) => m.delete(k) } }
@@ -23,26 +24,35 @@ test('a fresh profile starts at the intro, with 跟随系统 (the system languag
   assert.equal(guideTexts('zh').intro.start, '开始'); assert.equal(guideTexts('en').intro.start, 'Start')
 })
 
-test('the flow shows the intro first: the mark, the plain notice (whole), the language rows with 跟随系统 first and selected by default, a big start button', () => {
+test('the flow shows the intro first: the mark, the plain notice that the program is free and open source (always whole), the language rows with 跟随系统 first and selected by default, light or dark, a big start button', () => {
   const vue = read('src/vue/MGuideFlow.vue'), css = read('src/css/guideintro.css')
-  assert.match(vue, /<template v-if="id === 'intro'">/)
+  assert.match(vue, /<template v-if="pageId === 'intro'">/)
   assert.match(vue, /<MProductHero class="m-guide__herocard" :slogan="slogan"/)
   assert.doesNotMatch(vue, /m-guide__sun|appIcon/, 'the hero is 薇薇 alone: the sun mark is gone')
   assert.match(vue, /:title="followSystemTitle" data-locale="system" :selected="localeChoice === 'system'"/)
   assert.match(vue, /const followSystemTitle = computed\(\(\) => `\$\{T\.value\.intro\.followSystem\} · \$\{languageName\(props\.state\.locale\?\.resolved\)\}`\)/)
   assert.match(vue, /const localeChoice = computed\(\(\) => props\.state\.locale\?\.choice \|\| 'system'\)/)
   assert.match(vue, /case 'intro': return \{ label: t\.intro\.start, run: next/)
-  assert.match(vue, /const openFull = ref\(false\)/) // the open-source notice is one line with its link on the first screen
-  assert.match(vue, /<header v-if="id !== 'intro'" class="m-guide__head">/)
+  // the notice that the program is free and open source is a block of its own, whole, never behind an expand button; then the language, then light or dark
+  assert.doesNotMatch(vue, /openFull|openClamped|m-guide__openmore/, 'nothing about the notice is folded')
+  assert.match(vue, /<section class="m-guide__free" data-guide-free role="note"[^>]*>[\s\S]*S\.freeNotice[\s\S]*T\.openSource\.text[\s\S]*T\.openSource\.link[\s\S]*<\/section>/)
+  const intro = vue.slice(vue.indexOf(`<template v-if="pageId === 'intro'">`), vue.indexOf('<!-- 2 account -->'))
+  assert.ok(intro.indexOf('m-guide__free') < intro.indexOf('T.language') && intro.indexOf('T.language') < intro.indexOf('T.titles.appearance'), 'notice, language, light or dark in the markup; the CSS order puts light or dark under the name card')
+  assert.match(intro, /<MSeg class="m-guide__look" :icon-only="narrow" :model-value="appearance\.state\.mode"/)
+  // at every size the choice is one row right under the name card (CSS order), so the first screen always shows it; a phone shows icons only
+  assert.match(read('src/css/guideflow.css'), /\.m-guide__welcome \.m-guide__herocard \{ order: -2; \}\s*\.m-guide__mode \{ order: -1; display: flex; flex-direction: row;/)
+  assert.doesNotMatch(intro, /MAppearance/, 'the colours and the background are an optional page of the done page, not the first screen')
+  assert.match(vue, /<header v-if="pageId !== 'intro'" class="m-guide__head">/)
   assert.match(css, /\.m-guide\[data-step='intro'\] \.m-guide__actions > :last-child \{ min-width: min\(100%, 240px\); height: 56px;/)
-  assert.match(vue, /id\.value !== 'intro' && !props\.required/) // the first screen cannot be skipped
+  assert.match(vue, /const ACTION_STEPS = \['pair', 'connect'\]/) // the first screen has 开始 only: no step but pairing and the first stream has a skip
 })
 
 test('there is no consent step and no question: error reports and usage statistics are both on and the first screen says so once, in one notice; the notes sit at the foot of the first screen', () => {
   const vue = read('src/vue/MGuideFlow.vue')
   assert.match(vue, /const flow = computed\(\(\) => props\.steps\.filter\(\(s\) => s\.id !== 'consent'\)\)/)
   assert.doesNotMatch(vue, /C\.consentNo|C\.consentYes|saveConsent|data-consent=/, 'the blocking question and its 「不发送」 are gone')
-  assert.match(vue, /<div v-if="id === 'intro'" class="m-guide__notes" data-guide-notes>[\s\S]*S\.freeNotice[\s\S]*S\.supportLine[\s\S]*errorsParts\[0\][\s\S]*callbacks\.openPrivacy\(\)/)
+  assert.match(vue, /<div v-if="pageId === 'intro'" class="m-guide__notes" data-guide-notes>[\s\S]*S\.supportLine[\s\S]*errorsParts\[0\][\s\S]*callbacks\.openPrivacy\(\)/)
+  assert.doesNotMatch(vue.slice(vue.indexOf('data-guide-notes'), vue.indexOf('</footer>')), /S\.freeNotice/, 'the free-software sentence is in the block above, not in the small print')
   assert.match(vue, /const errorsNotice = ref\(!errorsNoticeSeen\(\)\)/); assert.match(vue, /before === 'intro' && now !== 'intro'\) markErrorsNoticeSeen\(\)/, 'one-time')
   assert.match(read('src/css/guideintro.css'), /\.m-guide__notes \{[^}]*font: var\(--m-body-small\)/, 'secondary, body-small')
 })
@@ -98,8 +108,11 @@ test('the language block is an airy list: 56 px rows 8 px apart, the checked row
 
 test('the first step: the notice is one line with its link, the step text is in the footer', () => {
   const vue = read('src/vue/MGuideFlow.vue')
-  assert.match(vue, /<span v-if="id === 'intro'" class="m-guide__footstep"/)
+  assert.match(vue, /<span v-if="pageId === 'intro'" class="m-guide__footstep"/)
   assert.match(vue, /<a :href="PRODUCT\.repo"/)
+  const texts = guideTexts('zh')
+  assert.equal(updateSourceTexts('zh').freeNotice, '本程序是免费、开源的自由软件。如果你通过任何渠道付费购买了本程序，请立即申请退款。', 'the sentence the owner asked to keep, word for word')
+  assert.match(texts.openSource.text, /GPL-3\.0/)
 })
 
 test('the project slogan is one string: the About page and the first screen show 让游戏串流更优雅 / Game streaming, more elegantly', async () => {
@@ -111,12 +124,14 @@ test('the project slogan is one string: the About page and the first screen show
   assert.match(read('src/vue/MGuideFlow.vue'), /aboutTexts\(props\.locale\)\.slogan/)
 })
 
-test('the first screen reads: the About hero card, then the open-source notice, then the language list, then 开始', () => {
-  const vue = read('src/vue/MGuideFlow.vue'), css = read('src/css/guideintro.css')
-  const body = vue.slice(vue.indexOf('<div class="m-guide__body">'))
-  assert.ok(body.indexOf('class="m-guide__open"') < body.indexOf('<MProductHero'), 'in the markup the notice is the first child of the body')
-  assert.match(css, /\.m-guide__herocard \{ margin: 0 0 2px; order: -1; \}/, 'the card is drawn before it')
-  assert.match(css, /\.m-guide__body > \.m-guide__open \{ margin: 0; \}/)
+test('the first screen reads from top to bottom: the About hero card, the free-software notice, the language list, light or dark, the small print, then 开始', () => {
+  const vue = read('src/vue/MGuideFlow.vue'), css = read('src/css/guideflow.css')
+  const intro = vue.slice(vue.indexOf(`<template v-if="pageId === 'intro'">`), vue.indexOf('<!-- 2 account -->'))
+  const at = (needle) => intro.indexOf(needle)
+  assert.ok(at('<MProductHero') < at('m-guide__free') && at('m-guide__free') < at('T.language') && at('T.language') < at('T.titles.appearance') && at('T.titles.appearance') < at('data-guide-notes'))
+  // one column at every width: a readable column in the middle of a wide window, never two columns and never stretched
+  assert.match(css, /\.m-guide__welcome \{ display: flex; flex-direction: column;[^}]*max-width: 640px; margin-inline: auto;/)
+  assert.doesNotMatch(css, /\.m-guide__welcome \{[^}]*grid-template-columns/)
 })
 
 test('the edges of the scroll area of every step say nothing while the content fits: no shadow, no divider; a hairline only while it scrolls, from two sentinels and an IntersectionObserver', () => {
@@ -126,4 +141,17 @@ test('the edges of the scroll area of every step say nothing while the content f
   assert.match(css, /\.m-guide \.m-guide__actions, \.m-onboard \.m-guide \.m-guide__actions \{ border-top: 0; box-shadow: none; \}/)
   assert.match(css, /\.m-guide\[data-below\] \.m-guide__actions::before, \.m-guide\[data-scrolled\] \.m-guide__steps::after \{ opacity: 1; \}/)
   assert.doesNotMatch(css, /box-shadow: 0 -10px/)
+})
+
+test('the first screen calls light or dark 外观 / Appearance, and the colours and the background are 主题色与背景 / Theme colour & background', () => {
+  assert.equal(guideTexts('zh').titles.appearance, '外观'); assert.equal(guideTexts('en').titles.appearance, 'Appearance')
+  assert.equal(guideTexts('zh').welcome.mode, undefined, 'one word, the title of the appearance step of the old flow')
+  assert.equal(guideTexts('zh').done.items.appearance.title, '主题色与背景'); assert.equal(guideTexts('en').done.items.appearance.title, 'Theme colour & background')
+  assert.equal(guideTexts('zh_TW').titles.appearance, '外觀'); assert.equal(guideTexts('zh_TW').done.items.appearance.title, '主題色與背景')
+  assert.notEqual(guideTexts('de').titles.appearance, guideTexts('en').titles.appearance, 'a language with its own word keeps it')
+  const vue = read('src/vue/MGuideFlow.vue')
+  assert.match(vue, /<h2 class="m-guide__sub">\{\{ T\.titles\.appearance \}\}<\/h2>/)
+  assert.match(vue, /:label="T\.titles\.appearance" :options="lookOptions"/, 'the accessible label says it too')
+  assert.match(vue, /pageId\.value === 'appearance' \? T\.value\.done\.items\.appearance\.title/)
+  assert.ok(!/深浅色|Light or dark/.test(JSON.stringify(guideTexts('zh')) + JSON.stringify(guideTexts('en'))), 'the old name is gone from the texts')
 })

@@ -105,7 +105,7 @@ test('反馈 has a row in 帮助与关于 and is found by 反馈 and feedback in
   assert.ok(ACTION_DEFS.some((a) => a.id === 'feedback'))
   const zh = actionDocs('zh', { feedback: () => {} })
   assert.equal(zh.length, 1)
-  assert.equal(zh[0].title, '发送反馈')
+  assert.equal(zh[0].title, '反馈问题或建议')
   assert.match(zh[0].keywords, /反馈/)
   assert.match(zh[0].keywords, /feedback/)
   assert.equal(actionDocs('en', { feedback: () => {} })[0].title, 'Send feedback')

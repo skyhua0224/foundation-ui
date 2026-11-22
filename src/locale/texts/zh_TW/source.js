@@ -1,7 +1,10 @@
 export default {
   "source": "更新來源",
+  "channel": "更新通道",
   "sources": {
     "auto": "自動",
+    "cnb": "CNB",
+    "github": "GitHub",
     "mirror": "Mirror醬"
   },
   "mirrorAbout": "Mirror醬是面向開源專案的下載加速服務，也是一項開發者贊助計劃。訂閱後可用 CDK 加速下載，訂閱收入會按訂閱情況分給接入 Mirror醬的開發者，包括本專案。CDK 為可選項，不填時從 CNB 或 GitHub 下載。",
@@ -13,12 +16,16 @@ export default {
   "cdk": "Mirror醬 CDK",
   "cdkHint": "儲存在系統安全儲存中，儲存後不再顯示。",
   "save": "儲存",
+  "clear": "移除",
   "check": "檢查 CDK",
   "checking": "正在檢查…",
   "saved": "CDK 已儲存",
+  "removed": "CDK 已移除",
   "unavailable": "安全儲存需要更新的控制面板。",
   "status": {
     "none": "沒有 CDK",
+    "valid": "CDK 有效",
+    "banned": "CDK 已被封鎖",
     "expired": "CDK 已過期",
     "invalid": "CDK 無效",
     "limit": "今日下載次數已用盡",

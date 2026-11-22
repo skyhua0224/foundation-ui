@@ -10,7 +10,11 @@
 .m-tile { --tk: var(--md-sys-color-primary); --on-tk: var(--md-sys-color-on-primary); --tk-c: var(--md-sys-color-primary-container); --on-tk-c: var(--md-sys-color-on-primary-container);
   --tk-fill-top: .36; --tk-fill-mid: .12; --tk-line: 3px; --tile-pad: 16px; --tile-bleed: 56%;
   position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; min-width: 0; min-height: 0; padding: var(--tile-pad); border-radius: var(--m-dash-radius, 28px);
-  background: var(--m-card); color: var(--md-sys-color-on-surface); }
+  background: var(--m-card); color: var(--md-sys-color-on-surface);
+  /* the text roles of a tile (see tiles-text.css): the card is tinted with its accent, so the secondary text is the surface's own secondary colour moved towards the primary text colour until it holds on that tint;
+     the error as text is the error colour moved the same way. Both are opaque: a see-through word lets the tint through and loses its contrast. */
+  --tile-text-2: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 30%, var(--md-sys-color-on-surface));
+  --tile-err-text: color-mix(in srgb, var(--md-sys-color-error) 72%, var(--md-sys-color-on-surface)); }
 html[data-bs-theme='dark'] .m-tile, html[data-theme='dark'] .m-tile { --tk-fill-top: .44; --tk-fill-mid: .15; }
 .m-tile[data-accent='secondary'] { --tk: var(--md-sys-color-secondary); --on-tk: var(--md-sys-color-on-secondary); --tk-c: var(--md-sys-color-secondary-container); --on-tk-c: var(--md-sys-color-on-secondary-container); }
 .m-tile[data-accent='tertiary'] { --tk: var(--md-sys-color-tertiary); --on-tk: var(--md-sys-color-on-tertiary); --tk-c: var(--md-sys-color-tertiary-container); --on-tk-c: var(--md-sys-color-on-tertiary-container); }
@@ -18,15 +22,15 @@ html[data-bs-theme='dark'] .m-tile, html[data-theme='dark'] .m-tile { --tk-fill-
 .m-tile[data-accent='warn'] { --tk: var(--md-sys-color-warning); --on-tk: var(--md-sys-color-on-warning); --tk-c: var(--md-sys-color-warning-container); --on-tk-c: var(--md-sys-color-on-warning-container); }
 .m-tile[data-accent='error'], .m-tile.is-hot { --tk: var(--md-sys-color-error); --on-tk: var(--md-sys-color-on-error); --tk-c: var(--md-sys-color-error-container); --on-tk-c: var(--md-sys-color-on-error-container); }
 /* a tile filled with its accent's container (a tile that is a state, or a hero that should read from across the room) */
-.m-tile--tonal { background: var(--tk-c); color: var(--on-tk-c); }
+.m-tile--tonal { background: var(--tk-c); color: var(--on-tk-c); --tile-text-2: color-mix(in srgb, var(--on-tk-c) 90%, var(--tk-c)); }
 /* the layers: a bleed sits on the card's edges under everything (a chart, a shape cut by the corner); the content is over it */
 .m-tile__bleed { position: absolute; z-index: 0; inset: auto 0 0 0; height: var(--tile-bleed); pointer-events: none; }
 .m-tile__corner { position: absolute; z-index: 0; top: 0; right: 0; translate: 18% -18%; pointer-events: none; }
 .m-tile > :not(.m-tile__bleed, .m-tile__corner) { position: relative; z-index: 1; }
-.m-tile__head { display: flex; align-items: center; gap: 8px; min-height: 24px; min-width: 0; font: var(--m-tile-text-13-strong); color: var(--md-sys-color-on-surface-variant); }
+.m-tile__head { display: flex; align-items: center; gap: 8px; min-height: 24px; min-width: 0; font: var(--m-tile-text-13-strong); color: var(--tile-text-2, var(--md-sys-color-on-surface-variant)); }
 .m-tile__head > .m-icon { flex: none; font-size: 18px; color: var(--tk); }
 .m-tile__head > span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.m-tile--tonal .m-tile__head { color: color-mix(in srgb, var(--on-tk-c) 78%, transparent); } .m-tile--tonal .m-tile__head > .m-icon { color: var(--on-tk-c); }
+.m-tile--tonal .m-tile__head { color: var(--tile-text-2, var(--on-tk-c)); } .m-tile--tonal .m-tile__head > .m-icon { color: var(--on-tk-c); }
 .m-tile__more { flex: none; display: grid; place-items: center; width: 28px; height: 28px; margin: -4px -6px -4px 0; border: 0; border-radius: 50%; background: none; color: inherit; cursor: pointer; }
 .m-tile__more:hover { background: color-mix(in srgb, currentColor 10%, transparent); } .m-tile__more:focus-visible { outline: 2px solid var(--tk); outline-offset: 1px; }
 
@@ -38,19 +42,8 @@ html[data-bs-theme='dark'] .m-tile, html[data-theme='dark'] .m-tile { --tk-fill-
 .m-tchart__line { fill: none; stroke: var(--tk); stroke-width: var(--tk-line); stroke-linecap: round; stroke-linejoin: round; }
 .m-tchart__past { fill: color-mix(in srgb, var(--tk) 30%, transparent); } .m-tchart__now { fill: var(--tk); }
 .m-tile--tonal .m-tchart__past { fill: color-mix(in srgb, var(--on-tk-c) 24%, transparent); }
-.m-tchart__dot { position: absolute; left: -6px; top: -6px; width: 12px; height: 12px; border-radius: 50%; background: var(--tk); box-shadow: 0 0 0 3px var(--m-card-solid, var(--md-sys-color-surface)), 0 0 0 9px color-mix(in srgb, var(--tk) 22%, transparent); will-change: transform; }
+.m-tchart__dot { position: absolute; left: -4px; top: -4px; width: 8px; height: 8px; border-radius: 50%; background: var(--tk); box-shadow: 0 0 0 2px var(--m-card-solid, var(--md-sys-color-surface)); will-change: transform; } /* the chart's last sample: a small dot, not the ringed disc of a slider handle (it was 12 px with a 9 px halo) */
 
-/* ring and gauge */
-.m-tring { position: relative; display: grid; place-items: center; aspect-ratio: 1; min-width: 0; }
-.m-tring > svg { grid-area: 1 / 1; width: 100%; height: 100%; overflow: visible; }
-.m-tring__spin { grid-area: 1 / 1; width: 100%; height: 100%; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
-.m-tring__spin > svg { display: block; width: 100%; height: 100%; overflow: visible; transform-origin: 50% 50%; will-change: transform; animation: m-tring-run 1.1s linear infinite; }
-@keyframes m-tring-run { to { transform: rotate(calc(360deg / var(--waves, 16))); } }
-.m-tring__centre { grid-area: 1 / 1; display: grid; place-items: center; text-align: center; min-width: 0; }
-.m-tring__track { fill: none; stroke: color-mix(in srgb, var(--tk) 8%, var(--md-sys-color-surface-container-highest)); stroke-linecap: round; }
-.m-tring__arc { fill: none; stroke-linecap: round; stroke-linejoin: round; transition: stroke-dasharray var(--m-spring-default-spatial-duration) var(--m-spring-default-spatial); }
-.m-tring__arc--a { stroke: var(--tk); } .m-tring__arc--b { stroke: color-mix(in srgb, var(--tk) 52%, var(--md-sys-color-surface-container-highest)); } .m-tring__arc--c { stroke: var(--md-sys-color-tertiary); }
-.m-tile--tonal .m-tring__track { stroke: color-mix(in srgb, var(--on-tk-c) 14%, transparent); }
 
 /* expressive shape */
 .m-tshape { --ts-shape: var(--tile-shape, var(--m-shape-cookie)); flex: none; width: var(--ts); height: var(--ts); display: grid; place-items: center; clip-path: var(--ts-shape); background: var(--tk-c); color: var(--on-tk-c);
@@ -66,9 +59,9 @@ html[data-bs-theme='dark'] .m-tile, html[data-theme='dark'] .m-tile { --tk-fill-
 .m-tnum__v { font: var(--tn-wght, 600) var(--tn)/.92 var(--m-font-display); font-stretch: var(--tn-wdth, 100%); font-variation-settings: 'ROND' var(--tn-rond, 0); letter-spacing: var(--tn-track, -.02em); font-feature-settings: 'tnum' 1, 'lnum' 1; }
 .m-tnum--condensed { --tn-wdth: 62%; --tn-track: -.01em; } .m-tnum--wide { --tn-wdth: 118%; } .m-tnum--soft { --tn-rond: 100; } .m-tnum--crisp { --tn-rond: 0; }
 .m-tnum--s { --tn: 40px; } .m-tnum--m { --tn: 57px; } .m-tnum--l { --tn: 76px; } .m-tnum--xl { --tn: 96px; }
-.m-tnum__u { font: 500 max(13px, calc(var(--tn) * .3))/1 var(--m-font-display); color: var(--md-sys-color-on-surface-variant); letter-spacing: 0; }
-.m-tnum__cap { margin-top: 6px; font: var(--m-tile-text-12-strong); color: var(--md-sys-color-on-surface-variant); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.m-tile--tonal :is(.m-tnum__u, .m-tnum__cap) { color: color-mix(in srgb, var(--on-tk-c) 74%, transparent); }
+.m-tnum__u { font: 500 max(13px, calc(var(--tn) * .3))/1 var(--m-font-display); color: var(--tile-text-2, var(--md-sys-color-on-surface-variant)); letter-spacing: 0; }
+.m-tnum__cap { margin-top: 6px; font: var(--m-tile-text-12-strong); color: var(--tile-text-2, var(--md-sys-color-on-surface-variant)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m-tile--tonal :is(.m-tnum__u, .m-tnum__cap) { color: var(--tile-text-2, var(--on-tk-c)); }
 
 /* chip */
 .m-tchip { display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 10px; border-radius: 13px; font: var(--m-tile-text-12-strong); line-height: 1; white-space: nowrap; background: color-mix(in srgb, var(--tk) 14%, transparent); color: color-mix(in srgb, var(--tk) 72%, var(--md-sys-color-on-surface)); }
@@ -90,11 +83,11 @@ html[data-bs-theme='dark'] .m-tile, html[data-theme='dark'] .m-tile { --tk-fill-
 .m-tstack--covers i { position: absolute; top: 0; left: 50%; height: var(--tst); aspect-ratio: 3 / 4; margin-left: calc(var(--tst) * -.375); border-radius: calc(var(--tst) * .12); font: 700 calc(var(--tst) * .34)/1 var(--md-ref-typeface-brand);
   box-shadow: 0 2px 10px color-mix(in srgb, var(--md-sys-color-shadow) 24%, transparent); }
 .m-tstack--covers .i0 { z-index: 3; } .m-tstack--covers .i1 { z-index: 2; transform: translateX(-36%) rotate(-9deg) scale(.88); filter: brightness(.94); } .m-tstack--covers .i2 { z-index: 1; transform: translateX(36%) rotate(9deg) scale(.88); filter: brightness(.94); }
-.m-tstack b { margin-left: 8px; font: var(--m-tile-text-13-strong); line-height: 1; color: var(--md-sys-color-on-surface-variant); }
+.m-tstack b { margin-left: 8px; font: var(--m-tile-text-13-strong); line-height: 1; color: var(--tile-text-2, var(--md-sys-color-on-surface-variant)); }
 .m-tstack--covers b { position: absolute; z-index: 4; right: -6px; bottom: -6px; margin: 0; padding: 4px 7px; border-radius: 10px; background: var(--tk); color: var(--on-tk); }
 
 /* cover (MTileCover): the art; without art the app's icon or a neutral glyph, centred on surface-container-high (no gradient, no letter); sized from outside */
-.m-tcover { position: relative; display: grid; place-items: center; overflow: hidden; font-style: normal; container-type: size; background: var(--md-sys-color-surface-container-high) center / cover no-repeat; color: var(--md-sys-color-on-surface-variant); }
+.m-tcover { position: relative; display: grid; place-items: center; overflow: hidden; font-style: normal; container-type: size; background: var(--md-sys-color-surface-container-high) center / cover no-repeat; color: var(--tile-text-2, var(--md-sys-color-on-surface-variant)); }
 .m-tcover.has-art { background-color: var(--md-sys-color-surface-container-high); }
 .m-tcover__glyph { width: 42cqmin; height: 42cqmin; }
 .m-tcover__img { width: 56cqmin; height: 56cqmin; object-fit: contain; border-radius: 22%; }
@@ -107,11 +100,10 @@ html[data-bs-theme='dark'] .m-tile, html[data-theme='dark'] .m-tile { --tk-fill-
 .m-tempty--m { flex-direction: row; align-items: center; justify-content: flex-start; gap: 20px; } .m-tempty--m .m-tempty__shape { margin-block: -24px; margin-inline-start: -28px; }
 .m-tempty--l { justify-content: center; align-items: center; text-align: center; gap: 16px; } .m-tempty--l .m-tempty__text { align-items: center; }
 .m-tempty__text { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; min-width: 0; }
-.m-tempty__title { font: var(--m-tile-text-13-strong); color: var(--md-sys-color-on-surface-variant); }
+.m-tempty__title { font: var(--m-tile-text-13-strong); color: var(--tile-text-2, var(--md-sys-color-on-surface-variant)); }
 .m-tempty__line { font: 500 17px/22px var(--m-font-display); color: var(--md-sys-color-on-surface); overflow-wrap: anywhere; }
 .m-tempty__act { height: 36px; padding: 0 16px; border: 0; border-radius: 18px; background: var(--tk); color: var(--on-tk); font: var(--m-tile-text-14-strong); line-height: 1; cursor: pointer; white-space: nowrap; }
 .m-tempty__act:hover { box-shadow: inset 0 0 0 100px color-mix(in srgb, var(--on-tk) 8%, transparent); } .m-tempty__act:focus-visible { outline: 2px solid var(--tk); outline-offset: 2px; }
 
-@media (prefers-reduced-motion: reduce) { html:not([data-motion='full']) :is(.m-tring__arc, .m-tshape) { transition: none; } html:not([data-motion='full']) .m-tring__spin > svg { animation: none; will-change: auto; } }
-html[data-motion='reduced'] .m-tring__spin > svg { animation: none; will-change: auto; }
-html[data-motion='reduced'] :is(.m-tring__arc, .m-tshape) { transition: none; }
+@media (prefers-reduced-motion: reduce) { html:not([data-motion='full']) .m-tshape { transition: none; } }
+html[data-motion='reduced'] .m-tshape { transition: none; }

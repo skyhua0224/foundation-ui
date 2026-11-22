@@ -26,5 +26,5 @@ test('connect journey: the seven systems are one row of equal large chips, only 
 })
 
 test('the foot of a metric tile (caption, stats) takes the card text colour in the dark theme, where its on-container colour is dark on a dark card', () => {
-  assert.match(read('css/tiles-cal.css'), /html\[data-bs-theme='dark'\] \.m-tile > \.m-calm__foot, html\[data-theme='dark'\] \.m-tile > \.m-calm__foot \{ color: var\(--md-sys-color-on-surface-variant\); \}/)
+  assert.match(read('css/tiles-cal.css'), /html\[data-bs-theme='dark'\] \.m-tile > \.m-calm__foot, html\[data-theme='dark'\] \.m-tile > \.m-calm__foot \{ color: var\(--tile-text-2, var\(--md-sys-color-on-surface-variant\)\); \}/)
 })

@@ -12,14 +12,16 @@
      anything on purpose: the layout (below) keeps the controls far enough apart that two slops never meet inside a box ---- */
   /* a host that is static in its own rule gets a position (the slop is placed against it); one that is already positioned keeps its own */
   :is(.m-chipset__chip, .m-pin__key, .m-usearch__open, .m-usearch__clear, .m-usearch__back, .m-usearch__remove, .m-item__more, .m-mpick__chip, .m-mpick__outchip, .m-sprompt__later, .m-guide__notelink,
-      .m-cover__act, .m-cover__label, .m-journey__close, .m-b2__icbtn, .m-calm__more, .m-rail__menu, .m-login__forgot, .m-announce__btn, .m-actions__btn, .m-mchip__btn, .m-support__row, .m-ap__swatch, .dm-fchip, .dm-call, .m-rail__item) { position: relative; }
+      .m-cover__act, .m-cover__label, .m-journey__close, .m-b2__btn, .m-b2__icbtn, .m-calm__more, .m-rail__menu, .m-login__forgot, .m-announce__btn, .m-actions__btn, .m-mchip__btn, .m-support__row, .m-ap__swatch, .dm-fchip, .dm-call, .m-rail__item) { position: relative; }
   :is(.m-btn, .m-icon-btn, .m-chipset__chip, .m-switch, .m-capver__btn, .m-capver__update, .m-page__back, .m-info__btn, .m-pin__key, .m-seg__btn, .m-mpick__chip, .m-mpick__outchip, .m-guide__seg,
-      .m-sprompt__btn, .m-sprompt__later, .m-item__more, .m-usearch__open, .m-usearch__clear, .m-usearch__back, .m-usearch__remove, .m-caption-connect, .m-guide__openmore, .m-guide__notelink,
+      .m-sprompt__btn, .m-sprompt__later, .m-item__more, .m-usearch__open, .m-usearch__clear, .m-usearch__back, .m-usearch__remove, .m-caption-connect, .m-guide__notelink,
       .m-cover__act, .m-cover__label, .m-journey__close, .m-b2__icbtn, .m-calm__more, .m-split__main, .m-split__more, .m-rail__menu, .m-login__forgot, .m-b2__btn, .m-capback, .m-caption-avatar,
       .m-announce__btn, .m-actions__btn, .m-ap__swatch, .m-support__row, .m-mchip__btn, .dm-fchip, .dm-call)::after {
     content: ''; position: absolute;
     inset-block: min(0px, calc((100% - var(--m-hit)) / 2)); inset-inline: min(0px, calc((100% - var(--m-hit)) / 2));
   }
+  /* Download starts only inside its visible button, including on touch screens. */
+  .m-b2dl .m-b2__btn::after { content: none; }
   /* the splitter is 16 px wide and as tall as the pane. Its slop (::before; its ::after is the grip) is 24 px wide, not a finger: the splitter sits on the edge of the list, and a slop of 48 px took the taps of the chips and buttons beside it (found by the audit's steal check) */
   .m-scene__handle::before { content: ''; position: absolute; inset-block: 0; inset-inline: -4px; }
   /* a control that clips its own overflow (the button clips its ripple, the segment its long label) lets the slop through: the clip box is 12 px wider than the control */
@@ -30,10 +32,10 @@
 /* ---- the layout: what a finger needs apart from the box. Two small controls next to each other need `width + gap` of 48 px (their slops meet in the gap and no further); a stack of rows has no room
    for slop, so the rows are the size ---- */
 @media (pointer: coarse) {
-  /* the caption bar: icon buttons of 44 and a gap of 4 */
-  .m-caption__actions { gap: 4px; }
-  .m-caption .m-caption-connect { min-width: 44px; min-height: 44px; }
-  .m-usearch.is-compact .m-usearch__open { width: 44px; height: 44px; margin-inline-end: 4px; }
+  /* the caption bar: icon buttons of --m-cap-btn (44) and a gap of --m-cap-gap (4), the same as with a mouse (css/layout.css): the search icon carries no gap of its own (the bar gives it one) */
+  .m-caption__actions { gap: var(--m-cap-gap, 4px); }
+  .m-caption .m-caption-connect { min-width: var(--m-cap-btn, 44px); min-height: var(--m-cap-btn, 44px); }
+  .m-usearch.is-compact .m-usearch__open { width: var(--m-cap-btn, 44px); height: var(--m-cap-btn, 44px); }
   /* the search field is as high as a finger and the input is the field */
   .m-usearch__field { height: max(var(--m-usearch-h, 40px), var(--m-hit)); }
   .m-usearch__input { align-self: stretch; }
@@ -42,8 +44,6 @@
   .m-rail:not(.m-rail--bar) .m-rail__items { overflow: visible; flex: none; gap: 0; }
   .m-rail .m-rail__item { min-height: var(--m-hit); justify-content: center; }
   .m-rail--bar .m-rail__items { gap: 0; }
-  .m-rail--rail[data-tier='3'] .m-rail__items { grid-template-columns: 1fr; }
-  .m-rail--rail[data-tier='3'] .m-rail__item { width: 100%; }
   .m-rail .m-rail__foot { gap: 0; }
   .m-rail:not(.m-rail--expanded) .m-rail__foot { display: flex; flex-direction: column; align-items: center; }
   .m-rail .m-rail__foot .m-icon-btn { width: var(--m-hit); height: var(--m-hit); }

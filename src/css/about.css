@@ -257,7 +257,7 @@ html[data-motion='reduced'] .m-friend-bubble-enter-active, html[data-motion='red
 .m-about__brandcard:hover { border-radius: 20px; } .m-about__brandcard:hover::before { opacity: 0.08; } .m-about__brandcard:active::before { opacity: 0.12; }
 .m-about__brandcard:focus-visible { outline: 2px solid var(--brand-on); outline-offset: 2px; }
 .m-about__brandico { display: grid; place-items: center; flex: none; width: 56px; height: 56px; border-radius: 50%; background: var(--brand-ico); color: var(--brand-ico-on); } .m-about__brandico .m-icon { font-size: 32px; }
-.m-about__brandtext { display: flex; flex-direction: column; min-width: 0; flex: 1 1 auto; } .m-about__brandtext strong { font: var(--m-title-large-emphasized, var(--m-title-large)); } .m-about__brandtext small { margin-top: 2px; font: var(--m-body-medium); opacity: 0.8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.m-about__brandtext { display: flex; flex-direction: column; min-width: 0; flex: 1 1 auto; } .m-about__brandtext strong { font: var(--m-title-large-emphasized, var(--m-title-large)); } .m-about__brandtext small { margin-top: 2px; font: var(--m-body-medium); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .m-about__brandgo { flex: none; opacity: 0.7; }
 @media (max-width: 599px) { .m-about__brand { grid-template-columns: minmax(0, 1fr); gap: 8px; } .m-about__brandcard { padding: 14px 16px; } .m-about__brandico { width: 48px; height: 48px; } }
 .m-comp__progress { margin: 0; display: flex; align-items: center; gap: 8px; min-height: 28px; padding: 0 12px; border-radius: 9999px; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); font: var(--m-label-medium); }

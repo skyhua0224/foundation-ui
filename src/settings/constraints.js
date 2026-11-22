@@ -46,6 +46,8 @@ export const CONSTRAINTS = Object.freeze({
   session_absolute_hours: range(1, 720),
   session_remember_idle_minutes: range(1, 525600),
   session_remember_days: range(1, 365),
+  // logs
+  max_log_size_mb: range(0, INT_MAX), // 0 keeps one log without rotation; the host clamps a negative value to 0
   // input
   key_repeat_frequency: { kind: 'number', min: 0, max: Number.MAX_VALUE },
   // whole numbers without a range of their own

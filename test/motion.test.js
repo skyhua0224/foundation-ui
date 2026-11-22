@@ -118,19 +118,17 @@ test('the 个性化 page shows that label on the choice 跟随系统 and follows
   assert.ok(src.includes('watchSystemMotion((v) => { sysReduced.value = v })'))
 })
 
-test('the welcome flow has a skippable motion step right after the look, with a title and no lead', () => {
-  const ids = buildGuideSteps().map((s) => s.id)
-  assert.equal(ids[ids.indexOf('appearance') + 1], 'motion')
-  assert.ok(buildGuideSteps().find((s) => s.id === 'motion').skippable)
+test('the animations are an optional page of the done page, with a title and no lead', () => {
+  assert.ok(!buildGuideSteps().some((s) => s.id === 'motion'), 'not a step of the flow')
+  assert.deepEqual(buildGuideSteps().at(-1).optional.slice(0, 2), ['appearance', 'motion'], 'the look and then the animations, first in the list')
   assert.equal(guideTexts('zh').titles.motion, '动画'); assert.equal(guideTexts('en').titles.motion, 'Animations')
   assert.equal(guideTexts('zh').leads.motion, ''); assert.equal(guideTexts('en').leads.motion, '')
-  // the required account step of the Web UI keeps its place and rule
-  assert.deepEqual(buildGuideSteps({ skip: ['account'] }).map((s) => s.id).slice(0, 4), ['intro', 'appearance', 'motion', 'setup'])
+  assert.equal(guideTexts('zh').done.items.motion.title, '动效')
 })
 
 test('the step offers the three choices of 个性化, saves them by the appearance path and shows a sample that follows the motion rule', () => {
   const flow = readFileSync(new URL('../src/vue/MGuideMotion.vue', import.meta.url), 'utf8')
-  assert.ok(readFileSync(new URL('../src/vue/MGuideFlow.vue', import.meta.url), 'utf8').includes(`<MGuideMotion v-else-if="id === 'motion'" :locale="locale" />`))
+  assert.ok(readFileSync(new URL('../src/vue/MGuideFlow.vue', import.meta.url), 'utf8').includes(`<MGuideMotion v-else-if="pageId === 'motion'" :locale="locale" />`))
   assert.ok(flow.includes("[['system', 'contrast', motionSystemLabel(T.value, sysReduced.value)], ['full', 'slow_motion_video', T.value.motionFull], ['reduced', 'speed', T.value.motionReduced]]"))
   assert.ok(flow.includes('@click="appearance.set({ motion: o.value })"') && flow.includes(':aria-checked="appearance.state.motion === o.value"'))
   assert.ok(flow.includes('<span class="m-guide__motion-dot"></span>') && flow.includes('<MLoading size="40px" />'), 'a running dot and the product\'s busy indicator')

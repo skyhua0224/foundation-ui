@@ -1,0 +1,104 @@
+/* The tiles of the second round of the catalogue growth (tiles/TileGrowth2.vue, homeGrowth2.js): 链路余量, 帧率来源, 麦克风, 捕获方式. One hero per tile and size; colours are theme roles only. */
+.m-gr2 { display: flex; flex-direction: column; gap: 6px; min-height: 0; }
+.m-gr2__body { flex: 1 1 0; min-height: 0; display: flex; align-items: center; gap: 16px; margin-top: 2px; }
+.m-gr2.is-s .m-gr2__body { justify-content: center; }
+.m-gr2__ring { height: 100%; max-height: 112px; flex: none; aspect-ratio: 1; }
+.m-gr2__facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; flex: 1 1 auto; min-width: 0; align-content: center; }
+.m-gr2__facts li { display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 10px; min-width: 0; font: var(--m-tile-text-13); color: var(--tile-text-2, var(--md-sys-color-on-surface-variant)); }
+.m-gr2__facts li > span { white-space: nowrap; }
+.m-gr2__facts li > b { font: var(--m-tile-text-14-strong, var(--m-title-small)); color: var(--md-sys-color-on-surface); font-variant-numeric: tabular-nums; white-space: nowrap; text-align: end; }
+.m-gr2__chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+
+/* 链路余量 大: the free speed in display type, one bar for the whole link, the three parts under it */
+.m-gr2__hero { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-top: 4px; }
+.m-gr2__split { display: flex; height: 28px; border-radius: 14px; overflow: hidden; background: var(--cal-inner); margin-top: auto; }
+.m-gr2__split > i { display: block; height: 100%; min-width: 6px; }
+.m-gr2__split > i.is-stream, .m-gr2__legend i.is-stream { background: var(--tk); }
+.m-gr2__split > i.is-fec, .m-gr2__legend i.is-fec { background: var(--md-sys-color-tertiary); }
+.m-gr2__split > i.is-fec { margin-left: 2px; }
+.m-gr2__legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+.m-gr2__legend li { display: grid; grid-template-columns: 10px auto 1fr auto; align-items: center; gap: 8px; min-height: 22px; font: var(--m-tile-text-13); color: var(--tile-text-2, var(--md-sys-color-on-surface-variant)); }
+.m-gr2__legend li > i { width: 10px; height: 10px; border-radius: 50%; background: var(--md-sys-color-outline); }
+.m-gr2__legend li > b { font: var(--m-tile-text-14-strong, var(--m-title-small)); color: var(--md-sys-color-on-surface); text-align: end; white-space: nowrap; }
+.m-gr2__legend li > em { font-style: normal; font: var(--m-tile-text-12); color: var(--tile-text-2, var(--md-sys-color-on-surface-variant)); white-space: nowrap; min-width: 56px; text-align: end; }
+
+/* 麦克风: the state as a shape and a word, the path as segments */
+.m-gr2__mic { flex: 1 1 0; min-height: 0; display: flex; align-items: center; gap: 14px; }
+.m-gr2.is-s .m-gr2__mic { flex-direction: column; align-items: flex-start; justify-content: center; gap: 8px; }
+.m-gr2__shape { flex: none; }
+.m-gr2__micside { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.m-gr2__state { font: var(--m-title-medium); color: var(--md-sys-color-on-surface); line-height: 1.15; }
+.m-gr2.is-l .m-gr2__state { font: var(--m-headline-small, var(--m-title-large)); }
+.m-gr2__counts { list-style: none; margin: 0; padding: 0; display: flex; gap: 12px; }
+.m-gr2__counts li { display: flex; flex-direction: column; font: var(--m-tile-text-12); color: var(--tile-text-2, var(--md-sys-color-on-surface-variant)); }
+.m-gr2__counts li > b { font: var(--m-title-small); color: var(--md-sys-color-on-surface); }
+.m-gr2__counts.is-bad li > b { color: var(--md-sys-color-error); }
+.m-gr2--mic.is-l .m-gr2__counts li > b { font: var(--m-title-medium); }
+.m-gr2--mic.is-l .m-gr2__counts { gap: 20px; }
+
+.m-gr2__seg { display: grid; gap: 4px; min-height: 40px; }
+.m-gr2__seg.is-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.m-gr2__seg.is-icons { flex: 1 1 0; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.m-gr2__seg button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-width: 0; border: 0; padding: 0 4px; background: var(--cal-inner); color: var(--md-sys-color-on-surface); font: var(--m-tile-text-13-strong); cursor: pointer; border-radius: 8px; transition: background-color var(--m-spring-fast-effects-duration, .2s), border-radius var(--m-spring-fast-spatial-duration, .3s); }
+.m-gr2__seg button:first-child { border-radius: 22px 8px 8px 22px; } .m-gr2__seg button:last-child { border-radius: 8px 22px 22px 8px; }
+.m-gr2__seg button > span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.m-gr2__seg button .m-icon { font-size: 22px; color: var(--tk); }
+.m-gr2__seg button.is-on { background: var(--tk); color: var(--on-tk); border-radius: 22px; }
+.m-gr2__seg button.is-on .m-icon { color: var(--on-tk); }
+.m-gr2__seg button:disabled { opacity: .4; cursor: default; }
+.m-gr2__seg button:hover:not(.is-on):not(:disabled) { background: color-mix(in srgb, var(--md-sys-color-on-surface) 10%, var(--cal-inner)); }
+.m-gr2__seg button:focus-visible, .m-gr2__rows button:focus-visible { outline: 3px solid var(--md-sys-color-primary); outline-offset: 2px; }
+.m-gr2--mic.is-m .m-gr2__seg.is-4 button, .m-gr2--mic.is-l .m-gr2__seg.is-4 button { height: 36px; }
+.m-gr2--mic.is-l .m-gr2__seg.is-4 button { height: 44px; }
+
+/* 捕获方式: the mark at 方形, four rows at 大 */
+.m-gr2__mark { flex: 1 1 0; min-height: 0; display: flex; align-items: center; }
+.m-gr2--capture.is-m { gap: 10px; }
+.m-gr2__rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; flex: 1 1 0; min-height: 0; align-content: stretch; }
+.m-gr2__rows li { display: flex; min-height: 0; }
+.m-gr2__rows button { flex: 1 1 auto; display: flex; align-items: center; gap: 12px; min-width: 0; border: 0; padding: 4px 14px 4px 6px; border-radius: 22px; background: var(--cal-inner); color: var(--md-sys-color-on-surface); text-align: start; cursor: pointer; transition: background-color var(--m-spring-fast-effects-duration, .2s); }
+.m-gr2__rows button.is-on { background: color-mix(in srgb, var(--tk) 22%, var(--cal-inner)); }
+.m-gr2__rows button:hover:not(.is-on) { background: color-mix(in srgb, var(--md-sys-color-on-surface) 10%, var(--cal-inner)); }
+.m-gr2__rows .m-gr2__txt { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.m-gr2__rows .m-gr2__txt > b { font: var(--m-title-small); line-height: 1.2; }
+.m-gr2__rows .m-gr2__txt > small { font: var(--m-tile-text-12); color: var(--tile-text-2, var(--md-sys-color-on-surface-variant)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.m-gr2__rows button > .m-icon { flex: none; color: var(--tk); }
+
+/* 麦克风 中: the shape and the state on one line, the counters in one line under it, the path under both */
+.m-gr2--mic.is-m { gap: 6px; }
+.m-gr2--mic.is-m .m-gr2__mic { flex: 0 0 auto; gap: 12px; }
+.m-gr2--mic.is-m .m-gr2__micside { gap: 2px; }
+.m-gr2--mic.is-m .m-gr2__counts { gap: 10px; }
+.m-gr2--mic.is-m .m-gr2__counts li { flex-direction: row; align-items: baseline; gap: 4px; }
+.m-gr2--mic.is-m .m-gr2__counts li > b { font: var(--m-tile-text-13-strong); }
+.m-gr2--mic.is-m .m-gr2__seg { margin-top: auto; }
+.m-gr2--mic .m-gr2__seg.is-4 button { font: var(--m-tile-text-12-strong, var(--m-tile-text-12)); padding: 0 2px; }
+
+/* the path chosen stays in the primary colour while the state (the shape, the counters) carries the error */
+.m-gr2--mic .m-gr2__seg button.is-on { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+
+/* 帧率来源: the sent rate is the hero, the four stages under or beside it (the two versions share the hero and the colours) */
+.m-fs__body { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+.m-fs.is-m .m-fs__body { flex-direction: row; align-items: center; gap: 14px; }
+.m-fs.is-s .m-fs__body { gap: 6px; }
+.m-fs__hero { flex: none; display: flex; align-items: flex-end; gap: 10px; }
+.m-fs.is-l .m-fs__hero { justify-content: space-between; }
+.m-fs__chips { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; padding-bottom: 6px; }
+.m-fs__rows { list-style: none; margin: 0; padding: 0; flex: 1 1 0; min-width: 0; min-height: 0; display: grid; align-content: center; gap: 5px; }
+.m-fs.is-s .m-fs__rows { flex: none; gap: 4px; }
+.m-fs.is-l .m-fs__rows { gap: 8px; align-content: center; }
+.m-fs__rows li { display: grid; grid-template-columns: 30px minmax(0, 1fr) 30px; align-items: center; gap: 8px; min-width: 0; }
+.m-fs.is-s .m-fs__rows li { grid-template-columns: minmax(0, 1fr); }
+.m-fs.is-l .m-fs__rows li { grid-template-columns: 64px minmax(0, 1fr) 58px; gap: 10px; }
+.m-fs__name { font: var(--m-tile-text-11, var(--m-tile-text-12)); color: var(--tile-text-2, var(--md-sys-color-on-surface-variant)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m-fs.is-l .m-fs__name { font: var(--m-tile-text-13); }
+.m-fs__track { position: relative; display: block; height: 8px; border-radius: 4px; background: var(--cal-inner); overflow: hidden; }
+.m-fs.is-s .m-fs__track { height: 4px; border-radius: 2px; }
+.m-fs.is-l .m-fs__track { height: 12px; border-radius: 6px; }
+.m-fs__track > i { position: absolute; inset: 0; display: block; background: var(--tk); clip-path: inset(0 calc(100% - var(--w)) 0 0 round 999px); transition: clip-path .6s cubic-bezier(.2, 0, 0, 1); }
+.m-fs__track > s { position: absolute; top: 0; bottom: 0; width: 1.5px; margin-left: -1px; background: color-mix(in srgb, var(--md-sys-color-on-surface) 45%, transparent); }
+.m-fs__rows li.is-lost .m-fs__track > i { background: var(--md-sys-color-error); }
+.m-fs__rows li > b { font: var(--m-tile-text-12); color: var(--md-sys-color-on-surface); text-align: end; white-space: nowrap; display: flex; flex-direction: column; align-items: flex-end; line-height: 1.05; }
+.m-fs.is-l .m-fs__rows li > b { font: var(--m-tile-text-14, var(--m-body-medium)); }
+.m-fs__rows li.is-lost > b { color: var(--md-sys-color-error); }
+.m-fs__rows li > b > em { font-style: normal; font: var(--m-tile-text-11, var(--m-tile-text-12)); }

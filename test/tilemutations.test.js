@@ -24,6 +24,6 @@ test('the live numbers of the tiles patch their text in place: the rolling numbe
   assert.match(roll, /el\.animate\?\.\(/, 'a real change rolls by the Web Animations API, no DOM change')
   const small = src('MDashSmall.vue')
   assert.match(small, /<span><MText :text="small\.value \|\| small\.title" \/><\/span>/)
-  assert.match(small, /class="m-dsmall__sub"><MText :text="small\.secondary" \/>/)
+  assert.match(small, /class="m-dsmall__sub"><span v-for="\(p, i\) in parts" :key="i" class="m-dsmall__part"><MText :text="p" \/><\/span>/)
   for (const f of ['MDashCurve.vue', 'MDashSpark.vue']) assert.match(src(f), /useDrawnPoints\(\(\) => props\.points, useOnScreen\(root\)\)/, f)
 })

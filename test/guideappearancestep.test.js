@@ -8,7 +8,7 @@ const read = (p) => fs.readFileSync(new URL(`../${p}`, import.meta.url), 'utf8')
 // guide p2b item 17: the appearance step opens with the wallpaper and the colour; the sliders and the colour style are under 更多, the rest stays on 个性化
 test('the guide asks the appearance controls for their essential form; the 个性化 page and the quick sheet keep all of them', () => {
   const flow = read('src/vue/MGuideFlow.vue')
-  assert.match(flow, /<MAppearance v-else-if="id === 'appearance'"[^>]*\bessential\b/)
+  assert.match(flow, /<MAppearance v-else-if="pageId === 'appearance'"[^>]*\bessential\b/)
   const ap = read('src/vue/MAppearance.vue')
   assert.match(ap, /essential: \{ type: Boolean, default: false \}/)
   // nothing in the essential form is folded away: no 更多外观选项 button, no hidden group

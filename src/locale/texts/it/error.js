@@ -86,7 +86,7 @@ export default
   "errorsNoticeLink": "Informazioni › Privacy",
   "privacyMore": "Cosa viene inviato e cosa no",
   "privacyTitle": "Segnalazioni di errore e statistiche d'uso",
-  "privacyLead": "Ogni interruttore funziona da solo. Se è spento, non viene inviato nulla di quel tipo.",
+  "privacyLead": "Ogni interruttore funziona da solo. Spegnerne uno invia un piccolo record che indica che è stato spento (quale interruttore, il prodotto e la sua versione, e il numero anonimo di questo computer); dopo non viene inviato più nulla di quel tipo.",
   "lblCollected": "Inviato",
   "lblNever": "Mai inviato",
   "lblWhere": "Destinazione",

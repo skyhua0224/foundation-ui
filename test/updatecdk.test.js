@@ -70,9 +70,14 @@ test('when the service cannot be reached the last valid result is shown with the
   assert.deepEqual(cdkView({ state: 'offline', kind: 'network' }, zh, { now: NOW }).lines, [zh.errors.network])
 })
 
-test('the host part of the first run ends with the update method, automatic by default', () => {
-  assert.equal(GUIDE_STEP_IDS[GUIDE_STEP_IDS.indexOf('hostdone') - 1], 'update')
-  assert.equal(buildGuideSteps().find((s, i, all) => all[i + 1]?.id === 'hostdone').id, 'update')
+test('the update source, automatic by default, and Mirror酱 are on the update channel step, the third step of the flow', () => {
+  const ids = buildGuideSteps().map((s) => s.id)
+  assert.deepEqual(ids.slice(0, 4), ['intro', 'account', 'channel', 'install'], 'language, account, update channel, then the client')
+  assert.equal(buildGuideSteps().find((s) => s.id === 'channel').source, true)
+  assert.equal(buildGuideSteps({ skip: ['update'] }).find((s) => s.id === 'channel').source, false, 'a product without an update source has the channel alone')
+  assert.ok(!buildGuideSteps().at(-1).optional.includes('update'), 'the CDK is not on the done page')
+  const channel = readFileSync(new URL('../src/vue/MGuideChannel.vue', import.meta.url), 'utf8')
+  assert.match(channel, /<MGuideUpdate :locale="locale" :state="state" :callbacks="callbacks"/)
   assert.equal(guideTexts('zh').titles.update, '更新方式')
   assert.equal(guideTexts('en').titles.update, 'Update method')
   assert.deepEqual(downloadOrder('auto', { hasCdk: true, locale: 'zh' }), ['cnb', 'github'], 'automatic in Chinese is CNB first, GitHub when that fails')

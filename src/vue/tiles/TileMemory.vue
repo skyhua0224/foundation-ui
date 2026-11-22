@@ -59,7 +59,7 @@ const toneOf = (p, i) => (p.tone === 'free' ? 'free' : i ? 'b' : 'a')
     <template v-else>
       <MTileHead :icon="d.icon" :title="card.title" :chevron="chevron && size !== 's'" @open="emit('act', OPEN)" />
       <div class="m-tmem__body">
-        <MTileRing class="m-tmem__ring" :segments="segments" :stroke="12" :wavy="false">
+        <MTileRing class="m-tmem__ring" :segments="segments">
           <MTileNumeral :value="d.value" :unit="mem.unit" size="s" :caption="size === 's' ? mem.total : ''" />
         </MTileRing>
         <div v-if="size !== 's'" class="m-tmem__side">

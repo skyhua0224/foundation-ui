@@ -32,9 +32,11 @@ test('RZ2: the overview measures from the observer of its container (after layou
   assert.match(src, /enabled: \(\) => \(edit\.value \|\| planMoving\.value\) && !resizing\.value/) // the tiles slide (FLIP, flipGroup.js) only in edit mode and never while the size changes: nothing is left to lie over the new cell
   const css = read('src/css/gallery.css')
   assert.match(css, /\.m-dash\.is-resizing \.m-dash__cell, \.m-dash\.is-resizing \.m-dash__cell \*[^{]*\{ transition: none !important; \}/)
-  // the dock's arrows are measured when its tiles change, and by its own observer, not after every write of the window
-  assert.match(src, /watch\(\[dockOn, dockCards\], async \(\) => \{ await nextTick\(\); measureDock\(\) \}/)
-  assert.match(src, /watch\(dockRow, \(el, _old, onCleanup\) => \{[\s\S]*new ResizeObserver\(\(\) => measureDock\(\)\)/)
+  // the dock has no row to measure: its columns are the grid's, from the width the page measured (no observer of its own, nothing read after a write of the window)
+  assert.ok(!/measureDock\(|dockRow/.test(src), 'no row of tiles to measure')
+  // the clock block's height is read in the callback of an observer (after layout, before paint), once per change of the pane or of the overview, never in a window handler
+  assert.match(src, /dockObserver = new ResizeObserver\(measureDockHead\)/)
+  assert.match(src, /const dockGrid = computed\(\(\) => gridOf\(width\.value\)\)/)
 })
 
 // the default overview's tiles at the widths a window goes through while it is dragged (720 to 5120, every 20 px): every tile placed inside the columns, none on another

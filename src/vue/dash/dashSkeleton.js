@@ -42,10 +42,10 @@ export const skeletonTop = (saved, opts) => (fits(saved, opts) ? saved.top || 0 
 export function skeletonOf(saved, { sectioned, width, columnsOf, sectionCount = 1 }) {
   const here = columnsOf(width)
   const ok = fits(saved, { sectioned, width, columnsOf, sectionCount })
-  if (ok) return saved.blocks.map((b, i) => { const u = columnsOf(b.width || width).unit; return { key: i, width: b.width, units: b.units, template: b.template ? retemplate(b.template, u) : '', autoRows: `${u}px`, natural: b.natural || 0, cells: b.cells } })
+  if (ok) return saved.blocks.map((b, i) => { const u = columnsOf(b.width || width).unit; return { key: i, width: b.width, unit: u, units: b.units, template: b.template ? retemplate(b.template, u) : '', autoRows: `${u}px`, natural: b.natural || 0, cells: b.cells } })
   const tiles = firstStart(here.columns)
   const rows = Math.max(2, Math.ceil(tiles.reduce((a, [c, r]) => a + c * r, 0) / here.columns))
   const cells = tiles.map(([c, r]) => ({ style: { gridColumn: `span ${c}`, gridRow: `span ${r}` }, cls: 'unit', big: c * r >= 4 }))
   cells.push({ style: { gridColumn: '1 / -1', gridRow: `${rows + 1}` }, cls: 'strip', big: false })
-  return [{ key: 0, width: 0, units: here.columns, template: `${here.unit}px `.repeat(rows) + `${STRIP_PX}px`, autoRows: `${here.unit}px`, natural: 0, cells }]
+  return [{ key: 0, width: 0, unit: here.unit, units: here.columns, template: `${here.unit}px `.repeat(rows) + `${STRIP_PX}px`, autoRows: `${here.unit}px`, natural: 0, cells }]
 }

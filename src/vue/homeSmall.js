@@ -17,9 +17,22 @@ const coversOf = (items, nameKey = 'title', icon = 'sports_esports') => (items |
 const avatarsOf = (list, n = 3) => (list || []).slice(0, n).map((x) => ({ icon: x.icon || 'devices', tone: x.tone || '' }))
 const displayOf = (sub, unit, hdr) => { const m = /(\d{3,5})\s*×\s*(\d{3,5})/.exec(sub || ''); return { ratio: m ? `${m[1]} / ${m[2]}` : '16 / 9', label: (/(\d+)/.exec(unit || '') || [])[1] || '', hdr: !!hdr } }
 
+/** A processor or a graphics card as a short name that is whole in a small tile: the generation, the vendor, the trademark signs and the filler words go
+ *  ("13th Gen Intel(R) Core(TM) i7-13700K" is i7-13700K, "AMD Ryzen 7 7800X3D 8-Core Processor" Ryzen 7 7800X3D, "NVIDIA GeForce RTX 4070" RTX 4070). Nothing short enough or unknown is touched. */
+export function shortHardware(name) {
+  const raw = String(name || '').trim()
+  if (!raw) return ''
+  let s = raw.replace(/\((?:R|TM)\)|[®™]/gi, '').replace(/@\s*[\d.]+\s*GHz/i, '').replace(/\b\d+(?:st|nd|rd|th) Gen\b/i, '').replace(/\b\d+-Core\b/i, '').replace(/\b(?:CPU|Processor|Graphics|with Radeon Graphics|Series)\b/gi, '')
+  s = s.replace(/^\s*(?:Intel|AMD|NVIDIA|Apple|Qualcomm)\s+/i, '').replace(/^(?:GeForce|Radeon)\s+(?=RTX|GTX|RX|Pro|Vega)/i, '').replace(/^Core\s+(?=i\d)/i, '').replace(/\s+/g, ' ').trim()
+  return s || raw
+}
+
+/** The name of a product's part without the maker's name when it is long and in Latin letters ("Foundation Virtual Display" is "Virtual Display"): one line of a small tile, never a cut one. */
+export const shortTitle = (title) => (/^[\x20-\x7e]+$/.test(title) && title.length > 16 ? title.replace(/^Foundation\s+/i, '') : title)
+
 export function smallOf(card, T = {}) {
   const d = card.data || {}
-  const title = card.title || d.title || ''
+  const title = shortTitle(card.title || d.title || '')
   const base = { icon: d.icon || 'apps', title }
   // the one action that fills an empty tile: what is empty is what the first stream, the first pairing or the announcements fill; reuses the actions the products already handle (guide-go, table-action, open)
   const fill = () => {
@@ -30,7 +43,8 @@ export function smallOf(card, T = {}) {
   }
   const empty = (text, action = null) => ({ ...base, value: text || '', empty: true, action: action || fill() })
   switch (card.kind) {
-    case 'hero': return { icon: d.icon || 'dns', title, value: d.statusLabel || d.title || '', secondary: dot(d.title, ...(d.pairs || []).map((p) => `${p.label} ${p.value}`)), tone: d.statusTone, pulse: true }
+    // the state is a dot beside the word (no drawn circle: it said nothing); the name of the host and how long it has run are the two parts of the second line (the pairs are the pairing tile's)
+    case 'hero': return { icon: d.icon || 'dns', title, value: d.statusLabel || d.title || '', secondary: dot(d.title, ...(d.pairs || []).slice(0, 1).map((p) => `${p.label} ${p.value}`)), tone: d.statusTone, state: d.statusTone || 'ok' }
     case 'table': {
       const tab = d.tabs?.[0]; const count = first(tab?.count, tab?.rows?.length, 0)
       const act = d.action ? { label: d.action.label, type: 'table-action' } : null
@@ -53,7 +67,8 @@ export function smallOf(card, T = {}) {
     }
     case 'curve': {
       const pts = (d.points || []).filter((v) => Number.isFinite(v))
-      return { ...base, value: String(first(d.value, '')), unit: d.unit, secondary: d.caption || (d.peak ? `${d.peak} ${d.unit || ''}` : ''), spark: pts.length > 1 ? pts : null }
+      const hw = card.id === 'cpu' || card.id === 'gpu'
+      return { ...base, value: String(first(d.value, '')), unit: d.unit, secondary: (hw ? shortHardware(d.caption) : d.caption) || (d.peak ? `${d.peak} ${d.unit || ''}` : ''), spark: pts.length > 1 ? pts : null }
     }
     case 'info': {
       const segs = d.bar?.segments
@@ -77,8 +92,9 @@ export function smallOf(card, T = {}) {
     case 'control': { const cur = d.options?.find((o) => o.value === d.value); const bin = d.options?.length === 2 && d.options.every((o) => /^(on|off|true|false|yes|no|enabled|disabled|1|0)$/i.test(String(o.value))); const on = bin && /^(on|true|yes|enabled|1)$/i.test(String(d.value)); return { ...base, value: String(cur?.label ?? d.value ?? ''), secondary: d.note || '', toggle: bin ? on : undefined, tone: on ? 'ok' : '', dots: !bin && d.options?.length > 1 ? { n: Math.min(d.options.length, 6), i: Math.max(0, d.options.findIndex((o) => o.value === d.value)) } : undefined } }
     case 'appearance': return { ...base, value: String(d.options?.find((o) => o.value === d.current)?.label ?? ''), dots: d.options?.length > 1 ? { n: Math.min(d.options.length, 6), i: Math.max(0, d.options.findIndex((o) => o.value === d.current)) } : undefined }
     case 'action': return { ...base, title: '', value: String(title), secondary: '', cta: !!d.label, action: d.label ? { label: d.label, type: d.act, value: d.value } : null }
-    case 'address': if (!d.saved) return empty(d.texts?.unset || '', T.emptyAddress ? { label: T.emptyAddress, type: 'detail' } : null)
-      return { ...base, value: String(first(d.saved, d.texts?.unset, '')), secondary: d.path?.word || '', tone: d.path?.tone === 'warn' ? 'warn' : '', pills: d.path?.word ? [{ label: d.path.word, tone: d.path.tone }] : null, avatars: d.path?.word ? null : [{ icon: d.saved ? 'public' : 'help' }] }
+    case 'address': { const v = d.view; if (!d.saved && (!v || v.state === 'unset')) return empty(d.texts?.unset || '', T.emptyAddress ? { label: T.emptyAddress, type: 'detail' } : null)
+      const word = v ? v.word : d.path?.word || ''; const bad = v ? v.tone === 'bad' : d.path?.tone === 'error'
+      return { ...base, value: String(v ? v.value : first(d.saved, d.texts?.unset, '')), secondary: word, tone: bad ? 'warn' : '', pills: word ? [{ label: word, tone: v ? ({ ok: 'ok', bad: 'error' }[v.tone] || 'neutral') : d.path.tone }] : null, avatars: word ? null : [{ icon: d.saved ? 'public' : 'help' }] } }
     case 'nics': return { ...base, value: String(first(d.primary?.speed, d.primary?.kind, d.primary?.name, '')), secondary: dot(d.primary?.name, d.primary?.ipv4), chip: d.primary?.kind && d.primary?.speed ? { label: d.primary.kind } : null }
     case 'quick': return { ...base, value: String(d.items?.length || ''), secondary: dot(...(d.items || []).slice(0, 3).map((i) => i.label)), avatars: avatarsOf(d.items, 3), more: Math.max(0, (d.items?.length || 0) - 3) }
     case 'news': return d.items?.length ? { ...base, value: String(d.items.length), secondary: d.items[0]?.title || '' } : empty(d.empty)
@@ -87,7 +103,8 @@ export function smallOf(card, T = {}) {
     case 'live-ds5': return { ...base, value: d.sliders?.[0] ? `${Math.round(d.sliders[0].value * 100) / 100}` : '', secondary: d.sliders?.[0]?.label || '' }
     case 'pin-switch': return { ...base, value: d.on ? d.onText : d.offText, tone: d.on ? 'ok' : '' }
     case 'pin-slider': return { ...base, value: d.value === 0 && d.zeroText ? d.zeroText : `${d.value}${d.unit || ''}`, progress: num(d.max) > num(d.min) ? (d.value - d.min) / (d.max - d.min) : undefined }
-    case 'pair': return d.count ? { icon: 'person_add', title, value: String(d.count), secondary: d.latest?.name || '', avatars: [d.latest || {}, ...Array.from({ length: Math.min(d.count - 1, 2) }, () => ({}))], more: Math.max(0, d.count - 3) } : empty(T.noClients, null)
+    // the name under the count says what it is: the client that paired last
+    case 'pair': return d.count ? { icon: 'person_add', title, value: String(d.count), secondary: d.latest?.name ? String(T.latestClient || 'Latest: {name}').replace('{name}', d.latest.name) : '', avatars: [d.latest || {}, ...Array.from({ length: Math.min(d.count - 1, 2) }, () => ({}))], more: Math.max(0, d.count - 3) } : empty(T.noClients, null)
     case 'vivi': return { icon: 'favorite', title, value: d.text || title, image: d.image }
     case 'tip': return { icon: 'lightbulb', title, value: d.text || title }
     case 'clients': { const n = first(d.count, d.items?.length, 0); return n ? { ...base, value: String(n), secondary: names(d.items), avatars: avatarsOf(d.items), more: Math.max(0, n - 3) } : empty(d.empty) }
@@ -95,8 +112,9 @@ export function smallOf(card, T = {}) {
     case 'lines': return d.rows?.length ? { ...base, value: String(d.rows.length), secondary: d.rows[0]?.title || '', avatars: avatarsOf(d.rows.filter((r) => r.icon), 3), more: Math.max(0, d.rows.length - 3) } : empty(d.empty)
     case 'heat': return d.total ? { ...base, value: String(d.total), secondary: d.caption || '', bars: (d.days || []).slice(-14).map((x) => Number(x?.value ?? x) || 0) } : empty(d.empty)
     case 'gauge': case 'arc': return { ...base, value: `${first(d.centre, '')}`, unit: d.unit, secondary: d.caption || '', progress: num(d.value) ?? undefined, tone: d.zones?.find((z) => d.value <= z.to)?.tone }
-    case 'ring': return { ...base, value: String(first(d.centre, '')), secondary: d.caption || '', progress: num(d.value) ?? undefined }
-    case 'now': return { ...base, value: String(first(d.name, '')), secondary: dot(...(d.rows || []).map((r) => r.value)), covers: d.name ? coversOf([{ cover: d.cover, name: d.name }], 'name') : null }
+    // an elapsed time has no full: the time is the value, no ring
+    case 'ring': return { ...base, value: String(first(d.centre, '')), secondary: d.caption || '' }
+    case 'now': return { ...base, value: String(first(d.name, '')), secondary: dot(...(d.rows || []).map((r) => r.value).slice(0, 2)), covers: d.name ? coversOf([{ cover: d.cover, name: d.name }], 'name') : null }
     case 'apps': return d.items?.length ? { ...base, value: String(d.items.length), secondary: names(d.items, 'name'), covers: coversOf(d.items, 'name', 'apps') } : empty(d.empty)
     case 'bars': { const v = d.series?.[0]?.values || []; return { ...base, value: String(v.reduce((a, b) => a + (Number(b) || 0), 0)), secondary: d.series?.[0]?.label || '', bars: v.slice(-14).map(Number) } }
     case 'chart': case 'chartx': { const v = (d.series?.[0]?.values || []).filter((x) => Number.isFinite(x)); return { ...base, value: '', spark: v.length > 1 ? v : null } }

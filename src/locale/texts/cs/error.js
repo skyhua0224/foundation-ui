@@ -86,7 +86,7 @@ export default {
   "errorsNoticeLink": "O aplikaci › Soukromí",
   "privacyMore": "Co se odesílá a co ne",
   "privacyTitle": "Hlášení chyb a statistiky používání",
-  "privacyLead": "Každý přepínač funguje samostatně. Je-li vypnutý, nic tohoto druhu se neodesílá.",
+  "privacyLead": "Každý přepínač funguje samostatně. Při vypnutí se odešle jeden malý záznam, že byl vypnut (který přepínač, produkt a jeho verze a anonymní číslo tohoto počítače); potom se nic tohoto druhu neodesílá.",
   "lblCollected": "Odesílá se",
   "lblNever": "Nikdy se neodesílá",
   "lblWhere": "Kam",

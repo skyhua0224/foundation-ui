@@ -22,7 +22,7 @@ test('every tile declares a range whose bounds are ladder sizes in order, or a s
   for (const id of DEFAULT_ORDER) {
     const r = rangeOf(id, CARD_META[id])
     assert.ok(r.strip || (r.min in RANK && r.max in RANK && RANK[r.min] <= RANK[r.max]), id)
-    if (r.max === 'xl' && !r.banner) assert.ok(['hero', 'clients-paired', 'covers', 'errors', 'journey', 'recent-actions', 'announcements'].includes(id), id)
+    if (r.max === 'xl' && !r.banner) assert.ok(['hero', 'clients-paired', 'covers', 'errors', 'journey', 'recent-actions', 'announcements', 'net'].includes(id), id)
   }
   assert.ok(Object.keys(TILE_RANGES).length > 60)
 })

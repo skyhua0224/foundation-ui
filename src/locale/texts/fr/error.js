@@ -86,7 +86,7 @@ export default
   "errorsNoticeLink": "À propos › Confidentialité",
   "privacyMore": "Ce qui est envoyé et ce qui ne l'est pas",
   "privacyTitle": "Rapports d'erreurs et statistiques d'utilisation",
-  "privacyLead": "Chaque interrupteur agit séparément. Désactivé, rien de ce type n'est envoyé.",
+  "privacyLead": "Chaque interrupteur agit séparément. En désactiver un envoie un petit enregistrement indiquant qu'il a été désactivé (quel interrupteur, le produit et sa version, et le numéro anonyme de cet ordinateur) ; ensuite, rien de ce type n'est envoyé.",
   "lblCollected": "Envoyé",
   "lblNever": "Jamais envoyé",
   "lblWhere": "Destination",

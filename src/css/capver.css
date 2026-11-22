@@ -23,12 +23,11 @@
 .m-capver__update { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); padding: 0 10px 0 6px; }
 .m-capver__update .m-icon { font-size: 16px; }
 .m-capver__update:hover { background: color-mix(in srgb, var(--md-sys-color-primary-container) 86%, var(--md-sys-color-on-primary-container)); }
-.m-capver__uver { font-variant-numeric: tabular-nums; opacity: .8; }
+.m-capver__uver { font-variant-numeric: tabular-nums; }
 /* narrow desktop windows give up words, in this order: the search turns into its icon (useCaptionRoom), the new version's number after the update line, then the words of the update line; the 测试版 tag stays; nothing wraps or is cut */
 @media (max-width: 1180px) { .m-caption .m-capver__uver { display: none; } }
 @media (max-width: 900px) { .m-caption .m-capver__utext { display: none; } .m-caption .m-capver__update { padding: 0 6px; } }
-/* a phone has no room in the caption bar: the version is the first line of 更多 (MCaptionVersion is not drawn there) */
-@media (max-width: 599.98px) { .m-caption .m-capver, .m-caption .m-capback { display: none; } }
+/* a phone has no room in the caption bar: the version is the first line of 更多 (MCaptionVersion is not drawn there): layout.css, `.m-caption[data-phone]` */
 /* the chip at the top of the page after a jump (variant B): over the detail pane, left-aligned with the page, the page below starts under it */
 .m-scene { --m-chip-h: 0px; }
 .m-scene--backchip { --m-chip-h: 44px; }

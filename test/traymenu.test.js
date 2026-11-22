@@ -4,18 +4,18 @@ import { readFileSync } from 'node:fs'
 import { ICONS } from '../src/icons/icons.js'
 import { CELLS, GROUPS, SUPPORT_ROW, gridCells, ITEMS, labelOf, pageTitle, shortOf, statusText, streamsText, vddText, MOCK_BUSY, MOCK_IDLE, MOCK_VDD, PAGES, SLIDER_KEYS, sliderView, sliderViews, sliderTargetText, stateOf, DEFAULT_SLIDERS, DEFAULT_TILES, TILES, TILE_IDS, hiddenSliders, hiddenTiles, hideItem, isDefaultLayout, layoutOf, layoutRecord, moveItem, normalizeLayout, showItem, tileView, tileViews, tickMarks, needsDisplay, sliderKeysOf, sliderRowShown, openingDensity, TRAY_DENSITIES, TRAY_CONTAINER_IDS, TRAY_ITEM_IDS, V1, V2, V3, VARIANTS, createNav, isChecked, isEnabled, isVisible, modelIds, modelPages, rowIds } from '../src/tray/trayModel.js'
 
-// The tray menu designs (docs/tray-menu.md): three layouts of today's menu. TRAY_ITEM_IDS is every id built by src-tauri/src/tray/menu.rs of the Panel (43 items); each layout must reach all of them.
+// The tray menu designs (docs/tray-menu.md): three layouts of today's menu. TRAY_ITEM_IDS is every id built by src-tauri/src/tray/menu.rs of the Panel; each layout must reach all of them.
 const src = (p) => readFileSync(new URL(p, import.meta.url), 'utf8')
 const MENU_RS_IDS = [
   'tray_status', 'recover_service', 'tray_notification_action', 'open_main_panel', 'connect_device', 'download_client', 'open_desktop', 'auto_start', 'open_sunshine',
   'vdd_settings', 'vdd_create', 'vdd_close', 'vdd_toggle_keep_enabled', 'vdd_toggle_headless_create', 'reset_display', 'show_toolbar', 'host_performance', 'rtss_control', 'web_stream',
   'log_console', 'debug_page', 'lang_zh', 'lang_en', 'lang_ja', 'prevent_sleep', 'restart_user_mode', 'import_config', 'export_config', 'reset_config', 'clear_cache', 'check_update', 'about',
-  'star_project', 'visit_project_sunshine', 'visit_project_moonlight', 'visit_site', 'visit_bilibili', 'star_github', 'sponsor_qiin', 'sponsor_yundi339', 'sponsor_skyhua', 'restart', 'shutdown',
+  'feedback', 'star_project', 'visit_project_sunshine', 'visit_project_moonlight', 'visit_site', 'visit_bilibili', 'star_github', 'sponsor_qiin', 'sponsor_yundi339', 'sponsor_skyhua', 'sponsor_wechat', 'sponsor_github', 'restart', 'shutdown',
 ]
 
 test('the id list is the menu.rs list', () => {
   assert.deepEqual([...TRAY_ITEM_IDS].sort(), [...MENU_RS_IDS].sort())
-  assert.equal(TRAY_ITEM_IDS.length, 43)
+  assert.equal(TRAY_ITEM_IDS.length, 46)
   assert.deepEqual([...TRAY_CONTAINER_IDS].sort(), ['advanced', 'display', 'help', 'interfaces', 'language', 'settings', 'tools'])
 })
 

@@ -4,27 +4,35 @@
  * A decorator (the persistent rail) wraps every scene, so it is never rebuilt on navigation.
  *
  * Entry: { key, id, role: 'list' | 'detail' | 'supporting', rail?: category id, list?: false, supporting?: id, params? }
- * Size classes (window width): under 600 the bottom bar; from 600 the navigation rail, collapsed (96 wide, icon and label under it)
+ * Size classes (window width): under 600, or a window shorter than 480 (SHORT_HEIGHT), the compact navigation (the bar at the bottom, or beside the content in a short window) with one pane; from 600 the navigation rail, collapsed (96 wide, icon and label under it)
  * or, when the person chose it and the window has room for it (from 1120: list and detail still fit beside 240), expanded; one
  * pane under 720 and list and detail from 720; from 1600 for pages that have content that deserves one (a live preview or
  * chart) a supporting pane at least 400 wide. Below that the status those pages would show sits inside the detail page.
  */
 export const BREAKPOINTS = Object.freeze({ rail: 600, listDetail: 720, supporting: 1600, expandedMin: 1120 })
+/** A window shorter than this (px) is a short one (a phone on its side, a small window; Material's compact height): it takes the compact navigation, whatever its width. */
+export const SHORT_HEIGHT = 480
+/** The narrowest window whose compact navigation stands beside the content; a narrower one keeps the bar at the bottom. */
+export const SIDE_MIN_WIDTH = 480
 /** The supporting pane is never narrower than this (px) and the detail pane keeps at least `detailMin`. */
 export const SUPPORTING_WIDTH = Object.freeze({ min: 400, max: 460, detailMin: 560 })
-export const RAIL_WIDTH = Object.freeze({ collapsed: 96, expanded: 240 })
+export const RAIL_WIDTH = Object.freeze({ collapsed: 96, expanded: 240, side: 80 })
 
 /**
  * 'bar' | 'rail' | 'expanded' for a window width. The expanded rail is only ever the person's choice, and only where it fits across (from 1120). The height never decides: the menu button is shown
  * from that width and has to do what it says at every height, so a window too short for the rows gets the expanded rail with its items scrolling (MRail), not a button that does nothing.
  */
-export function navigationOf(width, expandedChoice = false) {
-  if (width < BREAKPOINTS.rail) return 'bar'
+export function navigationOf(width, expandedChoice = false, height = Infinity) {
+  if (width < BREAKPOINTS.rail || height < SHORT_HEIGHT) return 'bar'
   return expandedChoice && width >= BREAKPOINTS.expandedMin ? 'expanded' : 'rail'
 }
+/** Whether a window of this size has the compact navigation (the bar at the bottom or beside the content): the products read it for what they keep per navigation (the stack of a phone). */
+export const isCompactNav = (width, height = Infinity) => navigationOf(width, false, height) === 'bar'
 /** Whether the window has room for the expanded rail (the menu button is shown only then). */
 export const canExpand = (width) => width >= BREAKPOINTS.expandedMin
-export const railWidthOf = (mode) => (mode === 'bar' ? 0 : mode === 'expanded' ? RAIL_WIDTH.expanded : RAIL_WIDTH.collapsed)
+/** The compact navigation ('bar') stands at the side, as a narrow rail with the labels under the icons, in a short window; in a tall and narrow one it is the bar at the bottom. */
+export const barSideOf = (width, height) => height < SHORT_HEIGHT && width >= SIDE_MIN_WIDTH
+export const railWidthOf = (mode, side = false) => (mode === 'bar' ? (side ? RAIL_WIDTH.side : 0) : mode === 'expanded' ? RAIL_WIDTH.expanded : RAIL_WIDTH.collapsed)
 
 /** Width of the list pane: 0.3636 of the window (as Android Settings), kept inside a pixel range (320 to 360 at the sizes where the list is a pane of its own). */
 export function listWidth(width, { ratio = 0.3636, min = 240, max = 360, preferred = null } = {}) {
@@ -90,3 +98,9 @@ export function layoutOf(scene, space, { listPreferred = null, focus = false } =
   const sup = Math.max(SUPPORTING_WIDTH.min, Math.min(SUPPORTING_WIDTH.max, Math.round(space * 0.3)))
   return { cols: [lead, space - lead - sup, sup], inner: [list, space - lead - sup, sup] }
 }
+
+/**
+ * The width the pane that fills the space ends at: its column in the layout the scene is going to, less the scrollbar the pane shows now. While the columns slide, the page in that pane lays out at
+ * this width (as the list pane keeps the width it lays out at, above), so a page that is opened from another one is arranged once, at the width it keeps, and not at every width on the way.
+ */
+export const settledWidth = (layout, fill, gutter = 0) => Math.max(0, layout.cols[fill] - Math.max(0, gutter))

@@ -23,7 +23,7 @@ export const CLIENTS = Object.freeze([
   { id: 'vplus-harmony', group: 'first', name: 'Moonlight V+', label: 'Moonlight V+ HarmonyOS', guideName: 'Moonlight V+ (HarmonyOS)', icon: 'mobile', guide: 'harmony', url: 'https://appgallery.huawei.com/app/detail?id=com.alkaidlab.sdream', project: 'https://github.com/AlkaidLab/moonlight-harmony',
     links: { project: 'https://github.com/AlkaidLab/moonlight-harmony', releases: 'https://github.com/AlkaidLab/moonlight-harmony/releases', host: 'github' },
     targets: [{ os: 'harmony', platform: 'harmony', types: ['phone', 'tablet'] }] },
-  { id: 'voidlink', group: 'partner', name: 'VoidLink', icon: 'mobile', guide: 'voidlink', url: 'https://apps.apple.com/us/app/voidlink-extreme/id6755103808', zhUrl: 'https://apps.apple.com/cn/app/voidlink/id6747717070',
+  { id: 'voidlink', group: 'partner', recommended: true, name: 'VoidLink', icon: 'mobile', guide: 'voidlink', url: 'https://apps.apple.com/us/app/voidlink-extreme/id6755103808', zhUrl: 'https://apps.apple.com/cn/app/voidlink/id6747717070',
     links: { project: 'https://github.com/The-Fried-Fish/VoidLink-previously-moonlight-zwm', releases: 'https://github.com/The-Fried-Fish/VoidLink-previously-moonlight-zwm/releases', host: 'github' },
     targets: [{ os: 'ios', platform: 'ios', types: ['phone', 'tablet'] }, { os: 'tv', platform: 'apple-tv', types: ['tv'] }] },
   { id: 'crown', group: 'partner', name: '王冠版', icon: 'android', url: 'https://github.com/WACrown/moonlight-android/releases',

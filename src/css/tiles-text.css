@@ -1,0 +1,17 @@
+/* Text on tiles. One rule: a word of a tile is drawn in an opaque colour of a text role, never in a see-through one (no opacity under 1, no colour mixed with transparent). A word at 55 to 90 % opacity lets
+   the card's tint (the accent washed over the card, a tonal fill, a plate) show through it and is under 4.5 : 1 on the tints that carry it; the hierarchy between a figure, its name and its caption is the size
+   and weight of the type. test/textcontrast.test.js holds the rule for the kit's stylesheets.
+   The roles are in tilekit.css (--tile-text-2 for the secondary word, --tile-err-text for an error as text) and follow the tile: the surface's secondary colour on a plain tile, the accent container's
+   on-colour on a tonal one. The measured proof is the contrast gate (scripts/contrast-fit.mjs, docs/text-contrast.md): every word of every tile, 4.5 : 1 (3 : 1 for large text), both themes, every size and state. */
+.m-tile .m-calm__stats i { opacity: 1; color: var(--tile-text-2, inherit); }
+
+/* A row that scrolls sideways and fades at its end (the presets of a slider tile, the tabs of a list) scrolls its selected chip in clear of the fade: a word under the fade is see-through. */
+.m-tile :is(.m-calq__row, .m-b3s__row, .m-b2table__tabs, .m-b2strip__seg) { scroll-padding-inline-end: 32px; }
+/* The decorative glyph in a shape and the shape itself sit under figures. Their ink is the accent moved towards the shape's own fill (--tile-deco-ink), so a figure over it keeps 3 : 1 whatever the accent. */
+.m-tile { --tile-deco-ink: color-mix(in srgb, var(--tk) 60%, var(--tk-c)); }
+.m-tile .m-tile__corner.m-tshape--tonal, .m-tile .m-tile__corner .m-tshape--tonal { color: var(--tile-deco-ink); }
+/* The name of a setting row is its glyph only in a narrow tile: the glyph takes its own width, not the 46 % reserved for the name, so the presets keep the room and no preset sits under the fade at the end of the row. */
+@container m-calq (max-width: 479px) { .m-calq:has(> .m-b3s__row) > .m-calq__title { flex: 0 0 auto; max-width: none; } }
+/* The frame of 串流分辨率 at two cells is 16 : 9 of the tile's height, under 90 px inside; the figure is wider than that and a stroke of the frame ran through its first digit and its last. At two cells the frame is as wide as the figure needs (the aspect ratio of the screen goes to the figure, the height stays). */
+.m-tfacts.is-m .m-tfacts__screen { aspect-ratio: auto !important; width: 124px; max-width: none; }
+.m-tfacts.is-m .m-tfacts__screen .m-tnum--s { --tn: 28px; }

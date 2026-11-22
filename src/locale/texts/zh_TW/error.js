@@ -82,7 +82,7 @@ export default {
   "errorsNoticeLink": "關於 › 隱私",
   "privacyMore": "會傳送什麼、不會傳送什麼",
   "privacyTitle": "錯誤報告與使用統計",
-  "privacyLead": "兩個開關各自獨立，關閉後該類內容不再傳送。",
+  "privacyLead": "兩個開關各自獨立。關閉時會傳送一筆「已關閉」記錄（只含是哪個開關、產品與版本，以及這台電腦的匿名編號），之後該類內容不再傳送。",
   "lblCollected": "傳送的內容",
   "lblNever": "不會傳送",
   "lblWhere": "傳送到",

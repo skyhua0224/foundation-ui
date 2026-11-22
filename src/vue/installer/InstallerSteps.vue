@@ -45,7 +45,7 @@ onBeforeUnmount(() => clearTimeout(creepTimer))
     <div v-if="note" class="m-inst__note" :class="`m-inst__note--${note.tone}`" role="note"><MIcon :name="note.icon" fill /><span>{{ note.text }}</span></div>
     <div class="m-inst__total">
       <div class="m-inst__total-row"><span>{{ t(locale, 'ins.stepof', group + 1, 4) }}</span><b>{{ percent }}%</b></div>
-      <MProgress :value="shown" class="m-inst__bar" :class="{ 'is-creeping': creeping }" :label="t(locale, 'ins.progress')" />
+      <MProgress :value="shown" class="m-inst__bar" :class="{ 'is-creeping': creeping }" :glide="creeping ? 14000 : 480" :glide-ease="creeping ? 'creep' : 'standard'" :label="t(locale, 'ins.progress')" />
     </div>
   </div>
 </template>

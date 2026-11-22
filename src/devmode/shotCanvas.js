@@ -1,6 +1,6 @@
 // The canvas side of the screenshot redaction: decode the PNG, paint the boxes black, encode again and strip what the encoder or the source put in (shot.js). Nothing leaves this file unmasked:
 // when a canvas is not there or the encode fails, the answer is null and the report has no screenshot (never the original).
-import { MASK_FILL, clampRect, mapRects, mergeRects, stripPngMetadata } from './shot.js'
+import { MASK_FILL, clampRect, mapRects, mergeRects, pngInfo, stripPngMetadata } from './shot.js'
 
 const makeCanvas = (w, h) => {
   if (typeof document !== 'undefined' && document.createElement) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c }
@@ -41,11 +41,13 @@ export async function paintMasks(bytes, rects) {
 /**
  * The automatic redaction of a capture: the marked boxes of the window (CSS pixels, taken at the capture) are mapped onto the picture and painted. -> { bytes, width, height, regions } or null.
  * `regions` are the boxes in image pixels (merged), so the sheet can outline them and count them.
+ * One decode and one encode: the size comes from the PNG header, the boxes are painted on the decoded picture and only that canvas is encoded (the original never leaves this function). A picture whose decoded
+ * size is not the size its header says is refused (null), like any other failure.
  */
 export async function maskCapture(bytes, cssRects, view) {
-  const first = await paintMasks(bytes, [])
-  if (!first) return null
-  const regions = mergeRects(mapRects(cssRects, view, { width: first.width, height: first.height }))
-  const done = regions.length ? await paintMasks(first.bytes, regions) : first
-  return done ? { ...done, regions } : null
+  const info = pngInfo(bytes)
+  if (!info || !(info.width > 0) || !(info.height > 0)) return null
+  const regions = mergeRects(mapRects(cssRects, view, info))
+  const done = await paintMasks(bytes, regions)
+  return done && done.width === info.width && done.height === info.height ? { ...done, regions } : null
 }

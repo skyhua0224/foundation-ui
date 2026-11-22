@@ -42,6 +42,15 @@ export function hostPatchOf({ done, finished, closed, active } = {}) {
   return patch
 }
 
+/**
+ * The keys one save of the guide writes to the host. `finished` goes out only when it is true: the flow also resets it in its own window (an upgrade starts at the top, so
+ * the flag is false there until the end), and writing that false back would take back what the person finished before, so the installer and every other device would
+ * start the whole guide over. Starting over on purpose is an explicit write (hostPatchOf with finished: false). `ended` (finished or closed): the guide no longer claims the host.
+ */
+export function progressSavePatch({ done, finished, closed, ended, device, now }) {
+  return { done, ...(finished ? { finished: true } : {}), closed, active: ended ? null : { device, at: now } }
+}
+
 /** True when another device took a step of the guide within the last ACTIVE_WINDOW_S seconds: this one must not open its own. */
 export function activeElsewhere(host, device, nowMs = Date.now()) {
   const a = host?.active
