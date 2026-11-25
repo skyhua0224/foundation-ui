@@ -38,6 +38,8 @@ const props = defineProps({
   locale: { type: String, default: 'en' },
   texts: { type: Object, default: null },
   closeLabel: { type: String, default: 'Close' },
+  /** the product's name, written in the first line of the diagnostics bundle */
+  product: { type: String, default: '' },
   commands: { type: Object, default: () => ({}) },
   labels: { type: Object, default: () => ({}) },
   notes: { type: Object, default: () => ({}) },
@@ -121,7 +123,7 @@ function showRow(id) { tab.value = 'log'; nextTick(() => viewer.value?.jumpTo(id
     <div v-show="tab === 'log'" class="m-diag__log"><MLogViewer ref="viewer" fill :text="text" :records="records" :live="live" :locale="locale" :texts="texts" :stats-for="statsFor" :loading="logLoading" @update:live="(v) => emit('update:live', v)" @rows="(r) => { rows = r; readAt = Date.now() }" /></div>
     <slot name="tools" />
 
-    <MDiagExport v-model="exportOpen" :collect="collect" :save="save" :host-names="hostNames" :client-names="clientNames" :locale="locale" :texts="texts" :close-label="closeLabel" :panel="panel" />
+    <MDiagExport v-model="exportOpen" :collect="collect" :save="save" :host-names="hostNames" :client-names="clientNames" :locale="locale" :texts="texts" :close-label="closeLabel" :panel="panel" :product="product" />
     <MDiagAi v-if="ai" :show="!!ai.show" :config="ai.config" :is-config-loading="!!ai.isConfigLoading" :is-saving-config="!!ai.isSavingConfig" :is-loading="!!ai.isLoading" :result="ai.result || ''" :error="ai.error || ''" :local-findings="ai.localFindings || []" :local-suggestions="ai.localSuggestions || []" :locale="locale" :texts="texts" @close="ai.onClose && ai.onClose()" @diagnose="call('diagnose')" />
   </MPage>
 </template>

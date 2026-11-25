@@ -21,6 +21,8 @@ const props = defineProps({
   collapseLabel: { type: String, default: 'Collapse navigation' },
   /** the brand lockup beside the menu button (expanded); a window with a caption bar of its own carries the lockup there and the rail has none */
   showName: { type: Boolean, default: true },
+  /** the product's name in the lockup */
+  brandName: { type: String, default: '' },
   /** the bar of a short window: it stands beside the content as a narrow rail, the label under each icon */
   side: { type: Boolean, default: false },
 })
@@ -106,7 +108,7 @@ function key(event) {
       <button v-if="canToggle" type="button" class="m-rail__menu" :aria-expanded="mode === 'expanded'" :aria-label="mode === 'expanded' ? collapseLabel : expandLabel" :data-tip="mode === 'expanded' ? collapseLabel : expandLabel" @click="emit('toggle')">
         <MIcon :name="mode === 'expanded' ? 'menu_open' : 'menu'" />
       </button>
-      <MBrand v-if="mode === 'expanded' && showName" class="m-rail__brand" :size="20" />
+      <MBrand v-if="mode === 'expanded' && showName" class="m-rail__brand" :name="brandName" :size="20" />
       <slot name="head" />
     </div>
     <div class="m-rail__items">

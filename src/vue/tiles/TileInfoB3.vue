@@ -142,6 +142,6 @@ const part = hour < 5 ? 'night' : hour < 11 ? 'morning' : hour < 18 ? 'day' : 'e
   <!-- vivi -->
   <section v-else class="m-tile m-cal m-b3vi" :class="`is-${part}`" data-size="s" data-accent="secondary">
     <p class="m-b3vi__hi">{{ d.text }}</p>
-    <img data-bleed class="m-b3vi__img" data-tile-art :src="VIVI.logo[192]" alt="" decoding="async">
+    <img data-bleed class="m-b3vi__img" data-tile-art v-if="VIVI.logo[192]" :src="VIVI.logo[192]" alt="" decoding="async">
   </section>
 </template>

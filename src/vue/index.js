@@ -223,8 +223,8 @@ export { modeListTexts, MODE_LIST_TEXTS } from '../settings/modeListTexts.js'
 export * as modeList from '../settings/modeList.js'
 export { default as MStatusPills } from './MStatusPills.vue'
 export { default as MMascot } from "./MMascot.vue"
-export { MASCOT, VIVI, viviImage, viviClip } from "../about/mascot.js"
-export { WALLPAPERS, autoPick, wallpaperBox, freeGaps } from "../appearance/wallpaper.js"
+export { MASCOT, VIVI, viviImage, viviClip, registerMascot, hasMascot } from "../about/mascot.js"
+export { WALLPAPERS, autoPick, wallpaperBox, freeGaps, registerWallpapers, wallpaperIds, autoPictures } from "../appearance/wallpaper.js"
 export { relayoutWallpaper } from "../appearance/apply.js"
 export { default as MUnifiedSearch } from "./MUnifiedSearch.vue"
 export { default as MSearchResults } from "./MSearchResults.vue"

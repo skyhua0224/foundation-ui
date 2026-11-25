@@ -27,6 +27,8 @@
     "./update": "./src/update/index.js",
     "./auth": "./src/auth/index.js",
     "./about": "./src/about/index.js",
+    "./registry": "./src/registry/index.js",
+    "./brand-assets": "./brand-assets/index.js",
     "./clients": "./src/clients/index.js",
     "./device-icons": "./src/vue/deviceIcons.js",
     "./status": "./src/status/index.js",

@@ -355,7 +355,7 @@ const team = computed(() => TEAM.map((p) => ({ ...p, founder: p.login === FOUNDE
          six quick clicks bring the pixel friends -->
     <div class="m-about__end">
       <div class="m-about__bubblebox"><Transition name="m-about-bubble"><p v-if="bubble" :key="bubble" class="m-about__bubble" role="status">{{ bubble }}</p></Transition></div>
-      <button type="button" class="m-about__vivi" :class="{ 'is-hop': viviHop }" :aria-label="T.viviLabel" @click="sayVivi"><img class="m-about__figure" :src="VIVI.bg" alt="" width="132" height="198" loading="lazy" decoding="async" /></button>
+      <button v-if="VIVI.bg" type="button" class="m-about__vivi" :class="{ 'is-hop': viviHop }" :aria-label="T.viviLabel" @click="sayVivi"><img class="m-about__figure" :src="VIVI.bg" alt="" width="132" height="198" loading="lazy" decoding="async" /></button>
       <p class="m-about__vivislogan">{{ T.viviSlogan }}</p>
     </div>
     <MPixelFriends v-if="friends" :locale="locale" :texts="T" @open="open" />

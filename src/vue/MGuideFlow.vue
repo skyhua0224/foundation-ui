@@ -459,7 +459,7 @@ onBeforeUnmount(() => { edgeObserver?.disconnect(); footObserver?.disconnect() }
       <div ref="topSentinel" class="m-guide__sentinel" aria-hidden="true" />
       <section :key="id" class="m-guide__content">
         <header v-if="pageId !== 'intro'" class="m-guide__head">
-          <span class="m-guide__avatar" aria-hidden="true"><img :src="vivi.src" alt="" width="48" height="48"></span>
+          <span v-if="vivi.src" class="m-guide__avatar" aria-hidden="true"><img :src="vivi.src" alt="" width="48" height="48"></span>
           <div class="m-guide__headtext">
             <h1 class="m-guide__title">{{ pageTitle }}<span v-if="sub && advancedSub" class="m-guide__advtag">{{ T.done.advanced }}</span></h1>
             <p v-if="T.leads[pageId]" class="m-guide__lead">{{ T.leads[pageId] }}</p>

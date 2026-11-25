@@ -79,7 +79,7 @@ const two = (n) => String(n).padStart(2, '0')
 export const bundleName = (now = new Date()) => `foundation-diagnostics-${now.getFullYear()}${two(now.getMonth() + 1)}${two(now.getDate())}-${two(now.getHours())}${two(now.getMinutes())}${two(now.getSeconds())}.zip`
 
 /** The ZIP of the ticked entries plus a README that says what is inside and what was removed. */
-export function finalizeBundle(entries, selected, { network = true, now = new Date(), product = 'Foundation Sunshine' } = {}) {
+export function finalizeBundle(entries, selected, { network = true, now = new Date(), product = '' } = {}) {
   const chosen = entries.filter((e) => e.available && selected.includes(e.id))
   const files = []
   for (const e of chosen) {
@@ -87,7 +87,7 @@ export function finalizeBundle(entries, selected, { network = true, now = new Da
     else files.push({ name: e.file, data: e.text })
   }
   const lines = [
-    `${product} diagnostics bundle`, `Created ${now.toISOString()}`, '',
+    `${product ? `${product} ` : ''}diagnostics bundle`, `Created ${now.toISOString()}`, '',
     'Files:', ...chosen.map((e) => `- ${e.file}${e.binary ? ' (not redacted)' : ''}  ${e.size} bytes${e.counts.secrets ? `, ${e.counts.secrets} secrets removed` : ''}${e.counts.ips ? `, ${e.counts.ips} addresses masked` : ''}${e.counts.names ? `, ${e.counts.names} names masked` : ''}${e.counts.sensitive ? `, ${e.counts.sensitive} sensitive fields hashed` : ''}`), '',
     `Credentials, tokens and pairing data were removed by the application.`,
     network ? 'IP addresses, MAC addresses and machine names were masked.' : 'IP addresses and machine names are included, as chosen.',

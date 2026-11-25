@@ -19,7 +19,7 @@ const props = defineProps({
   /** the return path from the address (`?next=`); only a same-origin path is followed */
   next: { type: String, default: '' },
   /** the product's name beside the brand mark */
-  name: { type: String, default: 'Foundation Sunshine' },
+  name: { type: String, default: '' },
   /** the languages of the footer's selector: [{ value, label }]; none, no selector */
   languages: { type: Array, default: () => [] },
   /** the links of the footer, small, at the right: [{ id: 'site' | 'bilibili' | 'docs' | 'github', url }] */

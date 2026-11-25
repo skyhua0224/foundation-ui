@@ -23,6 +23,8 @@ const props = defineProps({
   /** the destinations of the bottom bar of a narrow window (the Material navigation bar takes three to five), and the one of them that is current; the rail's own list when not given */
   barItems: { type: Array, default: null },
   barCurrent: { type: String, default: '' },
+  /** the product's name in the expanded rail's lockup */
+  brandName: { type: String, default: '' },
   strategies: { type: Array, default: null },
   storageKey: { type: String, default: 'foundation-ui.list-width' },
   texts: { type: Object, default: () => ({}) },
@@ -312,7 +314,7 @@ const allShortcuts = computed(() => [
     <div class="m-scene__railfill" aria-hidden="true" />
     <div class="m-scene__corner" aria-hidden="true" />
     <div class="m-scene__barfill" aria-hidden="true" />
-    <MRail v-if="mode !== 'bar'" class="m-scene__rail" :inert="modalOpen ? '' : undefined" :items="railItems" :current="nav.rail.value" :mode="mode" :label="T.main" :can-toggle="toggleable" :expand-label="T.expand" :collapse-label="T.collapse" :show-name="captionHeight === 0" @select="(i) => { focus = false; emit('rail', i) }" @toggle="toggleRail">
+    <MRail v-if="mode !== 'bar'" class="m-scene__rail" :inert="modalOpen ? '' : undefined" :items="railItems" :current="nav.rail.value" :mode="mode" :label="T.main" :can-toggle="toggleable" :expand-label="T.expand" :collapse-label="T.collapse" :show-name="captionHeight === 0" :brand-name="brandName" @select="(i) => { focus = false; emit('rail', i) }" @toggle="toggleRail">
       <template v-if="$slots['rail-head']" #head><slot name="rail-head" /></template>
       <template v-if="$slots['rail-foot']" #foot><slot name="rail-foot" /></template>
     </MRail>

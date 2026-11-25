@@ -26,7 +26,7 @@ const props = defineProps({
   clientNames: { type: Array, default: () => [] },
   locale: { type: String, default: 'en' },
   texts: { type: Object, default: null },
-  product: { type: String, default: 'Foundation Sunshine' },
+  product: { type: String, default: '' },
   /** the control panel adds its own log file next to the host log */
   panel: { type: Boolean, default: false },
   closeLabel: { type: String, default: 'Close' },

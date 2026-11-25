@@ -1,7 +1,8 @@
 // More cards of the home catalogue. Every one has a real source (a field of the running session, a key of the host configuration, the appearance
 // the window already keeps, a fixed link or route) and is `null` when that source is not there: nothing is invented. The list and the sources are
 // in docs/home-tiles.md.
-import { MASCOT } from '../about/mascot.js'
+import { MASCOT, viviImage } from '../about/mascot.js'
+import { WALLPAPERS, autoPictures, wallpaperIds } from '../appearance/wallpaper.js'
 import { realSession } from './clientsLive.js'
 import { platformName } from '../settings/model.js'
 
@@ -92,10 +93,11 @@ export function moreCatalogue(x, T, now = Date.now()) {
 
   // the window's own appearance (foundation-ui): the card changes it directly
   d['pers-theme'] = { type: 'appearance', which: 'mode', icon: 'contrast', title: T['c_pers-theme'], options: [{ value: 'system', label: T.themeSystem }, { value: 'light', label: T.themeLight }, { value: 'dark', label: T.themeDark }] }
-  d['pers-wallpaper'] = { type: 'appearance', which: 'source', icon: 'wallpaper', title: T['c_pers-wallpaper'], options: [{ value: 'auto', label: T.srcAuto }, { value: 'vivi1', label: T.srcVivi1 }, { value: 'vivi2', label: T.srcVivi2 }, { value: 'gradient', label: T.srcGradient }] }
+  d['pers-wallpaper'] = { type: 'appearance', which: 'source', icon: 'wallpaper', title: T['c_pers-wallpaper'], options: [...(autoPictures() ? [{ value: 'auto', label: T.srcAuto }] : []), ...wallpaperIds().map((id) => ({ value: id, label: (WALLPAPERS[id].labelKey && T[WALLPAPERS[id].labelKey]) || WALLPAPERS[id].label || id })), { value: 'gradient', label: T.srcGradient }] }
   d['pers-colour'] = { type: 'appearance', which: 'preset', icon: 'palette', title: T['c_pers-colour'] }
   const hour = new Date(now).getHours()
-  d.vivi = { type: 'vivi', icon: 'favorite', title: T.c_vivi, text: hour < 5 ? T.viviNight : hour < 11 ? T.viviMorning : hour < 18 ? T.viviDay : T.viviEvening, image: MASCOT[256] }
+  const viviPicture = MASCOT[256] || viviImage(128, 1).src
+  d.vivi = !viviPicture ? null : { type: 'vivi', icon: 'favorite', title: T.c_vivi, text: hour < 5 ? T.viviNight : hour < 11 ? T.viviMorning : hour < 18 ? T.viviDay : T.viviEvening, image: viviPicture }
   const day = Math.floor(now / 86400000) % TIPS
   d.tip = T[`tip${day}`] ? { type: 'tip', icon: 'lightbulb', title: T.c_tip, text: T[`tip${day}`] } : null
 

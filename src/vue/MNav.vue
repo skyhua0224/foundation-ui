@@ -7,8 +7,8 @@ const props = defineProps({
   items: { type: Array, required: true },
   footer: { type: Array, default: () => [] },
   current: { type: String, default: '' },
-  brandName: { type: String, default: 'Foundation' },
-  brandSub: { type: String, default: 'Sunshine' },
+  brandName: { type: String, default: '' },
+  brandSub: { type: String, default: '' },
   label: { type: String, default: 'Main' },
   /** Items shown in the bottom bar on narrow screens (ids); default: the first five. */
   barIds: { type: Array, default: () => [] },
@@ -27,7 +27,7 @@ const go = (item, event) => {
 
 <template>
   <nav class="m-nav" :aria-label="label">
-    <div class="m-nav__brand"><span class="m-nav__mark" /><span class="m-nav__name"><b>{{ brandName }}</b><small>{{ brandSub }}</small></span></div>
+    <div class="m-nav__brand"><span class="m-nav__mark" /><span class="m-nav__name"><b v-if="brandName">{{ brandName }}</b><small v-if="brandSub">{{ brandSub }}</small></span></div>
     <div class="m-nav__list">
       <template v-for="item in items" :key="item.id">
         <div v-if="item.title" class="m-nav__title">{{ item.title }}</div>

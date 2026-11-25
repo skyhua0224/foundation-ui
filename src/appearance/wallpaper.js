@@ -1,24 +1,55 @@
-// The two wallpapers of 薇薇 and how they sit in a window. Pure (tested): which one fits the window, and where the picture goes so that
-// `cover` cropping keeps her face on screen and, where the window has room, outside the panes that cover the picture.
-import { VIVI } from '../about/mascot.js'
+// The wallpapers a window can show, and how they sit in it. The engine ships none: a Product registers the pictures it has (`registerWallpapers`,
+// from `foundation-ui/registry`) and without any the sources are the plain gradient, the person's file and a web address. Pure
+// (tested): which picture fits the window, and where it goes so that `cover` cropping keeps the face of the picture on screen and, where the window
+// has room, outside the panes that cover the picture.
 
-/** focus: the middle of her face as a fraction of the picture (measured on the pictures themselves). */
-export const WALLPAPERS = Object.freeze({
-  vivi1: Object.freeze({ id: 'vivi1', url: VIVI.wallpaper[1], w: 1491, h: 1055, focus: Object.freeze({ x: 0.60, y: 0.50 }) }),
-  vivi2: Object.freeze({ id: 'vivi2', url: VIVI.wallpaper[2], w: 1672, h: 941, focus: Object.freeze({ x: 0.63, y: 0.52 }) }),
-})
-export const WALLPAPER_IDS = Object.freeze(['vivi1', 'vivi2'])
+/** The sources the engine itself offers; a registered picture adds its id. */
+export const BUILTIN_SOURCES = Object.freeze(['gradient', 'file', 'url'])
+const RESERVED = new Set(['auto', 'default', ...BUILTIN_SOURCES])
+/** The registered pictures by id: { id, url, w, h, focus: { x, y }, labelKey?, label? }. Filled by `registerWallpapers`. */
+export const WALLPAPERS = {}
+let auto = null
+
+/**
+ * Adds pictures. `list`: [{ id, url, w, h, focus: { x, y } (the middle of the face as a fraction of the picture), labelKey? (a text of the appearance
+ * texts) or label? }]. `options.auto` ({ narrow, wide, colour }: three registered ids) turns on the Auto source: the wide picture for wide windows,
+ * the narrow one otherwise, and the colours always from `colour`.
+ */
+export function registerWallpapers(list, options = {}) {
+  for (const p of list) {
+    if (!p || typeof p.id !== 'string' || !/^[a-z][a-z0-9_-]*$/i.test(p.id) || RESERVED.has(p.id)) throw new Error(`wallpaper id not usable: ${p && p.id}`)
+    const finite = (n) => typeof n === 'number' && Number.isFinite(n)
+    const inUnit = (n) => finite(n) && n >= 0 && n <= 1
+    if (typeof p.url !== 'string' || !p.url || !(finite(p.w) && p.w > 0) || !(finite(p.h) && p.h > 0) || !p.focus || !inUnit(p.focus.x) || !inUnit(p.focus.y)) throw new Error(`wallpaper ${p.id} is incomplete`)
+    WALLPAPERS[p.id] = Object.freeze({ ...p, focus: Object.freeze({ x: p.focus.x, y: p.focus.y }) })
+  }
+  const a = options.auto
+  if (a) {
+    if (![a.narrow, a.wide, a.colour].every((id) => typeof id === 'string' && Object.hasOwn(WALLPAPERS, id))) throw new Error('the Auto pictures are not registered')
+    auto = Object.freeze({ narrow: a.narrow, wide: a.wide, colour: a.colour })
+  }
+}
+/** The ids of the registered pictures, in the order they were registered. */
+export const wallpaperIds = () => Object.keys(WALLPAPERS)
+/** { narrow, wide, colour } while Auto has pictures to choose from, else null (the source then falls back to the gradient). */
+export const autoPictures = () => auto
+/** Every source a stored appearance may name. */
+export const wallpaperSources = () => ['auto', ...wallpaperIds(), ...BUILTIN_SOURCES]
+/** Forgets every registration (tests). */
+export function clearWallpapers() { for (const id of Object.keys(WALLPAPERS)) delete WALLPAPERS[id]; auto = null }
 
 /**
  * Auto: the wide picture for wide windows, the other otherwise. The window must go past 1.7 to switch to the wide one and under 1.5 to leave it,
  * so a window near the middle (1440 x 900 is 1.6) does not flicker while it is resized. With nothing chosen yet the middle, 1.6, decides.
+ * Returns null while Auto has no pictures.
  */
 export const AUTO_ASPECT = Object.freeze({ toWide: 1.7, toNormal: 1.5, first: 1.6 })
 export function autoPick(prev, width, height) {
+  if (!auto) return null
   const aspect = height > 0 ? width / height : 1
-  if (prev !== 'vivi1' && prev !== 'vivi2') return aspect >= AUTO_ASPECT.first ? 'vivi2' : 'vivi1'
-  if (prev === 'vivi2') return aspect < AUTO_ASPECT.toNormal ? 'vivi1' : 'vivi2'
-  return aspect > AUTO_ASPECT.toWide ? 'vivi2' : 'vivi1'
+  if (prev !== auto.narrow && prev !== auto.wide) return aspect >= AUTO_ASPECT.first ? auto.wide : auto.narrow
+  if (prev === auto.wide) return aspect < AUTO_ASPECT.toNormal ? auto.narrow : auto.wide
+  return aspect > AUTO_ASPECT.toWide ? auto.wide : auto.narrow
 }
 
 /**
@@ -26,8 +57,7 @@ export function autoPick(prev, width, height) {
  * inside its frame and the Web UI in a browser are three different shapes), so the colours must not follow it: one seed for every window of
  * the product, the wide picture's (the shape of the reference, 1440 x 900). A picture the person chose gives its own colours.
  */
-export const COLOUR_PICTURE = 'vivi2'
-export const colourPictureId = (source, pickedId) => (source === 'auto' ? COLOUR_PICTURE : pickedId)
+export const colourPictureId = (source, pickedId) => (source === 'auto' ? (auto ? auto.colour : null) : pickedId)
 
 /** The parts of [0, width] that no covered range ({ left, right } in pixels) touches. */
 export function freeGaps(width, covered = []) {

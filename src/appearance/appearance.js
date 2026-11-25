@@ -1,20 +1,19 @@
 // Appearance: solid background or wallpaper, where the colours come from, light/dark, scrim. Pure logic here (tested); the DOM part is `applyAppearance`.
 import { schemeColors as realSchemeColors, BRAND_SEEDS, COLOR_STYLES, DEFAULT_STYLE } from '../tokens/theme.js'
-import { WALLPAPERS } from './wallpaper.js'
+import { WALLPAPERS, autoPictures, wallpaperSources } from './wallpaper.js'
 import { LIST_STYLES } from './listStyle.js'
 import { luminance, imageStats } from './pictureStats.js'
 
 export { luminance, imageStats }
 
-// The default is Auto: one of the two pictures of 薇薇, chosen by the shape of the window (see wallpaper.js). The other sources are the gradient
-// of the theme's own tones (the seed colour; nothing to load), the person's file and a web address. Nothing is downloaded for the built-in ones.
+// The default is Auto: one of the registered pictures, chosen by the shape of the window (see wallpaper.js); with none registered the window gets the
+// gradient. The other sources are the gradient of the theme's own tones (the seed colour; nothing to load), the person's file and a web address.
 export const DEFAULT_WALLPAPER = 'auto'
 // The backdrop of a window with no wallpaper, and the plain gradient: three large soft blobs of the container tones over the surface, calm and low in contrast (the frost lies over it as over a
 // picture). --m-tonal-k (shell-blend.css) is how much of each container tone shows: 70 % in light, 45 % in 深色, 22 % in 纯黑 where it stays very dark. Images only: it is used as a background-image.
 export const DEFAULT_GRADIENT = 'radial-gradient(62% 56% at 14% 10%, color-mix(in srgb, var(--md-sys-color-primary-container) var(--m-tonal-k, 70%), transparent) 0%, transparent 72%), radial-gradient(56% 62% at 90% 16%, color-mix(in srgb, var(--md-sys-color-tertiary-container) calc(var(--m-tonal-k, 70%) * .85), transparent) 0%, transparent 70%), radial-gradient(72% 62% at 76% 104%, color-mix(in srgb, var(--md-sys-color-secondary-container) var(--m-tonal-k, 70%), transparent) 0%, transparent 74%), linear-gradient(var(--md-sys-color-surface), var(--md-sys-color-surface))'
 // Nothing in a gradient is busy; the tones are mid so the scrim is computed for the worst case of both schemes.
 export const DEFAULT_WALLPAPER_STATS = Object.freeze({ mean: 0.5, lo: 0.1, hi: 0.9, busy: 0 })
-export const WALLPAPER_SOURCES = Object.freeze(['auto', 'vivi1', 'vivi2', 'gradient', 'file', 'url'])
 // Any other remote picture is shown but treated as unreadable: conservative statistics (strong scrim) and the brand seed.
 export const UNREADABLE_STATS = Object.freeze({ mean: 0.5, lo: 0, hi: 1, busy: 0.2 })
 export const STORAGE_KEY = 'foundation-ui.appearance'
@@ -29,7 +28,7 @@ export const PRESET_SEEDS = Object.freeze([
 export const WALLPAPER_SEEDS = 4
 export { COLOR_STYLES, DEFAULT_STYLE }
 
-// Default: wallpaper on (Auto: 薇薇), colour from the wallpaper (solid and the brand seed when the picture fails)
+// Default: wallpaper on (Auto), colour from the wallpaper (solid and the brand seed when the picture fails)
 // The frosted layer over the wallpaper: a blur (px) and a tint of the scheme's surface tone (0 to 0.8). The overview is much lighter than the other pages
 // so that she shows there; `homeSame` makes the overview use the values of the other pages. Both are stored with the appearance, per interface.
 export const FROST_DEFAULTS = Object.freeze({ home: Object.freeze({ blur: 4, dim: 0.12 }), other: Object.freeze({ blur: 32, dim: 0.5 }) })
@@ -58,11 +57,13 @@ const HEX = /^#[0-9a-f]{6}$/i
 /** Only https images (or a data URL of the person's own file) are ever used; anything else is ignored. */
 export const safeImageUrl = (u) => (typeof u === 'string' && u.length < 2_500_000 && (/^https:\/\/[^\s"'()]+$/i.test(u) || /^data:image\/(png|jpe?g|webp|gif);base64,[a-z0-9+/=]+$/i.test(u)) ? u : '')
 
+// a source that is not offered (a picture this Product did not register) reads as the default; Auto with no pictures to choose from is the gradient
+const sourceOf = (v) => { const s = oneOf(v === 'default' ? 'auto' : v, wallpaperSources(), DEFAULTS.source); return s === 'auto' && !autoPictures() ? 'gradient' : s }
 export function normalize(raw) {
   const r = raw && typeof raw === 'object' ? raw : {}
   return {
     background: oneOf(r.background, ['solid', 'wallpaper'], DEFAULTS.background),
-    source: oneOf(r.source === 'default' ? 'auto' : r.source, WALLPAPER_SOURCES, DEFAULTS.source),
+    source: sourceOf(r.source),
     url: r.source === 'url' ? safeImageUrl(r.url) : '',
     color: oneOf(r.color, ['wallpaper', 'preset', 'custom'], DEFAULTS.color),
     preset: PRESET_SEEDS.some((p) => p.id === r.preset) ? r.preset : DEFAULTS.preset,
@@ -119,9 +120,9 @@ export const frostFor = (s, scope) => (scope === 'home' && !s.homeSame ? s.home 
 /** The picture to show: null for a solid background. `file` is the person's stored data URL. */
 export function imageSource(s, file = '') {
   if (s.background !== 'wallpaper') return null
-  if (s.source === 'auto') return 'auto'
+  if (s.source === 'auto') return autoPictures() ? 'auto' : 'gradient'
   if (s.source === 'gradient') return 'gradient'
-  if (s.source === 'vivi1' || s.source === 'vivi2') return WALLPAPERS[s.source].url
+  if (WALLPAPERS[s.source]) return WALLPAPERS[s.source].url
   if (s.source === 'file') return safeImageUrl(file) || null
   return s.url || null
 }

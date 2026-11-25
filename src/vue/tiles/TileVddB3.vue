@@ -12,7 +12,7 @@ import MIcon from '../MIcon.vue'
 import { vddTexts } from '../../settings/vddTexts.js'
 import { useAppearance } from '../useAppearance.js'
 import { DEFAULT_GRADIENT, IMAGE_KEY } from '../../appearance/appearance.js'
-import { WALLPAPERS } from '../../appearance/wallpaper.js'
+import { WALLPAPERS, autoPictures } from '../../appearance/wallpaper.js'
 import MTileShape from '../MTileShape.vue'
 import { designProps } from './tileData.js'
 import { b3Texts } from './b3Texts.js'
@@ -36,7 +36,7 @@ const chip = computed(() => (virtual.value && summary.value.active !== null && s
 const ap = useAppearance()
 const source = computed(() => (ap.state.background === 'wallpaper' ? ap.state.source : ''))
 const stored = () => { try { return globalThis.localStorage?.getItem(IMAGE_KEY) || '' } catch { return '' } }
-const pictureOf = (s) => (s === 'vivi1' ? WALLPAPERS.vivi1.url : s === 'vivi2' || s === 'auto' ? WALLPAPERS.vivi2.url : s === 'url' ? ap.state.url || '' : s === 'file' ? stored() : '')
+const pictureOf = (s) => (WALLPAPERS[s] ? WALLPAPERS[s].url : s === 'auto' && autoPictures() ? WALLPAPERS[autoPictures().colour].url : s === 'url' ? ap.state.url || '' : s === 'file' ? stored() : '')
 const ground = (s) => { const u = pictureOf(s); return u ? { backgroundImage: `url("${u}")` } : { backgroundImage: DEFAULT_GRADIENT } }
 const sourceLabel = computed(() => (d.value.options || []).find((o) => o.value === source.value)?.label || (source.value ? '' : L.value.noWallpaper))
 const setSource = (s) => { if (!props.preview) ap.set({ background: 'wallpaper', source: s }) }

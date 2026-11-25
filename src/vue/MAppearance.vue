@@ -9,7 +9,7 @@ import MSliderItem from './MSliderItem.vue'
 import MSwitchItem from './MSwitchItem.vue'
 import { CLOCK_FACES, COLOR_STYLES, LOOK_LIMITS, PRESET_SEEDS, clockSizesOffered, contrastRatio, effectiveClockSize, hexRgb, seedFor } from '../appearance/appearance.js'
 import { DEFAULT_VARIANTS, schemeColors } from '../tokens/theme.js'
-import { WALLPAPERS } from '../appearance/wallpaper.js'
+import { WALLPAPERS, autoPictures, wallpaperIds } from '../appearance/wallpaper.js'
 import { useAppearance } from './useAppearance.js'
 import { afterFirstPaint } from './afterFirstPaint.js'
 import { usePreviewBake } from './previewBake.js'
@@ -37,8 +37,13 @@ const iconMode = ref(document.documentElement.dataset.icons || 'b')
 const setIcons = (v) => { iconMode.value = v; document.documentElement.dataset.icons = v; try { localStorage.setItem('foundation-ui.icons', v) } catch { /* storage unavailable */ } }
 const opts = (keys) => keys.map(([value, label, icon]) => ({ value, label: T.value[label], icon }))
 const bg = computed(() => opts([['solid', 'solid', 'format_color_fill'], ['wallpaper', 'wallpaper', 'wallpaper']]))
-const src = computed(() => opts([['auto', 'srcAuto', 'wallpaper'], ['vivi1', 'srcVivi1', 'image'], ['vivi2', 'srcVivi2', 'image'], ['gradient', 'srcGradient', 'palette'], ['file', 'srcFile', 'upload_file'], ['url', 'srcUrl', 'link']]))
-const THUMBS = { vivi1: WALLPAPERS.vivi1.url, vivi2: WALLPAPERS.vivi2.url }
+// the sources: Auto and the pictures a Product registered (none by default), then the gradient, the person's file and a web address
+const src = computed(() => [
+  ...(autoPictures() ? opts([['auto', 'srcAuto', 'wallpaper']]) : []),
+  ...wallpaperIds().map((id) => ({ value: id, label: (WALLPAPERS[id].labelKey && T.value[WALLPAPERS[id].labelKey]) || WALLPAPERS[id].label || id, icon: 'image' })),
+  ...opts([['gradient', 'srcGradient', 'palette'], ['file', 'srcFile', 'upload_file'], ['url', 'srcUrl', 'link']]),
+])
+const THUMBS = Object.fromEntries(wallpaperIds().map((id) => [id, WALLPAPERS[id].url]))
 const col = computed(() => opts([['wallpaper', 'fromWallpaper', 'palette'], ['preset', 'preset', 'colors'], ['custom', 'custom', 'colorize']]))
 const FACES = CLOCK_FACES
 const faceName = (f) => T.value[`face${f[0].toUpperCase()}${f.slice(1)}`]

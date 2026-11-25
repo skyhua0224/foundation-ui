@@ -1,6 +1,8 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { DEFAULTS, normalize, imageSource, seedFor, safeImageUrl, contrastRatio, imageStats, scrimFor, scrimsFor, frostFor, FROST_DEFAULTS, DEFAULT_WALLPAPER } from '../src/appearance/appearance.js'
+import { registerFakeArt } from './fakeArt.js'
+registerFakeArt()
 
 const flat = (grey, n = 64) => { const a = new Uint8ClampedArray(n * n * 4); for (let i = 0; i < n * n; i++) { a[i * 4] = a[i * 4 + 1] = a[i * 4 + 2] = grey; a[i * 4 + 3] = 255 } return { a, n } }
 const noisy = (n = 64) => { const a = new Uint8ClampedArray(n * n * 4); for (let i = 0; i < n * n; i++) { const g = (i * 7919) % 2 ? 250 : 5; a[i * 4] = a[i * 4 + 1] = a[i * 4 + 2] = g; a[i * 4 + 3] = 255 } return { a, n } }

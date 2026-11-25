@@ -32,6 +32,8 @@ const props = defineProps({
   clientNames: { type: Array, default: () => [] },
   panel: { type: Boolean, default: false },
   closeLabel: { type: String, default: 'Close' },
+  /** the product's name, written in the first line of the diagnostics bundle */
+  product: { type: String, default: '' },
   /** start at once (the 「开始体检」 entries of help, search and the offline page open the page running). A number is the entry's own token: the same token again (Back) does not run again; `true` runs
    *  when there is no result yet or it is more than five minutes old */
   autostart: { type: [Boolean, Number], default: false },
@@ -300,6 +302,6 @@ defineExpose({ run, state })
         <MButton variant="warning" :icon="pending?.action.level === 3 ? 'shield' : 'restart_alt'" @click="confirmFix">{{ pending?.label || T.confirm.run }}</MButton>
       </template>
     </MDialog>
-    <MDiagExport v-model="exportOpen" :collect="collectWithDoctor" :save="save" :host-names="hostNames" :client-names="clientNames" :locale="locale" :close-label="closeLabel" :panel="panel" />
+    <MDiagExport v-model="exportOpen" :collect="collectWithDoctor" :save="save" :host-names="hostNames" :client-names="clientNames" :locale="locale" :close-label="closeLabel" :panel="panel" :product="product" />
   </MPage>
 </template>

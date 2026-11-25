@@ -9,6 +9,8 @@ import { homeTexts } from '../src/vue/homeModel.js'
 import { createHistory } from '../src/vue/homeHistory.js'
 import { sizesOf, largestOf } from '../src/vue/homeSizes.js'
 import { rangeOf } from '../src/vue/homeRanges.js'
+import { registerFakeArt } from './fakeArt.js'
+registerFakeArt()
 
 const XL_VIEWS = ['hero', 'clients-paired', 'covers', 'errors', 'recent-actions', 'announcements', 'net']
 

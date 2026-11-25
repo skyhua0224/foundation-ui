@@ -23,7 +23,7 @@ if (q.get('dialog')) setTimeout(() => (dialog.value = true), 50)
 
 <template>
   <div class="m-app m-app--shell m-app--scroll">
-    <MNav :items="nav" :footer="footer" :current="current" @navigate="(i) => (current = i.id)" />
+    <MNav brand-name="Foundation UI" :items="nav" :footer="footer" :current="current" @navigate="(i) => (current = i.id)" />
     <main class="m-app__main">
       <MPage title="手柄" lead="选择串流时游戏识别的手柄，并调校 DualSense。" eyebrow="输入与外设" back back-label="返回" @back="() => {}">
         <template #status>

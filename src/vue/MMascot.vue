@@ -9,5 +9,5 @@ const img = computed(() => viviImage(props.size, typeof window !== 'undefined' ?
 </script>
 
 <template>
-  <img class="m-mascot" :class="{ 'm-mascot--round': round }" :src="img.src" :srcset="img.srcset || undefined" :width="size" :height="size" :alt="alt" :aria-hidden="alt ? undefined : 'true'" decoding="async" />
+  <img v-if="img.src" class="m-mascot" :class="{ 'm-mascot--round': round }" :src="img.src" :srcset="img.srcset || undefined" :width="size" :height="size" :alt="alt" :aria-hidden="alt ? undefined : 'true'" decoding="async" />
 </template>

@@ -57,7 +57,7 @@ const detail = computed(() => (proxy.value ? fillText(T.value.proxyAttempts, { n
   </section>
   <section v-else class="m-offline" :data-cause="kind" aria-live="polite">
     <div class="m-offline__inner">
-      <div class="m-offline__art"><img class="m-offline__vivi" :src="VIVI.bg" alt="" width="512" height="768" decoding="async" /></div>
+      <div v-if="VIVI.bg" class="m-offline__art"><img class="m-offline__vivi" :src="VIVI.bg" alt="" width="512" height="768" decoding="async" /></div>
       <div class="m-offline__copy">
         <h2 class="m-offline__title">{{ proxy ? T.proxyTitle : unresponsive ? T.unresponsiveTitle : T.title }}</h2>
         <p class="m-offline__line">{{ proxy ? T.proxyLine : unresponsive ? T.unresponsiveLine : T.line }}</p>

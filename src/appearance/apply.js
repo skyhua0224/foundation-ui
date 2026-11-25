@@ -338,7 +338,7 @@ export async function applyAppearance(root, s, { file = '', timeout = 8000 } = {
     if (mine !== seq) return 'superseded'
     // the colours do not follow the window's shape: with Auto they grow from the same picture in every window
     const colourId = colourPictureId(s.source, picture?.id)
-    const colourPic = colourId && picture && colourId !== picture.id ? await readPicture(WALLPAPERS[colourId].url, { timeout }).catch(() => pic) : pic
+    const colourPic = colourId && picture && colourId !== picture.id ? await readPicture(WALLPAPERS[colourId]?.url, { timeout }).catch(() => pic) : pic
     if (mine !== seq) return 'superseded'
     const imageSeeds = colourPic.seeds?.length ? colourPic.seeds : [colourPic.seed]
     const seeds = seedFor(s, imageSeeds)

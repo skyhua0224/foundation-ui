@@ -11,5 +11,5 @@ const vivi = computed(() => !props.thumb && announcementHero(key.value).vivi)
 </script>
 
 <template>
-  <span class="m-ahero" :style="{ background: announcementHeroBackground(key) }" aria-hidden="true"><img v-if="vivi" class="m-ahero__vivi" :src="VIVI.logo[192]" alt="" decoding="async"></span>
+  <span class="m-ahero" :style="{ background: announcementHeroBackground(key) }" aria-hidden="true"><img v-if="vivi && VIVI.logo[192]" class="m-ahero__vivi" :src="VIVI.logo[192]" alt="" decoding="async"></span>
 </template>

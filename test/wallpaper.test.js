@@ -2,6 +2,8 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { AUTO_ASPECT, WALLPAPERS, autoPick, freeGaps, wallpaperBox } from '../src/appearance/wallpaper.js'
 import { DEFAULTS, normalize, imageSource } from '../src/appearance/appearance.js'
+import { registerFakeArt } from './fakeArt.js'
+registerFakeArt()
 
 test('auto: the wide picture for wide windows, with hysteresis near the middle', () => {
   assert.equal(autoPick(null, 1600, 1000), 'vivi2') // 1.6

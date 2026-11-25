@@ -7,7 +7,6 @@ import { CARD_META, sponsorCardData } from '../src/vue/homeCards.js'
 import { catalogueMeta } from '../src/vue/homeCatalogue.js'
 import { UNIT_PX, offeredOf, sizePx } from '../src/vue/homeSizes.js'
 import { createVddStore } from '../src/vue/useVddStore.js'
-import { VIVI } from '../src/about/mascot.js'
 
 // The tiles of B3 on sample data, for the evidence of round 30 only: every value here is made up in this file (no host). Each tile is drawn in a cell of the overview's
 // size (one unit = 176 px, the standard density) through MDashCardView, so the same page shows the tile as before (no flag) and with its design (?tiles=bold).
@@ -29,7 +28,7 @@ const base = (o = {}) => ({
   logText: logText(LOG), logs: { rows: logRows(LOG) },
   config: { platform: 'windows', encoder: 'nvenc', max_bitrate: 0, fps: '[60,90,120]', controller: 'enabled', keyboard: 'enabled', mouse: 'disabled', capture_cursor: true, stream_audio: false, upnp: 'disabled', port: 47989 },
   vddStore,
-  announcements: [{ id: 'a1', title: 'Foundation Sunshine 1.4.3：虚拟显示器 HDR 与更低的延迟', category: 'update', banner: VIVI.wallpaper[2], date: '11-03' }, { id: 'a2', title: '社区串流挑战赛开始报名', category: 'announce', banner: VIVI.wallpaper[1], date: '10-28' }, { id: 'a3', title: '手把手：用手机串流 PC 游戏', category: 'guide', banner: '', date: '10-20' }],
+  announcements: [{ id: 'a1', title: 'Foundation Sunshine 1.4.3：虚拟显示器 HDR 与更低的延迟', category: 'update', banner: '', date: '11-03' }, { id: 'a2', title: '社区串流挑战赛开始报名', category: 'announce', banner: '', date: '10-28' }, { id: 'a3', title: '手把手：用手机串流 PC 游戏', category: 'guide', banner: '', date: '10-20' }],
   session: { client_name: "Pixel 9", uptimeMs: 3723000, fps: 120, bitrate: 48000, enable_mic: false, use_vdd: true },
   ...o,
 })
